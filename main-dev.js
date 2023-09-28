@@ -103,8 +103,8 @@ class ARMMane{
                 "code_block" : this.querySel(".tp-ins-code-block"),
             },
             "text" : {
-                "connect_url" : document.querySelector(".connecting-url").querySelector("div > h2"),
-                "connect_status" : document.querySelector(".connecting-status").querySelector("div > h2"),
+                "connect_url" : document.querySel(".connecting-url").querySelector("div > h2"),
+                "connect_status" : document.querySel(".connecting-status").querySelector("div > h2"),
             }
         }
 
@@ -884,7 +884,7 @@ class ARMMane{
             zone.addEventListener("dragover", (e) => {
                 e.preventDefault();
                 const bottomList = this.insertAboveList(zone, e.clientY);
-                const curList = document.querySelector(".dragging");
+                const curList = document.querySel(".dragging");
                 if (!bottomList) {
                     zone.appendChild(curList);
                 } else {
@@ -928,6 +928,8 @@ class ARMMane{
             newDiv.value = this.conf_list[i]["value"];
             newDiv.min = this.conf_list[i]["min"];
             newDiv.max = this.conf_list[i]["max"];
+            newDiv.setAttribute("data-type", this.conf_list[i]["type"]);
+            newDiv.setAttribute("data-value", this.conf_list[i]["value"]);
 
             // Add a click event listener to clone the element to the swim-lane
             newDiv.addEventListener("click", () => {
@@ -944,6 +946,8 @@ class ARMMane{
                     clonedCodeBlock.querySelector(".cmd-play").addEventListener("click", () => {
                         this.consoleLog("「ARMMANE」 Run command");
                     });
+                    clonedCodeBlock.setAttribute("data-type", newDiv.type);
+                    clonedCodeBlock.setAttribute("data-value", newDiv.value);
 
                     // Remove the click event listener from the cloned element
 
@@ -980,6 +984,8 @@ class ARMMane{
                     clonedCodeBlock.querySelector(".cmd-play").addEventListener("click", () => {
                         this.consoleLog("「ARMMANE」 Run command");
                     });
+                    clonedCodeBlock.setAttribute("data-type", newDiv.type);
+                    clonedCodeBlock.setAttribute("data-value", newDiv.value);
 
                     // Remove the click event listener from the cloned element
                     clonedCodeBlock.removeEventListener("click", () => {});
