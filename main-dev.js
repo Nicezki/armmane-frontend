@@ -62,6 +62,7 @@ class ARMMane{
                 "settingarea" : this.querySel(".main-settingarea"),
                 "statusbox" : this.querySel(".main-statusbox"),
                 "controlbox" : this.querySel(".main-controlbox"),
+                "cconfbox" : this.querySel("cconfbox"),
                 "logmane" : this.querySel(".logmane"),
                 "log_disconnect" : this.querySel(".log-disconnect"),
                 "log_area" : this.querySel(".log-area"),
@@ -86,6 +87,8 @@ class ARMMane{
                 "main_config" : this.querySel(".btn-main-config"),
                 "error_btn_selectserver" : this.querySel(".err-btn1"),
                 "error_btn_retry" : this.querySel(".err-btn2"),
+                "cconf_btn_save" : this.querySel(".cconf-btn-save"),
+                "cconf_btn_cancel" : this.querySel(".cconf-btn-cancel"),
             },
             "form" : {
                 "conn_address_field" : this.querySel("#form-field-srvaddress"),
@@ -97,6 +100,9 @@ class ARMMane{
                 "servo_05" : this.querySel("#form-field-s5"),
                 "conv_00" : this.querySel("#form-field-conv0"),
                 "conv_01" : this.querySel("#form-field-conv1"),
+                "cconf_01" : this.querySel("#form-field-cconf-s1"),
+                "cconf_02" : this.querySel("#form-field-cconf-s2"),
+                "cconf_03" : this.querySel("#form-field-cconf-s3"),
             },
             "template" : {
                 "btn_serverlist" : this.querySel(".tp-btn-server"),
@@ -107,6 +113,9 @@ class ARMMane{
             "text" : {
                 "connect_url" : this.querySel(".connecting-url").querySelector("div > h2"),
                 "connect_status" : this.querySel(".connecting-status").querySelector("div > h2"),
+                "cconf_title_1" : this.querySel(".cconf-title-1").querySelector("div > h2"),
+                "cconf_title_2" : this.querySel(".cconf-title-2").querySelector("div > h2"),
+                "cconf_title_3" : this.querySel(".cconf-title-3").querySelector("div > h2"),
             }
         }
 
@@ -217,6 +226,14 @@ class ARMMane{
     querySel(element, doc = document) {
         try {
             return doc.querySelector(element);
+        } catch (error) {
+            this.consoleLog("「ARMMANE」 Element " + element + " not found", "ERROR");
+        }
+    }
+
+    querySelAll(element, doc = document) {
+        try {
+            return doc.querySelectorAll(element);
         } catch (error) {
             this.consoleLog("「ARMMANE」 Element " + element + " not found", "ERROR");
         }
@@ -542,6 +559,11 @@ class ARMMane{
             }
             
         }, time);
+    }
+
+    //This will change the property of the element after click save button
+    openConfigBox(element){
+        
     }
 
 
