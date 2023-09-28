@@ -103,8 +103,8 @@ class ARMMane{
                 "code_block" : this.querySel(".tp-ins-code-block"),
             },
             "text" : {
-                "connect_url" : document.querySel(".connecting-url").querySelector("div > h2"),
-                "connect_status" : document.querySel(".connecting-status").querySelector("div > h2"),
+                "connect_url" : this.querySel(".connecting-url").querySelector("div > h2"),
+                "connect_status" : this.querySel(".connecting-status").querySelector("div > h2"),
             }
         }
 
@@ -127,36 +127,36 @@ class ARMMane{
         this.eventSource = null;
         
         // this.uiElements = {
-        //     "arm-status" : document.querySel(".arm-status > div > h2"),
-        //     "amn-icon" : document.querySel(".amn-icon"),
-        //     "amn-config-box" : document.querySel(".amn-config-box"),
-        //     "amn-info-box" : document.querySel(".amn-info-box"),
-        //     "btn-info" : document.querySel(".btn-info"),
-        //     "btn-control" : document.querySel(".btn-control"),
-        //     "btn-config" : document.querySel(".btn-config"),
-        //     "btn-config-inner" : document.querySel(".btn-config > div > div > a"),
-        //     "btn-preset-temp" : document.querySel(".btn-preset-temp"),
-        //     "btn-s-control" : document.querySel(".btn-s-control"),
-        //     "chip-servo-0" : document.querySel(".chip-servo-0 div > h4"),
-        //     "chip-servo-1" : document.querySel(".chip-servo-1 div > h4"),
-        //     "chip-servo-2" : document.querySel(".chip-servo-2 div > h4"),
-        //     "chip-servo-3" : document.querySel(".chip-servo-3 div > h4"),
-        //     "chip-servo-4" : document.querySel(".chip-servo-4 div > h4"),
-        //     "chip-servo-5" : document.querySel(".chip-servo-5 div > h4"),
-        //     "conf-cur-selmodel" : document.querySel(".conf-cur-selmodel > div > h6"),
-        //     "conf-cur-conv1" : document.querySel(".conf-cur-conv1 > div > h6"),
-        //     "conf-cur-conv2" : document.querySel(".conf-cur-conv2 > div > h6"),
-        //     "form-field-s0" : document.querySel("#form-field-s0"),
-        //     "form-field-s1" : document.querySel("#form-field-s1"),
-        //     "form-field-s2" : document.querySel("#form-field-s2"),
-        //     "form-field-s3" : document.querySel("#form-field-s3"),
-        //     "form-field-s4" : document.querySel("#form-field-s4"),
-        //     "form-field-s5" : document.querySel("#form-field-s5"),
-        //     "form-field-conv1" : document.querySel("#form-field-conv1"),
-        //     "form-field-conv2" : document.querySel("#form-field-conv2"),
-        //     "form-field-selmodel" : document.querySel("#form-field-selmodel"),
-        //     "list" : document.querySelAll(".list"),
-        //     "swim-lane" : document.querySelAll(".swim-lane"),
+        //     "arm-status" : this.querySel(".arm-status > div > h2"),
+        //     "amn-icon" : this.querySel(".amn-icon"),
+        //     "amn-config-box" : this.querySel(".amn-config-box"),
+        //     "amn-info-box" : this.querySel(".amn-info-box"),
+        //     "btn-info" : this.querySel(".btn-info"),
+        //     "btn-control" : this.querySel(".btn-control"),
+        //     "btn-config" : this.querySel(".btn-config"),
+        //     "btn-config-inner" : this.querySel(".btn-config > div > div > a"),
+        //     "btn-preset-temp" : this.querySel(".btn-preset-temp"),
+        //     "btn-s-control" : this.querySel(".btn-s-control"),
+        //     "chip-servo-0" : this.querySel(".chip-servo-0 div > h4"),
+        //     "chip-servo-1" : this.querySel(".chip-servo-1 div > h4"),
+        //     "chip-servo-2" : this.querySel(".chip-servo-2 div > h4"),
+        //     "chip-servo-3" : this.querySel(".chip-servo-3 div > h4"),
+        //     "chip-servo-4" : this.querySel(".chip-servo-4 div > h4"),
+        //     "chip-servo-5" : this.querySel(".chip-servo-5 div > h4"),
+        //     "conf-cur-selmodel" : this.querySel(".conf-cur-selmodel > div > h6"),
+        //     "conf-cur-conv1" : this.querySel(".conf-cur-conv1 > div > h6"),
+        //     "conf-cur-conv2" : this.querySel(".conf-cur-conv2 > div > h6"),
+        //     "form-field-s0" : this.querySel("#form-field-s0"),
+        //     "form-field-s1" : this.querySel("#form-field-s1"),
+        //     "form-field-s2" : this.querySel("#form-field-s2"),
+        //     "form-field-s3" : this.querySel("#form-field-s3"),
+        //     "form-field-s4" : this.querySel("#form-field-s4"),
+        //     "form-field-s5" : this.querySel("#form-field-s5"),
+        //     "form-field-conv1" : this.querySel("#form-field-conv1"),
+        //     "form-field-conv2" : this.querySel("#form-field-conv2"),
+        //     "form-field-selmodel" : this.querySel("#form-field-selmodel"),
+        //     "list" : this.querySelAll(".list"),
+        //     "swim-lane" : this.querySelAll(".swim-lane"),
             
         // };
         // this.config = [];
@@ -885,7 +885,7 @@ class ARMMane{
             zone.addEventListener("dragover", (e) => {
                 e.preventDefault();
                 const bottomList = this.insertAboveList(zone, e.clientY);
-                const curList = document.querySel(".dragging");
+                const curList = this.querySel(".dragging");
                 if (!bottomList) {
                     zone.appendChild(curList);
                 } else {
@@ -913,7 +913,7 @@ class ARMMane{
     }
     
     getData() {
-        const commandArea = document.querySel(".ins-command-area"); // Assuming this is your command_area
+        const commandArea = this.querySel(".ins-command-area"); // Assuming this is your command_area
 
         // Initialize an array to store the data
         const data = [];
