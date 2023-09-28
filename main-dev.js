@@ -78,6 +78,7 @@ class ARMMane{
                 "status_conv01_backward" : this.querySel(".status-conv01-bw"),
                 "command_area" : document.querySelectorAll(".ins-command-area"),
                 "function_box" : document.querySelectorAll(".ins-func-box"),
+                "livepreview" : this.querySel(".ins-livepreview"),
             },
             "btn" : {
                 "conn_connectsrv" : this.querySel(".btn-connectsrv"),
@@ -116,6 +117,7 @@ class ARMMane{
                 "cconf_title_1" : this.querySel(".cconf-title-1").querySelector("div > h2"),
                 "cconf_title_2" : this.querySel(".cconf-title-2").querySelector("div > h2"),
                 "cconf_title_3" : this.querySel(".cconf-title-3").querySelector("div > h2"),
+                "prediction_class" : this.querySel(".prediction-class").querySelector("div > h2"),
             }
         }
 
@@ -136,6 +138,7 @@ class ARMMane{
         ];
 
         this.eventSource = null;
+        this.videoStream = null;
         
         // this.uiElements = {
         //     "arm-status" : this.querySel(".arm-status > div > h2"),
@@ -185,7 +188,7 @@ class ARMMane{
      * The init function sets up the initial state of the app.
      */
     init() {
-        this.consoleLog("「ARMMANE」 by Nattawut Manjai-araya  v1.5.0");
+        this.consoleLog("「ARMMANE」 by Nattawut Manjai-araya  v1.5.0 Build 202309280147");
 
         // Hide element log_disconnect
         this.hideElement("ui", "log_disconnect");
@@ -582,6 +585,7 @@ class ARMMane{
         }
     
         this.eventSource = new EventSource(this.appStatus["server"]["fullURL"] + "/sse/status");
+        this.videoStream = new EventSource(this.appStatus["server"]["fullURL"] + "/sse/videostream");
     
         this.eventSource.onopen = () => {
             this.updateConnectionStatus("กำลังเชื่อมต่อกับเซิร์ฟเวอร์");
@@ -599,6 +603,11 @@ class ARMMane{
         this.eventSource.addEventListener("arm_status", (event) => {
             this.consoleLog("[INFO] SSE arm_status: " + event.data);
             this.handleArmStatus(event.data);
+        });
+
+        this.videoStream.addEventListener("prediction", (event) => {
+            this.consoleLog("[INFO] SSE received prediction data");
+            this.handlePrediction(event.data);
         });
     }
     
@@ -736,6 +745,13 @@ class ARMMane{
         this.handleConvStatus(0, armStatus["conv"]["mode"][0]);
         this.handleConvStatus(1, armStatus["conv"]["mode"][1]);
         this.handleInfStatus(armStatus["sensor"]);
+    }
+
+
+    handlePrediction(data) {
+        let prediction = JSON.parse(data);
+        this.changeText("prediction_class", "Class: " + prediction["class"] + " (" + prediction["confident_score"] + "%) <br> " + prediction["fps"] + " FPS <br> Detected:" + prediction["detect_flag"] + " ");
+        this.elements["ui"]["prediction_img"].src = "data:image/jpeg;base64," + prediction["current_frame"];
     }
 
 
