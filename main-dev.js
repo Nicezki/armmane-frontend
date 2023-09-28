@@ -199,7 +199,7 @@ class ARMMane{
 
         // this.createDraggableList();
 
-        this.dragNdrop();
+        // this.dragNdrop();
     }
 
 
