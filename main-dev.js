@@ -127,36 +127,36 @@ class ARMMane{
         this.eventSource = null;
         
         // this.uiElements = {
-        //     "arm-status" : document.querySelector(".arm-status > div > h2"),
-        //     "amn-icon" : document.querySelector(".amn-icon"),
-        //     "amn-config-box" : document.querySelector(".amn-config-box"),
-        //     "amn-info-box" : document.querySelector(".amn-info-box"),
-        //     "btn-info" : document.querySelector(".btn-info"),
-        //     "btn-control" : document.querySelector(".btn-control"),
-        //     "btn-config" : document.querySelector(".btn-config"),
-        //     "btn-config-inner" : document.querySelector(".btn-config > div > div > a"),
-        //     "btn-preset-temp" : document.querySelector(".btn-preset-temp"),
-        //     "btn-s-control" : document.querySelector(".btn-s-control"),
-        //     "chip-servo-0" : document.querySelector(".chip-servo-0 div > h4"),
-        //     "chip-servo-1" : document.querySelector(".chip-servo-1 div > h4"),
-        //     "chip-servo-2" : document.querySelector(".chip-servo-2 div > h4"),
-        //     "chip-servo-3" : document.querySelector(".chip-servo-3 div > h4"),
-        //     "chip-servo-4" : document.querySelector(".chip-servo-4 div > h4"),
-        //     "chip-servo-5" : document.querySelector(".chip-servo-5 div > h4"),
-        //     "conf-cur-selmodel" : document.querySelector(".conf-cur-selmodel > div > h6"),
-        //     "conf-cur-conv1" : document.querySelector(".conf-cur-conv1 > div > h6"),
-        //     "conf-cur-conv2" : document.querySelector(".conf-cur-conv2 > div > h6"),
-        //     "form-field-s0" : document.querySelector("#form-field-s0"),
-        //     "form-field-s1" : document.querySelector("#form-field-s1"),
-        //     "form-field-s2" : document.querySelector("#form-field-s2"),
-        //     "form-field-s3" : document.querySelector("#form-field-s3"),
-        //     "form-field-s4" : document.querySelector("#form-field-s4"),
-        //     "form-field-s5" : document.querySelector("#form-field-s5"),
-        //     "form-field-conv1" : document.querySelector("#form-field-conv1"),
-        //     "form-field-conv2" : document.querySelector("#form-field-conv2"),
-        //     "form-field-selmodel" : document.querySelector("#form-field-selmodel"),
-        //     "list" : document.querySelectorAll(".list"),
-        //     "swim-lane" : document.querySelectorAll(".swim-lane"),
+        //     "arm-status" : document.querySel(".arm-status > div > h2"),
+        //     "amn-icon" : document.querySel(".amn-icon"),
+        //     "amn-config-box" : document.querySel(".amn-config-box"),
+        //     "amn-info-box" : document.querySel(".amn-info-box"),
+        //     "btn-info" : document.querySel(".btn-info"),
+        //     "btn-control" : document.querySel(".btn-control"),
+        //     "btn-config" : document.querySel(".btn-config"),
+        //     "btn-config-inner" : document.querySel(".btn-config > div > div > a"),
+        //     "btn-preset-temp" : document.querySel(".btn-preset-temp"),
+        //     "btn-s-control" : document.querySel(".btn-s-control"),
+        //     "chip-servo-0" : document.querySel(".chip-servo-0 div > h4"),
+        //     "chip-servo-1" : document.querySel(".chip-servo-1 div > h4"),
+        //     "chip-servo-2" : document.querySel(".chip-servo-2 div > h4"),
+        //     "chip-servo-3" : document.querySel(".chip-servo-3 div > h4"),
+        //     "chip-servo-4" : document.querySel(".chip-servo-4 div > h4"),
+        //     "chip-servo-5" : document.querySel(".chip-servo-5 div > h4"),
+        //     "conf-cur-selmodel" : document.querySel(".conf-cur-selmodel > div > h6"),
+        //     "conf-cur-conv1" : document.querySel(".conf-cur-conv1 > div > h6"),
+        //     "conf-cur-conv2" : document.querySel(".conf-cur-conv2 > div > h6"),
+        //     "form-field-s0" : document.querySel("#form-field-s0"),
+        //     "form-field-s1" : document.querySel("#form-field-s1"),
+        //     "form-field-s2" : document.querySel("#form-field-s2"),
+        //     "form-field-s3" : document.querySel("#form-field-s3"),
+        //     "form-field-s4" : document.querySel("#form-field-s4"),
+        //     "form-field-s5" : document.querySel("#form-field-s5"),
+        //     "form-field-conv1" : document.querySel("#form-field-conv1"),
+        //     "form-field-conv2" : document.querySel("#form-field-conv2"),
+        //     "form-field-selmodel" : document.querySel("#form-field-selmodel"),
+        //     "list" : document.querySelAll(".list"),
+        //     "swim-lane" : document.querySelAll(".swim-lane"),
             
         // };
         // this.config = [];
@@ -885,7 +885,7 @@ class ARMMane{
             zone.addEventListener("dragover", (e) => {
                 e.preventDefault();
                 const bottomList = this.insertAboveList(zone, e.clientY);
-                const curList = document.querySelector(".dragging");
+                const curList = document.querySel(".dragging");
                 if (!bottomList) {
                     zone.appendChild(curList);
                 } else {
@@ -913,7 +913,7 @@ class ARMMane{
     }
     
     getData() {
-        const commandArea = document.querySelector(".ins-command-area"); // Assuming this is your command_area
+        const commandArea = document.querySel(".ins-command-area"); // Assuming this is your command_area
 
         // Initialize an array to store the data
         const data = [];
