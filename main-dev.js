@@ -125,12 +125,14 @@ class ARMMane{
                 "value" : 0,
                 "min" : 0,
                 "max" : 180,
+                "num" : 0,
             },
             {
                 "type" : "conv",
                 "value" : 0,
                 "min" : 0,
                 "max" : 2,
+                "num" : 0,
             }
 
         ];
@@ -947,11 +949,13 @@ class ARMMane{
         codeBlocks.forEach(codeBlock => {
             // Extract the data you need from each codeBlock
             const type = codeBlock.getAttribute("data-type"); // Example: "servo" or "conv"
-            const value = codeBlock.getAttribute("data-value"); // Example: Numeric value associated with the code block
+            const value = codeBlock.getAttribute("data-value"); 
+            const num = codeBlock.getAttribute("data-num"); 
             // Add the extracted data to the data array
             data.push({
                 type,
-                value
+                value,
+                num
             });
         });
 
@@ -975,8 +979,12 @@ class ARMMane{
             newDiv.value = this.conf_list[i]["value"];
             newDiv.min = this.conf_list[i]["min"];
             newDiv.max = this.conf_list[i]["max"];
+            newDiv.num = this.conf_list[i]["num"];
             newDiv.setAttribute("data-type", this.conf_list[i]["type"]);
             newDiv.setAttribute("data-value", this.conf_list[i]["value"]);
+            newDiv.setAttribute("data-num", this.conf_list[i]["num"]);
+
+            
     
             // Add a click event listener to clone the element to the swim-lane
             newDiv.addEventListener("click", () => {
@@ -995,6 +1003,7 @@ class ARMMane{
                     });
                     clonedCodeBlock.setAttribute("data-type", newDiv.type);
                     clonedCodeBlock.setAttribute("data-value", newDiv.value);
+                    clonedCodeBlock.setAttribute("data-num", newDiv.num);
     
                     // Remove the click event listener from the cloned element
 
@@ -1033,6 +1042,7 @@ class ARMMane{
                     });
                     clonedCodeBlock.setAttribute("data-type", newDiv.type);
                     clonedCodeBlock.setAttribute("data-value", newDiv.value);
+                    clonedCodeBlock.setAttribute("data-num", newDiv.num);
     
                     // Remove the click event listener from the cloned element
                     clonedCodeBlock.removeEventListener("click", () => {});
