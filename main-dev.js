@@ -75,6 +75,8 @@ class ARMMane{
                 "status_conv01_stop" : this.querySel(".status-conv01-stop"),
                 "status_conv01_forward" : this.querySel(".status-conv01-fw"),
                 "status_conv01_backward" : this.querySel(".status-conv01-bw"),
+                "command_area" : document.querySelectorAll(".ins-command-area"),
+                "function_box" : document.querySelectorAll(".ins-func-box"),
             },
             "btn" : {
                 "conn_connectsrv" : this.querySel(".btn-connectsrv"),
