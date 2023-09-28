@@ -751,7 +751,7 @@ class ARMMane{
     handlePrediction(data) {
         let prediction = JSON.parse(data);
         this.changeText("prediction_class", "Class: " + prediction["current_result"] + " (" + prediction["confident_score"] + "%) <br> " + prediction["fps"] + " FPS <br> Detected:" + prediction["detect_flag"] + " ");
-        this.elements["ui"]["livepreview"].src = "data:image/jpeg;base64," + prediction["current_frame"];
+        this.elements["ui"]["livepreview"].querySelector("img").src = "data:image/jpeg;base64," + prediction["current_frame"];
     }
 
 
