@@ -941,7 +941,7 @@ class ARMMane{
     
         for (let i = 0; i < this.conf_list.length; i++) {
             // Create a new element
-            let newDiv = this.elements["template"]["ins_function"][0].cloneNode(true);
+            let newDiv = this.elements["template"]["ins_function"].cloneNode(true);
     
             // Set the class and text content
             newDiv.classList.add("ins_function", "" + i);
