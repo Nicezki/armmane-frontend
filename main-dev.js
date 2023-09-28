@@ -101,7 +101,7 @@ class ARMMane{
             "template" : {
                 "btn_serverlist" : this.querySel(".tp-btn-server"),
                 "log_alert" : this.querySel(".tp-log-alert"),
-                "ins_function" : this.querySel(".tp-ins-func"),
+                "ins_function" : document.querySelectorAll(".tp-ins-func"),
                 "code_block" : this.querySel(".tp-ins-code-block"),
             },
             "text" : {
@@ -941,7 +941,7 @@ class ARMMane{
     
         for (let i = 0; i < this.conf_list.length; i++) {
             // Create a new element
-            let newDiv = this.elements["template"]["ins_function"].cloneNode(true);
+            let newDiv = this.elements["template"]["ins_function"][0].cloneNode(true);
     
             // Set the class and text content
             newDiv.classList.add("ins_function", "" + i);
