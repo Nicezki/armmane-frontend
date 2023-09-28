@@ -862,6 +862,7 @@ class ARMMane{
 // Shit code still need to be clear
 // DEPRECATED them all!!
 
+    // initialize drag and drop function
     dragNdrop() {
         const draggables = Array.from(this.elements["template"]["code_block"]);
         const droppables = Array.from(this.elements["ui"]["command_area"]);
@@ -884,7 +885,7 @@ class ARMMane{
             zone.addEventListener("dragover", (e) => {
                 e.preventDefault();
                 const bottomList = this.insertAboveList(zone, e.clientY);
-                const curList = document.querySel(".dragging");
+                const curList = document.querySelector(".dragging");
                 if (!bottomList) {
                     zone.appendChild(curList);
                 } else {
@@ -899,7 +900,7 @@ class ARMMane{
         const els = Array.from(zone.querySelectorAll(".tp-ins-code-block:not(.dragging)"));
         let closestList = null;
         let closestOffset = Number.NEGATIVE_INFINITY;
-
+    
         els.forEach(list => {
             const { top, width } = list.getBoundingClientRect();
             const offset = mouseY - top; // Calculate the offset from the top edge
@@ -910,27 +911,49 @@ class ARMMane{
         });
         return closestList;
     }
+    
+    getData() {
+        const commandArea = document.querySelector(".ins-command-area"); // Assuming this is your command_area
 
+        // Initialize an array to store the data
+        const data = [];
+
+        // Iterate through the child elements of command_area
+        const codeBlocks = Array.from(commandArea.querySelectorAll(".tp-ins-code-block"));
+        codeBlocks.forEach(codeBlock => {
+            // Extract the data you need from each codeBlock
+            const type = codeBlock.getAttribute("data-type"); // Example: "servo" or "conv"
+            const value = codeBlock.getAttribute("data-value"); // Example: Numeric value associated with the code block
+            // Add the extracted data to the data array
+            data.push({
+                type,
+                value
+            });
+        });
+
+        return data;
+    }
 
     createDraggableList() {
         const spawnArea = this.elements["ui"]["function_box"][0].querySelector("div");
-
+    
         for (let i = 0; i < this.conf_list.length; i++) {
             // Create a new element
             let newDiv = this.elements["template"]["ins_function"][0].cloneNode(true);
-
+    
             // Set the class and text content
             newDiv.classList.add("ins_function", "" + i);
             newDiv.querySelector(".tp-ins-func > div > h4").textContent = this.conf_list[i]["type"];
             newDiv.style.display = "flex";
-
+    
+            // Add data attributes to store custom data
             newDiv.type = this.conf_list[i]["type"];
             newDiv.value = this.conf_list[i]["value"];
             newDiv.min = this.conf_list[i]["min"];
             newDiv.max = this.conf_list[i]["max"];
             newDiv.setAttribute("data-type", this.conf_list[i]["type"]);
             newDiv.setAttribute("data-value", this.conf_list[i]["value"]);
-
+    
             // Add a click event listener to clone the element to the swim-lane
             newDiv.addEventListener("click", () => {
                 // Check the type of the clicked element
@@ -948,26 +971,26 @@ class ARMMane{
                     });
                     clonedCodeBlock.setAttribute("data-type", newDiv.type);
                     clonedCodeBlock.setAttribute("data-value", newDiv.value);
-
+    
                     // Remove the click event listener from the cloned element
 
                     clonedCodeBlock.removeEventListener("click", () => {});
-
+    
                     // Add a dragstart event listener to make it draggable within the swim-lane
                     clonedCodeBlock.addEventListener("dragstart", (e) => {
                         clonedCodeBlock.classList.add("dragging");
                         // Set a custom data attribute to track the element's origin
                         e.dataTransfer.setData("origin", "command_area");
                     });
-
+    
                     // Add a dragend event listener to remove the dragging class
                     clonedCodeBlock.addEventListener("dragend", () => {
                         clonedCodeBlock.classList.remove("dragging");
                     });
-
+    
                     // Enable draggable behavior for the cloned element
                     clonedCodeBlock.draggable = true;
-
+    
                     // Append the cloned element to the swim-lane
                     const swimLane = this.elements["ui"]["command_area"][0];
                     swimLane.appendChild(clonedCodeBlock);
@@ -986,31 +1009,31 @@ class ARMMane{
                     });
                     clonedCodeBlock.setAttribute("data-type", newDiv.type);
                     clonedCodeBlock.setAttribute("data-value", newDiv.value);
-
+    
                     // Remove the click event listener from the cloned element
                     clonedCodeBlock.removeEventListener("click", () => {});
-
+    
                     // Add a dragstart event listener to make it draggable within the swim-lane
                     clonedCodeBlock.addEventListener("dragstart", (e) => {
                         clonedCodeBlock.classList.add("dragging");
                         // Set a custom data attribute to track the element's origin
                         e.dataTransfer.setData("origin", "command_area");
                     });
-
+    
                     // Add a dragend event listener to remove the dragging class
                     clonedCodeBlock.addEventListener("dragend", () => {
                         clonedCodeBlock.classList.remove("dragging");
                     });
-
+    
                     // Enable draggable behavior for the cloned element
                     clonedCodeBlock.draggable = true;
-
+    
                     // Append the cloned element to the swim-lane
                     const swimLane = this.elements["ui"]["command_area"][0];
                     swimLane.appendChild(clonedCodeBlock);
                 }
             });
-
+    
             // Append the new element to the spawn area
             spawnArea.appendChild(newDiv);
         }
