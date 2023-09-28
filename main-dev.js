@@ -76,7 +76,8 @@ class ARMMane{
                 "status_conv01_stop" : this.querySel(".status-conv01-stop"),
                 "status_conv01_forward" : this.querySel(".status-conv01-fw"),
                 "status_conv01_backward" : this.querySel(".status-conv01-bw"),
-                
+                "command_area" : document.querySelectorAll(".ins-command-area"),
+                "function_box" : document.querySelectorAll(".ins-func-box"),
             },
             "btn" : {
                 "conn_connectsrv" : this.querySel(".btn-connectsrv"),
@@ -106,7 +107,7 @@ class ARMMane{
             "template" : {
                 "btn_serverlist" : this.querySel(".tp-btn-server"),
                 "log_alert" : this.querySel(".tp-log-alert"),
-                "ins_function" : this.querySel(".tp-ins-func"),
+                "ins_function" : document.querySelectorAll(".tp-ins-func"),
                 "code_block" : this.querySel(".tp-ins-code-block"),
             },
             "text" : {
@@ -137,36 +138,36 @@ class ARMMane{
         this.eventSource = null;
         
         // this.uiElements = {
-        //     "arm-status" : document.querySelector(".arm-status > div > h2"),
-        //     "amn-icon" : document.querySelector(".amn-icon"),
-        //     "amn-config-box" : document.querySelector(".amn-config-box"),
-        //     "amn-info-box" : document.querySelector(".amn-info-box"),
-        //     "btn-info" : document.querySelector(".btn-info"),
-        //     "btn-control" : document.querySelector(".btn-control"),
-        //     "btn-config" : document.querySelector(".btn-config"),
-        //     "btn-config-inner" : document.querySelector(".btn-config > div > div > a"),
-        //     "btn-preset-temp" : document.querySelector(".btn-preset-temp"),
-        //     "btn-s-control" : document.querySelector(".btn-s-control"),
-        //     "chip-servo-0" : document.querySelector(".chip-servo-0 div > h4"),
-        //     "chip-servo-1" : document.querySelector(".chip-servo-1 div > h4"),
-        //     "chip-servo-2" : document.querySelector(".chip-servo-2 div > h4"),
-        //     "chip-servo-3" : document.querySelector(".chip-servo-3 div > h4"),
-        //     "chip-servo-4" : document.querySelector(".chip-servo-4 div > h4"),
-        //     "chip-servo-5" : document.querySelector(".chip-servo-5 div > h4"),
-        //     "conf-cur-selmodel" : document.querySelector(".conf-cur-selmodel > div > h6"),
-        //     "conf-cur-conv1" : document.querySelector(".conf-cur-conv1 > div > h6"),
-        //     "conf-cur-conv2" : document.querySelector(".conf-cur-conv2 > div > h6"),
-        //     "form-field-s0" : document.querySelector("#form-field-s0"),
-        //     "form-field-s1" : document.querySelector("#form-field-s1"),
-        //     "form-field-s2" : document.querySelector("#form-field-s2"),
-        //     "form-field-s3" : document.querySelector("#form-field-s3"),
-        //     "form-field-s4" : document.querySelector("#form-field-s4"),
-        //     "form-field-s5" : document.querySelector("#form-field-s5"),
-        //     "form-field-conv1" : document.querySelector("#form-field-conv1"),
-        //     "form-field-conv2" : document.querySelector("#form-field-conv2"),
-        //     "form-field-selmodel" : document.querySelector("#form-field-selmodel"),
-        //     "list" : document.querySelectorAll(".list"),
-        //     "swim-lane" : document.querySelectorAll(".swim-lane"),
+        //     "arm-status" : this.querySel(".arm-status > div > h2"),
+        //     "amn-icon" : this.querySel(".amn-icon"),
+        //     "amn-config-box" : this.querySel(".amn-config-box"),
+        //     "amn-info-box" : this.querySel(".amn-info-box"),
+        //     "btn-info" : this.querySel(".btn-info"),
+        //     "btn-control" : this.querySel(".btn-control"),
+        //     "btn-config" : this.querySel(".btn-config"),
+        //     "btn-config-inner" : this.querySel(".btn-config > div > div > a"),
+        //     "btn-preset-temp" : this.querySel(".btn-preset-temp"),
+        //     "btn-s-control" : this.querySel(".btn-s-control"),
+        //     "chip-servo-0" : this.querySel(".chip-servo-0 div > h4"),
+        //     "chip-servo-1" : this.querySel(".chip-servo-1 div > h4"),
+        //     "chip-servo-2" : this.querySel(".chip-servo-2 div > h4"),
+        //     "chip-servo-3" : this.querySel(".chip-servo-3 div > h4"),
+        //     "chip-servo-4" : this.querySel(".chip-servo-4 div > h4"),
+        //     "chip-servo-5" : this.querySel(".chip-servo-5 div > h4"),
+        //     "conf-cur-selmodel" : this.querySel(".conf-cur-selmodel > div > h6"),
+        //     "conf-cur-conv1" : this.querySel(".conf-cur-conv1 > div > h6"),
+        //     "conf-cur-conv2" : this.querySel(".conf-cur-conv2 > div > h6"),
+        //     "form-field-s0" : this.querySel("#form-field-s0"),
+        //     "form-field-s1" : this.querySel("#form-field-s1"),
+        //     "form-field-s2" : this.querySel("#form-field-s2"),
+        //     "form-field-s3" : this.querySel("#form-field-s3"),
+        //     "form-field-s4" : this.querySel("#form-field-s4"),
+        //     "form-field-s5" : this.querySel("#form-field-s5"),
+        //     "form-field-conv1" : this.querySel("#form-field-conv1"),
+        //     "form-field-conv2" : this.querySel("#form-field-conv2"),
+        //     "form-field-selmodel" : this.querySel("#form-field-selmodel"),
+        //     "list" : this.querySelAll(".list"),
+        //     "swim-lane" : this.querySelAll(".swim-lane"),
             
         // };
         // this.config = [];
@@ -885,6 +886,7 @@ class ARMMane{
 // Shit code still need to be clear
 // DEPRECATED them all!!
 
+    // initialize drag and drop function
     dragNdrop() {
         const draggables = Array.from(this.elements["template"]["code_block"]);
         const droppables = Array.from(this.elements["ui"]["command_area"]);
@@ -907,7 +909,7 @@ class ARMMane{
             zone.addEventListener("dragover", (e) => {
                 e.preventDefault();
                 const bottomList = this.insertAboveList(zone, e.clientY);
-                const curList = document.querySelector(".dragging");
+                const curList = this.querySel(".dragging");
                 if (!bottomList) {
                     zone.appendChild(curList);
                 } else {
@@ -922,7 +924,7 @@ class ARMMane{
         const els = Array.from(zone.querySelectorAll(".tp-ins-code-block:not(.dragging)"));
         let closestList = null;
         let closestOffset = Number.NEGATIVE_INFINITY;
-
+    
         els.forEach(list => {
             const { top, width } = list.getBoundingClientRect();
             const offset = mouseY - top; // Calculate the offset from the top edge
@@ -933,25 +935,49 @@ class ARMMane{
         });
         return closestList;
     }
+    
+    getData() {
+        const commandArea = this.querySel(".ins-command-area"); // Assuming this is your command_area
 
+        // Initialize an array to store the data
+        const data = [];
+
+        // Iterate through the child elements of command_area
+        const codeBlocks = Array.from(commandArea.querySelectorAll(".tp-ins-code-block"));
+        codeBlocks.forEach(codeBlock => {
+            // Extract the data you need from each codeBlock
+            const type = codeBlock.getAttribute("data-type"); // Example: "servo" or "conv"
+            const value = codeBlock.getAttribute("data-value"); // Example: Numeric value associated with the code block
+            // Add the extracted data to the data array
+            data.push({
+                type,
+                value
+            });
+        });
+
+        return data;
+    }
 
     createDraggableList() {
         const spawnArea = this.elements["ui"]["function_box"][0].querySelector("div");
-
+    
         for (let i = 0; i < this.conf_list.length; i++) {
             // Create a new element
             let newDiv = this.elements["template"]["ins_function"][0].cloneNode(true);
-
+    
             // Set the class and text content
             newDiv.classList.add("ins_function", "" + i);
             newDiv.querySelector(".tp-ins-func > div > h4").textContent = this.conf_list[i]["type"];
             newDiv.style.display = "flex";
-
+    
+            // Add data attributes to store custom data
             newDiv.type = this.conf_list[i]["type"];
             newDiv.value = this.conf_list[i]["value"];
             newDiv.min = this.conf_list[i]["min"];
             newDiv.max = this.conf_list[i]["max"];
-
+            newDiv.setAttribute("data-type", this.conf_list[i]["type"]);
+            newDiv.setAttribute("data-value", this.conf_list[i]["value"]);
+    
             // Add a click event listener to clone the element to the swim-lane
             newDiv.addEventListener("click", () => {
                 // Check the type of the clicked element
@@ -967,26 +993,28 @@ class ARMMane{
                     clonedCodeBlock.querySelector(".cmd-play").addEventListener("click", () => {
                         this.consoleLog("「ARMMANE」 Run command");
                     });
-
+                    clonedCodeBlock.setAttribute("data-type", newDiv.type);
+                    clonedCodeBlock.setAttribute("data-value", newDiv.value);
+    
                     // Remove the click event listener from the cloned element
 
                     clonedCodeBlock.removeEventListener("click", () => {});
-
+    
                     // Add a dragstart event listener to make it draggable within the swim-lane
                     clonedCodeBlock.addEventListener("dragstart", (e) => {
                         clonedCodeBlock.classList.add("dragging");
                         // Set a custom data attribute to track the element's origin
                         e.dataTransfer.setData("origin", "command_area");
                     });
-
+    
                     // Add a dragend event listener to remove the dragging class
                     clonedCodeBlock.addEventListener("dragend", () => {
                         clonedCodeBlock.classList.remove("dragging");
                     });
-
+    
                     // Enable draggable behavior for the cloned element
                     clonedCodeBlock.draggable = true;
-
+    
                     // Append the cloned element to the swim-lane
                     const swimLane = this.elements["ui"]["command_area"][0];
                     swimLane.appendChild(clonedCodeBlock);
@@ -1003,31 +1031,33 @@ class ARMMane{
                     clonedCodeBlock.querySelector(".cmd-play").addEventListener("click", () => {
                         this.consoleLog("「ARMMANE」 Run command");
                     });
-
+                    clonedCodeBlock.setAttribute("data-type", newDiv.type);
+                    clonedCodeBlock.setAttribute("data-value", newDiv.value);
+    
                     // Remove the click event listener from the cloned element
                     clonedCodeBlock.removeEventListener("click", () => {});
-
+    
                     // Add a dragstart event listener to make it draggable within the swim-lane
                     clonedCodeBlock.addEventListener("dragstart", (e) => {
                         clonedCodeBlock.classList.add("dragging");
                         // Set a custom data attribute to track the element's origin
                         e.dataTransfer.setData("origin", "command_area");
                     });
-
+    
                     // Add a dragend event listener to remove the dragging class
                     clonedCodeBlock.addEventListener("dragend", () => {
                         clonedCodeBlock.classList.remove("dragging");
                     });
-
+    
                     // Enable draggable behavior for the cloned element
                     clonedCodeBlock.draggable = true;
-
+    
                     // Append the cloned element to the swim-lane
                     const swimLane = this.elements["ui"]["command_area"][0];
                     swimLane.appendChild(clonedCodeBlock);
                 }
             });
-
+    
             // Append the new element to the spawn area
             spawnArea.appendChild(newDiv);
         }
