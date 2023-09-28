@@ -197,9 +197,9 @@ class ARMMane{
 
         this.setupElementTrigger();
 
-        // this.createDraggableList();
+        this.createDraggableList();
 
-        // this.dragNdrop();
+        this.dragNdrop();
     }
 
 
@@ -225,6 +225,14 @@ class ARMMane{
     querySel(element, doc = document) {
         try {
             return doc.querySelector(element);
+        } catch (error) {
+            this.consoleLog("「ARMMANE」 Element " + element + " not found", "ERROR");
+        }
+    }
+
+    querySelAll(element, doc = document) {
+        try {
+            return doc.querySelectorAll(element);
         } catch (error) {
             this.consoleLog("「ARMMANE」 Element " + element + " not found", "ERROR");
         }
