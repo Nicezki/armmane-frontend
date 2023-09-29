@@ -206,6 +206,8 @@ class ARMMane{
         this.createDraggableList(this.elements["ui"]["function_box"][0].querySelector("div"));
 
         this.dragNdrop(this.elements["template"]["code_block"],this.elements["ui"]["command_area"]);
+
+        enableMobileDragAndDrop();
     }
 
 
@@ -1061,27 +1063,34 @@ class ARMMane{
         const droppables = Array.from(this.elements["ui"]["command_area"]);
 
         let activeElement = null;
+        let offsetX, offsetY;
 
         // Add touch event listeners to draggable elements
         draggables.forEach(element => {
             element.addEventListener('touchstart', (e) => {
                 activeElement = element;
                 const touch = e.touches[0];
-                element.style.position = 'absolute';
-                element.style.left = `${touch.clientX - (element.offsetWidth / 2)}px`;
-                element.style.top = `${touch.clientY - (element.offsetHeight / 2)}px`;
+                offsetX = touch.clientX - element.getBoundingClientRect().left;
+                offsetY = touch.clientY - element.getBoundingClientRect().top;
             });
 
             element.addEventListener('touchmove', (e) => {
                 if (activeElement === element) {
                     const touch = e.touches[0];
-                    element.style.left = `${touch.clientX - (element.offsetWidth / 2)}px`;
-                    element.style.top = `${touch.clientY - (element.offsetHeight / 2)}px`;
+                    const left = touch.clientX - offsetX;
+                    const top = touch.clientY - offsetY;
+
+                    element.style.transform = `translate(${left}px, ${top}px)`;
                 }
             });
 
             element.addEventListener('touchend', () => {
-                activeElement = null;
+                if (activeElement === element) {
+                    // You can add logic here to snap the element to a drop zone if needed.
+                    // For now, we'll reset the transform to move it back to its original position.
+                    element.style.transform = 'translate(0, 0)';
+                    activeElement = null;
+                }
             });
         });
 
@@ -1089,15 +1098,6 @@ class ARMMane{
         droppables.forEach(zone => {
             zone.addEventListener('touchmove', (e) => {
                 e.preventDefault();
-                if (activeElement) {
-                    const touch = e.touches[0];
-                    activeElement.style.left = `${touch.clientX - (activeElement.offsetWidth / 2)}px`;
-                    activeElement.style.top = `${touch.clientY - (activeElement.offsetHeight / 2)}px`;
-                }
-            });
-
-            zone.addEventListener('touchend', () => {
-                activeElement = null;
             });
         });
     }
