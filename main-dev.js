@@ -201,9 +201,9 @@ class ARMMane{
 
         this.setupElementTrigger();
 
-        this.createDraggableList();
+        this.createDraggableList(this.elements["ui"]["function_box"][0].querySelector("div"));
 
-        this.dragNdrop();
+        this.dragNdrop(this.elements["template"]["code_block"],this.elements["ui"]["command_area"]);
     }
 
 
@@ -892,35 +892,13 @@ class ARMMane{
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // Shit code still need to be clear
 // DEPRECATED them all!!
 
     // initialize drag and drop function
-    dragNdrop() {
-        const draggables = Array.from(this.elements["template"]["code_block"]);
-        const droppables = Array.from(this.elements["ui"]["command_area"]);
+    dragNdrop(draggables_elem,droppables_elem) {
+        const draggables = Array.from(draggables_elem);
+        const droppables = Array.from(droppables_elem);
 
         // Add dragstart and dragend event listeners to draggable elements
         draggables.forEach(list => {
@@ -967,14 +945,14 @@ class ARMMane{
         return closestList;
     }
     
-    getData() {
-        const commandArea = this.querySel(".ins-command-area"); // Assuming this is your command_area
+    getData(element_name="ins-command-area",code_block="tp-ins-code-block") {
+        const commandArea = this.querySel("." + element_name);
 
         // Initialize an array to store the data
         const data = [];
 
         // Iterate through the child elements of command_area
-        const codeBlocks = Array.from(commandArea.querySelectorAll(".tp-ins-code-block"));
+        const codeBlocks = Array.from(commandArea.querySelectorAll("." + code_block));
         codeBlocks.forEach(codeBlock => {
             // Extract the data you need from each codeBlock
             const type = codeBlock.getAttribute("data-type"); // Example: "servo" or "conv"
@@ -989,9 +967,8 @@ class ARMMane{
         return data;
     }
 
-    createDraggableList() {
-        const spawnArea = this.elements["ui"]["function_box"][0].querySelector("div");
-    
+    createDraggableList(spawnArea) {
+        
         for (let i = 0; i < this.conf_list.length; i++) {
             // Create a new element
             let newDiv = this.elements["template"]["ins_function"][0].cloneNode(true);
