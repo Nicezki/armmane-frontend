@@ -980,18 +980,15 @@ class ARMMane{
 
     createDraggableList() {
         const spawnArea = this.elements["ui"]["function_box"][0].querySelector("div");
-        const createdElements = {}; // Object to store references to created elements
-        let uniqueIdCounter = 0; // Counter for generating unique IDs
 
         for (let i = 0; i < this.conf_list.length; i++) {
             // Create a new element
             let newDiv = this.elements["template"]["ins_function"][0].cloneNode(true);
-
-            // Generate a unique ID
-            const uniqueId = `ins_function_${uniqueIdCounter}`;
+            
+            // Generate a unique ID for the new element based on a prefix and index
+            const uniqueId = `ins_function_${i}`;
             newDiv.id = uniqueId;
-            uniqueIdCounter++;
-    
+
             // Set the class and text content
             newDiv.classList.add("ins_function", "" + i);
             newDiv.querySelector(".tp-ins-func > div > h4").textContent = this.conf_list[i]["type"];
@@ -1015,10 +1012,9 @@ class ARMMane{
                 if (newDiv.type === "servo") {
                     // Clone this.elements["tp-ins-code-block"]
                     const clonedCodeBlock = this.elements["template"]["code_block"].cloneNode(true);
-                    // Generate a unique ID for the cloned element
-                    const codeBlockUniqueId = `code_block_${uniqueIdCounter}`;
+                    // Generate a unique ID for the cloned code block
+                    const codeBlockUniqueId = `code_block_${Date.now()}`;
                     clonedCodeBlock.id = codeBlockUniqueId;
-                    uniqueIdCounter++;
 
                     clonedCodeBlock.querySelector(".cmd-del").addEventListener("click", () => {
                         clonedCodeBlock.remove();
@@ -1030,12 +1026,18 @@ class ARMMane{
                         this.consoleLog("「ARMMANE」 Run command");
                     });
 
-                    // Set a custom data attribute to track the element's origin
-                    clonedCodeBlock.setAttribute("data-origin", uniqueId);
+                    clonedCodeBlock.setAttribute("data-type", newDiv.type);
+                    clonedCodeBlock.setAttribute("data-value", newDiv.value);
+                    clonedCodeBlock.setAttribute("data-num", newDiv.num);
+
+                    // Remove the click event listener from the cloned element
+                    clonedCodeBlock.removeEventListener("click", () => {});
 
                     // Add a dragstart event listener to make it draggable within the swim-lane
                     clonedCodeBlock.addEventListener("dragstart", (e) => {
                         clonedCodeBlock.classList.add("dragging");
+                        // Set a custom data attribute to track the element's origin
+                        e.dataTransfer.setData("origin", "command_area");
                     });
 
                     // Add a dragend event listener to remove the dragging class
@@ -1053,10 +1055,10 @@ class ARMMane{
                     // Clone this.elements["tp-ins-code-block"]
                     const clonedCodeBlock = this.elements["template"]["code_block"].cloneNode(true);
                     clonedCodeBlock.querySelector(".cmd-text > div > h2").textContent = "setConV(0,1);";
-                    // Generate a unique ID for the cloned element
-                    const codeBlockUniqueId = `code_block_${uniqueIdCounter}`;
+                    // Generate a unique ID for the cloned code block
+                    const codeBlockUniqueId = `code_block_${Date.now()}`;
                     clonedCodeBlock.id = codeBlockUniqueId;
-                    uniqueIdCounter++;
+
                     clonedCodeBlock.querySelector(".cmd-del").addEventListener("click", () => {
                         clonedCodeBlock.remove();
                     });
@@ -1066,12 +1068,19 @@ class ARMMane{
                     clonedCodeBlock.querySelector(".cmd-play").addEventListener("click", () => {
                         this.consoleLog("「ARMMANE」 Run command");
                     });
-                    // Set a custom data attribute to track the element's origin
-                    clonedCodeBlock.setAttribute("data-origin", uniqueId);
+
+                    clonedCodeBlock.setAttribute("data-type", newDiv.type);
+                    clonedCodeBlock.setAttribute("data-value", newDiv.value);
+                    clonedCodeBlock.setAttribute("data-num", newDiv.num);
+
+                    // Remove the click event listener from the cloned element
+                    clonedCodeBlock.removeEventListener("click", () => {});
 
                     // Add a dragstart event listener to make it draggable within the swim-lane
                     clonedCodeBlock.addEventListener("dragstart", (e) => {
                         clonedCodeBlock.classList.add("dragging");
+                        // Set a custom data attribute to track the element's origin
+                        e.dataTransfer.setData("origin", "command_area");
                     });
 
                     // Add a dragend event listener to remove the dragging class
@@ -1087,26 +1096,23 @@ class ARMMane{
                     swimLane.appendChild(clonedCodeBlock);
                 }
             });
-    
-            // Store a reference to the created element in the object using its unique ID as the key
-            createdElements[uniqueId] = newDiv;
-
             // Append the new element to the spawn area
             spawnArea.appendChild(newDiv);
         }
-        // Now, you can access the created elements using their unique IDs
-        console.log(createdElements);
     }
 
-    check() {
-        const uniqueIdToCheck = "code_block_1";
-        const elementToCheck = document.querySelector(`#${uniqueIdToCheck}`);
-        if (elementToCheck) {
-            console.log(`Element with ID "${uniqueIdToCheck}" exists.`);
+    selectAndViewById(uniqueElementId) {
+        // Use querySelector to select the element by its unique ID
+        const selectedElement = document.querySelector(`#${uniqueElementId}`);
+    
+        if (selectedElement) {
+            // You can now work with the selected element
+            console.log(selectedElement);
         } else {
-            console.log(`Element with ID "${uniqueIdToCheck}" does not exist.`);
+            console.error(`Element with ID '${uniqueElementId}' not found.`);
         }
     }
+    
 
     createPresetButton(){
         this.getConfig();
