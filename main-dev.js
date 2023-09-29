@@ -207,7 +207,7 @@ class ARMMane{
 
         this.dragNdrop(this.elements["template"]["code_block"],this.elements["ui"]["command_area"]);
 
-        enableMobileDragAndDrop();
+        this.enableMobileDragAndDrop();
     }
 
 
