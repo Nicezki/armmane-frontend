@@ -1063,32 +1063,29 @@ class ARMMane{
         const droppables = Array.from(this.elements["ui"]["command_area"]);
 
         let activeElement = null;
-        let offsetX, offsetY;
+        let initialY;
 
         // Add touch event listeners to draggable elements
         draggables.forEach(element => {
             element.addEventListener('touchstart', (e) => {
                 activeElement = element;
                 const touch = e.touches[0];
-                offsetX = touch.clientX - element.getBoundingClientRect().left;
-                offsetY = touch.clientY - element.getBoundingClientRect().top;
+                initialY = touch.clientY - element.getBoundingClientRect().top;
             });
 
             element.addEventListener('touchmove', (e) => {
                 if (activeElement === element) {
                     const touch = e.touches[0];
-                    const left = touch.clientX - offsetX;
-                    const top = touch.clientY - offsetY;
+                    const newY = touch.clientY - initialY;
 
-                    element.style.transform = `translate(${left}px, ${top}px)`;
+                    element.style.transform = `translateY(${newY}px)`;
                 }
             });
 
             element.addEventListener('touchend', () => {
                 if (activeElement === element) {
-                    // You can add logic here to snap the element to a drop zone if needed.
-                    // For now, we'll reset the transform to move it back to its original position.
-                    element.style.transform = 'translate(0, 0)';
+                    // Reset the transform property
+                    element.style.transform = 'translateY(0)';
                     activeElement = null;
                 }
             });
