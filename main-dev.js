@@ -1098,6 +1098,16 @@ class ARMMane{
         console.log(createdElements);
     }
 
+    check() {
+        const uniqueIdToCheck = "code_block_1";
+        const elementToCheck = document.querySelector(`#${uniqueIdToCheck}`);
+        if (elementToCheck) {
+            console.log(`Element with ID "${uniqueIdToCheck}" exists.`);
+        } else {
+            console.log(`Element with ID "${uniqueIdToCheck}" does not exist.`);
+        }
+    }
+
     createPresetButton(){
         this.getConfig();
         let config = this.config;
