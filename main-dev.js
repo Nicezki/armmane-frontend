@@ -206,6 +206,8 @@ class ARMMane{
         this.createDraggableList();
 
         this.dragNdrop();
+
+        this.enableMobileDragAndDrop();
     }
 
 
@@ -1019,6 +1021,7 @@ class ARMMane{
             this.attachCodeBlockEventListeners(clonedCodeBlock, newDiv);
         } else if (newDiv.type === "conv") {
             const clonedCodeBlock = this.cloneCodeBlockElement(newDiv);
+            clonedCodeBlock.querySelector(".cmd-text > div > h2").textContent = "setConV(0,1);";
             this.attachCodeBlockEventListeners(clonedCodeBlock, newDiv);
         }
     }
@@ -1063,6 +1066,32 @@ class ARMMane{
         swimLane.appendChild(clonedCodeBlock);
     }
     
+    enableMobileDragAndDrop() {
+        const draggableElements = document.querySelectorAll('.tp-ins-code-block');
+        let activeElement = null;
+
+        draggableElements.forEach(element => {
+            element.addEventListener('touchstart', (e) => {
+                activeElement = element;
+                const touch = e.touches[0];
+                element.style.position = 'absolute';
+                element.style.left = `${touch.clientX - (element.offsetWidth / 2)}px`;
+                element.style.top = `${touch.clientY - (element.offsetHeight / 2)}px`;
+            });
+
+            element.addEventListener('touchmove', (e) => {
+                if (activeElement === element) {
+                    const touch = e.touches[0];
+                    element.style.left = `${touch.clientX - (element.offsetWidth / 2)}px`;
+                    element.style.top = `${touch.clientY - (element.offsetHeight / 2)}px`;
+                }
+            });
+
+            element.addEventListener('touchend', () => {
+                activeElement = null;
+            });
+        });
+    }
 
     selectAndViewById(uniqueElementId) {
         // Use querySelector to select the element by its unique ID
