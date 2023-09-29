@@ -125,12 +125,14 @@ class ARMMane{
             {
                 "type" : "servo",
                 "value" : 0,
+                "device" : 0,
                 "min" : 0,
                 "max" : 180,
             },
             {
                 "type" : "conv",
                 "value" : 0,
+                "device" : 0,
                 "min" : 0,
                 "max" : 2,
             }
@@ -564,10 +566,7 @@ class ARMMane{
         }, time);
     }
 
-    //This will change the property of the element after click save button
-    openConfigBox(element){
-        
-    }
+
 
 
 
@@ -874,6 +873,9 @@ class ARMMane{
     }
 
 
+    
+
+
     // setStatus(status,
 
 
@@ -981,10 +983,13 @@ class ARMMane{
             // Add data attributes to store custom data
             newDiv.type = this.conf_list[i]["type"];
             newDiv.value = this.conf_list[i]["value"];
+            newDiv.device = this.conf_list[i]["device"];
             newDiv.min = this.conf_list[i]["min"];
             newDiv.max = this.conf_list[i]["max"];
             newDiv.setAttribute("data-type", this.conf_list[i]["type"]);
+            newDiv.setAttribute("data-device", this.conf_list[i]["device"]);
             newDiv.setAttribute("data-value", this.conf_list[i]["value"]);
+
     
             // Add a click event listener to clone the element to the swim-lane
             newDiv.addEventListener("click", () => {
@@ -992,16 +997,20 @@ class ARMMane{
                 if (newDiv.type === "servo") {
                     // Clone this.elements["tp-ins-code-block"]
                     const clonedCodeBlock = this.elements["template"]["code_block"].cloneNode(true);
+                    clonedCodeBlock.id = "code_block_" + Math.floor(Math.random() * 1000000);
                     clonedCodeBlock.querySelector(".cmd-del").addEventListener("click", () => {
                         clonedCodeBlock.remove();
                     });
                     clonedCodeBlock.querySelector(".cmd-edit").addEventListener("click", () => {
                         this.consoleLog("「ARMMANE」 Edit command");
+                        this.openConfigBox(clonedCodeBlock);
+                        
                     });
                     clonedCodeBlock.querySelector(".cmd-play").addEventListener("click", () => {
                         this.consoleLog("「ARMMANE」 Run command");
                     });
                     clonedCodeBlock.setAttribute("data-type", newDiv.type);
+                    clonedCodeBlock.setAttribute("data-device", newDiv.device);
                     clonedCodeBlock.setAttribute("data-value", newDiv.value);
     
                     // Remove the click event listener from the cloned element
@@ -1035,11 +1044,13 @@ class ARMMane{
                     });
                     clonedCodeBlock.querySelector(".cmd-edit").addEventListener("click", () => {
                         this.consoleLog("「ARMMANE」 Edit command");
+                        this.openConfigBox(clonedCodeBlock);
                     });
                     clonedCodeBlock.querySelector(".cmd-play").addEventListener("click", () => {
                         this.consoleLog("「ARMMANE」 Run command");
                     });
                     clonedCodeBlock.setAttribute("data-type", newDiv.type);
+                    clonedCodeBlock.setAttribute("data-device", newDiv.device);
                     clonedCodeBlock.setAttribute("data-value", newDiv.value);
     
                     // Remove the click event listener from the cloned element
@@ -1069,6 +1080,123 @@ class ARMMane{
             // Append the new element to the spawn area
             spawnArea.appendChild(newDiv);
         }
+    }
+
+
+    // this.elements = {
+    //     "mode" : ["btn", "form", "ui", "screen", "template","text"],
+    //     "screen" : {
+    //         "errorloading" : this.querySel(".scr-errload"),
+    //         "loading" : this.querySel(".scr-loading"),
+    //         "connect" : this.querySel(".scr-connect"),
+    //         "main" : this.querySel(".scr-main"),
+    //     },
+    //     "ui" : {
+    //         "statusarea" : this.querySel(".main-statusarea"),
+    //         "controlarea" : this.querySel(".main-controlarea"),
+    //         "settingarea" : this.querySel(".main-settingarea"),
+    //         "statusbox" : this.querySel(".main-statusbox"),
+    //         "controlbox" : this.querySel(".main-controlbox"),
+    //         "cconfbox" : this.querySel("cconfbox"),
+    //         "logmane" : this.querySel(".logmane"),
+    //         "log_disconnect" : this.querySel(".log-disconnect"),
+    //         "log_area" : this.querySel(".log-area"),
+    //         "log_disconnect" : this.querySel(".log-disconnect"),
+    //         "box_serverlist" : this.querySel(".box-serverlist"),
+    //         "status_inf_trigger" : this.querySel(".status-inf-triggered"),
+    //         "status_inf_idle" : this.querySel(".status-inf-idle"),
+    //         "status_conv00_forward" : this.querySel(".status-conv00-fw"),
+    //         "status_conv00_backward" : this.querySel(".status-conv00-bw"),
+    //         "status_conv00_stop" : this.querySel(".status-conv00-stop"),
+    //         "status_conv01_stop" : this.querySel(".status-conv01-stop"),
+    //         "status_conv01_forward" : this.querySel(".status-conv01-fw"),
+    //         "status_conv01_backward" : this.querySel(".status-conv01-bw"),
+    //         "command_area" : document.querySelectorAll(".ins-command-area"),
+    //         "function_box" : document.querySelectorAll(".ins-func-box"),
+    //         "livepreview" : this.querySel(".livepreview"),
+    //     },
+    //     "btn" : {
+    //         "conn_connectsrv" : this.querySel(".btn-connectsrv"),
+    //         "status_toggle" : this.querySel(".btn-status-toggle"),
+    //         "main_info" : this.querySel(".btn-main-info"),
+    //         "main_control" : this.querySel(".btn-main-control"),
+    //         "main_config" : this.querySel(".btn-main-config"),
+    //         "error_btn_selectserver" : this.querySel(".err-btn1"),
+    //         "error_btn_retry" : this.querySel(".err-btn2"),
+    //         "cconf_btn_save" : this.querySel(".cconf-btn-save"),
+    //         "cconf_btn_cancel" : this.querySel(".cconf-btn-cancel"),
+    //     },
+    //     "form" : {
+    //         "conn_address_field" : this.querySel("#form-field-srvaddress"),
+    //         "servo_00" : this.querySel("#form-field-s0"),
+    //         "servo_01" : this.querySel("#form-field-s1"),
+    //         "servo_02" : this.querySel("#form-field-s2"),
+    //         "servo_03" : this.querySel("#form-field-s3"),
+    //         "servo_04" : this.querySel("#form-field-s4"),
+    //         "servo_05" : this.querySel("#form-field-s5"),
+    //         "conv_00" : this.querySel("#form-field-conv0"),
+    //         "conv_01" : this.querySel("#form-field-conv1"),
+    //         "cconf_01" : this.querySel("#form-field-cconf-s1"),
+    //         "cconf_02" : this.querySel("#form-field-cconf-s2"),
+    //         "cconf_03" : this.querySel("#form-field-cconf-s3"),
+    //     },
+    //     "template" : {
+    //         "btn_serverlist" : this.querySel(".tp-btn-server"),
+    //         "log_alert" : this.querySel(".tp-log-alert"),
+    //         "ins_function" : document.querySelectorAll(".tp-ins-func"),
+    //         "code_block" : this.querySel(".tp-ins-code-block"),
+    //     },
+    //     "text" : {
+    //         "connect_url" : this.querySel(".connecting-url").querySelector("div > h2"),
+    //         "connect_status" : this.querySel(".connecting-status").querySelector("div > h2"),
+    //         "cconf_title_1" : this.querySel(".cconf-title-1").querySelector("div > h2"),
+    //         "cconf_title_2" : this.querySel(".cconf-title-2").querySelector("div > h2"),
+    //         "cconf_title_3" : this.querySel(".cconf-title-3").querySelector("div > h2"),
+    //         "prediction_class" : this.querySel(".prediction-class").querySelector("div > h2"),
+    //     }
+    // }
+
+    //This will change the property of the element after click save button
+    openConfigBox(element){
+        let type = element.getAttribute("data-type");
+        
+        if(type == "servo"){
+            this.changeText("cconf_title_1", "คำสั่ง");
+            this.changeText("cconf_title_2", "อุปกรณ์ที่ต้องการ");
+            this.changeText("cconf_title_3", "องศา");
+            // Set min and max value
+            this.elements["form"]["cconf_03"].setAttribute("min", element.getAttribute("data-min"));
+            this.elements["form"]["cconf_03"].setAttribute("max", element.getAttribute("data-max"));
+        }else if(type == "conv"){
+            this.changeText("cconf_title_1", "คำสั่ง");
+            this.changeText("cconf_title_2", "อุปกรณ์ที่ต้องการ");
+            this.changeText("cconf_title_3", "โหมด");
+            // Set min and max value
+            this.elements["form"]["cconf_03"].setAttribute("min", element.getAttribute("data-min"));
+            this.elements["form"]["cconf_03"].setAttribute("max", element.getAttribute("data-max"));
+        }
+            this.elements["form"]["cconf_01"].value = element.getAttribute("data-type");
+            this.elements["form"]["cconf_02"].value = element.getAttribute("data-device");
+            this.elements["form"]["cconf_03"].value = element.getAttribute("data-value");
+            this.showElement("ui", "cconfbox");
+
+            // Add event listener to save button
+            this.elements["btn"]["cconf_btn_save"].addEventListener("click", () => {
+                element.setAttribute("data-type", this.elements["form"]["cconf_01"].value);
+                element.setAttribute("data-device", this.elements["form"]["cconf_02"].value);
+                element.setAttribute("data-value", this.elements["form"]["cconf_03"].value);
+                element.querySelector(".cmd-text > div > h2").textContent = this.elements["form"]["cconf_01"].value + "(" + this.elements["form"]["cconf_02"].value + "," + this.elements["form"]["cconf_03"].value + ");";
+                this.hideElement("ui", "cconfbox");
+                // Remove event listener
+                this.elements["btn"]["cconf_btn_save"].removeEventListener("click", () => {});
+            });
+
+            // Add event listener to cancel button
+            this.elements["btn"]["cconf_btn_cancel"].addEventListener("click", () => {
+                this.hideElement("ui", "cconfbox");
+                // Remove event listener
+                this.elements["btn"]["cconf_btn_cancel"].removeEventListener("click", () => {});
+            });
     }
 
     createPresetButton(){
