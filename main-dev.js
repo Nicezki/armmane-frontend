@@ -1067,10 +1067,13 @@ class ARMMane{
     }
     
     enableMobileDragAndDrop() {
-        const draggableElements = document.querySelectorAll('.tp-ins-code-block');
+        const draggables = Array.from(document.querySelectorAll('.tp-ins-code-block'));
+        const droppables = Array.from(this.elements["ui"]["command_area"]);
+
         let activeElement = null;
 
-        draggableElements.forEach(element => {
+        // Add touch event listeners to draggable elements
+        draggables.forEach(element => {
             element.addEventListener('touchstart', (e) => {
                 activeElement = element;
                 const touch = e.touches[0];
@@ -1091,8 +1094,24 @@ class ARMMane{
                 activeElement = null;
             });
         });
-    }
 
+        // Add touch event listeners to droppable zones
+        droppables.forEach(zone => {
+            zone.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                if (activeElement) {
+                    const touch = e.touches[0];
+                    activeElement.style.left = `${touch.clientX - (activeElement.offsetWidth / 2)}px`;
+                    activeElement.style.top = `${touch.clientY - (activeElement.offsetHeight / 2)}px`;
+                }
+            });
+
+            zone.addEventListener('touchend', () => {
+                activeElement = null;
+            });
+        });
+    }
+    
     selectAndViewById(uniqueElementId) {
         // Use querySelector to select the element by its unique ID
         const selectedElement = document.querySelector(`#${uniqueElementId}`);
