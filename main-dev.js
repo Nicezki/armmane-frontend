@@ -1019,6 +1019,7 @@ class ARMMane{
         const clonedCodeBlock = this.elements["template"]["code_block"].cloneNode(true);
         const codeBlockUniqueId = `code_block_${Date.now()}`;
         clonedCodeBlock.id = codeBlockUniqueId;
+        clonedCodeBlock.style.display = "flex";
 
         return clonedCodeBlock;
     }
