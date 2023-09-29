@@ -613,6 +613,8 @@ class ARMMane{
             this.consoleLog("[INFO] SSE received prediction data");
             this.handlePrediction(event.data);
         });
+
+        this.handleVideoStream();
     }
     
     
@@ -755,7 +757,20 @@ class ARMMane{
     handlePrediction(data) {
         let prediction = JSON.parse(data);
         this.changeText("prediction_class", "Class: " + prediction["current_classes"] + " (" + prediction["confident_score"] + "%) <br> " + prediction["fps"] + " FPS <br> Detected:" + prediction["detect_flag"] + " ");
-        this.elements["ui"]["livepreview"].querySelector("img").src = "data:image/jpeg;base64," + prediction["current_result"];
+    }
+
+
+    handleVideoStream() {
+        // url is /stream/video (without prediction overlay) and /stream/video2 (with prediction overlay)
+        //From StreamingResponse(generate(), media_type="multipart/x-mixed-replace; boundary=frame")
+        this.elements["ui"]["livepreview"].querySelector("img").src = this.appStatus["server"]["fullURL"] + "/stream/video2";
+
+        // Detect if the server connection is lost
+        this.elements["ui"]["livepreview"].querySelector("img").addEventListener("error", () => {
+            // Try to reconnect
+            this.elements["ui"]["livepreview"].querySelector("img").src = this.appStatus["server"]["fullURL"] + "/stream/video2";
+        });
+
     }
 
 
