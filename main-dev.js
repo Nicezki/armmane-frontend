@@ -981,14 +981,16 @@ class ARMMane{
     createDraggableList() {
         const spawnArea = this.elements["ui"]["function_box"][0].querySelector("div");
         const createdElements = {}; // Object to store references to created elements
-    
+        let uniqueIdCounter = 0; // Counter for generating unique IDs
+
         for (let i = 0; i < this.conf_list.length; i++) {
             // Create a new element
             let newDiv = this.elements["template"]["ins_function"][0].cloneNode(true);
 
             // Generate a unique ID
-            const uniqueId = `ins_function_${i}`;
+            const uniqueId = `ins_function_${uniqueIdCounter}`;
             newDiv.id = uniqueId;
+            uniqueIdCounter++;
     
             // Set the class and text content
             newDiv.classList.add("ins_function", "" + i);
@@ -1013,6 +1015,11 @@ class ARMMane{
                 if (newDiv.type === "servo") {
                     // Clone this.elements["tp-ins-code-block"]
                     const clonedCodeBlock = this.elements["template"]["code_block"].cloneNode(true);
+                    // Generate a unique ID for the cloned element
+                    const codeBlockUniqueId = `code_block_${uniqueIdCounter}`;
+                    clonedCodeBlock.id = codeBlockUniqueId;
+                    uniqueIdCounter++;
+
                     clonedCodeBlock.querySelector(".cmd-del").addEventListener("click", () => {
                         clonedCodeBlock.remove();
                     });
@@ -1046,6 +1053,10 @@ class ARMMane{
                     // Clone this.elements["tp-ins-code-block"]
                     const clonedCodeBlock = this.elements["template"]["code_block"].cloneNode(true);
                     clonedCodeBlock.querySelector(".cmd-text > div > h2").textContent = "setConV(0,1);";
+                    // Generate a unique ID for the cloned element
+                    const codeBlockUniqueId = `code_block_${uniqueIdCounter}`;
+                    clonedCodeBlock.id = codeBlockUniqueId;
+                    uniqueIdCounter++;
                     clonedCodeBlock.querySelector(".cmd-del").addEventListener("click", () => {
                         clonedCodeBlock.remove();
                     });
