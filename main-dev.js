@@ -980,16 +980,21 @@ class ARMMane{
 
     createDraggableList() {
         const spawnArea = this.elements["ui"]["function_box"][0].querySelector("div");
+        const createdElements = {}; // Object to store references to created elements
     
         for (let i = 0; i < this.conf_list.length; i++) {
             // Create a new element
             let newDiv = this.elements["template"]["ins_function"][0].cloneNode(true);
+
+            // Generate a unique ID
+            const uniqueId = `ins_function_${i}`;
+            newDiv.id = uniqueId;
     
             // Set the class and text content
             newDiv.classList.add("ins_function", "" + i);
             newDiv.querySelector(".tp-ins-func > div > h4").textContent = this.conf_list[i]["type"];
             newDiv.style.display = "flex";
-    
+
             // Add data attributes to store custom data
             newDiv.type = this.conf_list[i]["type"];
             newDiv.value = this.conf_list[i]["value"];
@@ -1017,29 +1022,23 @@ class ARMMane{
                     clonedCodeBlock.querySelector(".cmd-play").addEventListener("click", () => {
                         this.consoleLog("「ARMMANE」 Run command");
                     });
-                    clonedCodeBlock.setAttribute("data-type", newDiv.type);
-                    clonedCodeBlock.setAttribute("data-value", newDiv.value);
-                    clonedCodeBlock.setAttribute("data-num", newDiv.num);
-    
-                    // Remove the click event listener from the cloned element
 
-                    clonedCodeBlock.removeEventListener("click", () => {});
-    
+                    // Set a custom data attribute to track the element's origin
+                    clonedCodeBlock.setAttribute("data-origin", uniqueId);
+
                     // Add a dragstart event listener to make it draggable within the swim-lane
                     clonedCodeBlock.addEventListener("dragstart", (e) => {
                         clonedCodeBlock.classList.add("dragging");
-                        // Set a custom data attribute to track the element's origin
-                        e.dataTransfer.setData("origin", "command_area");
                     });
-    
+
                     // Add a dragend event listener to remove the dragging class
                     clonedCodeBlock.addEventListener("dragend", () => {
                         clonedCodeBlock.classList.remove("dragging");
                     });
-    
+
                     // Enable draggable behavior for the cloned element
                     clonedCodeBlock.draggable = true;
-    
+
                     // Append the cloned element to the swim-lane
                     const swimLane = this.elements["ui"]["command_area"][0];
                     swimLane.appendChild(clonedCodeBlock);
@@ -1056,37 +1055,36 @@ class ARMMane{
                     clonedCodeBlock.querySelector(".cmd-play").addEventListener("click", () => {
                         this.consoleLog("「ARMMANE」 Run command");
                     });
-                    clonedCodeBlock.setAttribute("data-type", newDiv.type);
-                    clonedCodeBlock.setAttribute("data-value", newDiv.value);
-                    clonedCodeBlock.setAttribute("data-num", newDiv.num);
-    
-                    // Remove the click event listener from the cloned element
-                    clonedCodeBlock.removeEventListener("click", () => {});
-    
+                    // Set a custom data attribute to track the element's origin
+                    clonedCodeBlock.setAttribute("data-origin", uniqueId);
+
                     // Add a dragstart event listener to make it draggable within the swim-lane
                     clonedCodeBlock.addEventListener("dragstart", (e) => {
                         clonedCodeBlock.classList.add("dragging");
-                        // Set a custom data attribute to track the element's origin
-                        e.dataTransfer.setData("origin", "command_area");
                     });
-    
+
                     // Add a dragend event listener to remove the dragging class
                     clonedCodeBlock.addEventListener("dragend", () => {
                         clonedCodeBlock.classList.remove("dragging");
                     });
-    
+
                     // Enable draggable behavior for the cloned element
                     clonedCodeBlock.draggable = true;
-    
+
                     // Append the cloned element to the swim-lane
                     const swimLane = this.elements["ui"]["command_area"][0];
                     swimLane.appendChild(clonedCodeBlock);
                 }
             });
     
+            // Store a reference to the created element in the object using its unique ID as the key
+            createdElements[uniqueId] = newDiv;
+
             // Append the new element to the spawn area
             spawnArea.appendChild(newDiv);
         }
+        // Now, you can access the created elements using their unique IDs
+        console.log(createdElements);
     }
 
     createPresetButton(){
