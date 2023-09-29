@@ -62,7 +62,7 @@ class ARMMane{
                 "settingarea" : this.querySel(".main-settingarea"),
                 "statusbox" : this.querySel(".main-statusbox"),
                 "controlbox" : this.querySel(".main-controlbox"),
-                "cconfbox" : this.querySel("cconfbox"),
+                "cconfbox" : this.querySel(".cconfbox"),
                 "logmane" : this.querySel(".logmane"),
                 "log_disconnect" : this.querySel(".log-disconnect"),
                 "log_area" : this.querySel(".log-area"),
