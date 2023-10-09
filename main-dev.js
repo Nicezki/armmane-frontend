@@ -1062,7 +1062,7 @@ class ARMMane{
 
     //This will change the property of the element after click save button
     openConfigBox(elementname){
-        let element = this.querySel("#" + elementname.id);
+        let element = this.querySel("#" + elementname);
         let type = element.getAttribute("data-type");
         
         if(type == "setServo"){
