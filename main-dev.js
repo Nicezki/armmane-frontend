@@ -947,6 +947,7 @@ class ARMMane{
         codeBlocks.forEach(codeBlock => {
             // Extract the data you need from each codeBlock
             const type = codeBlock.getAttribute("data-type"); // Example: "servo" or "conv"
+            const device = codeBlock.getAttribute("data-device"); // Example: "servo" or "conv"
             const value = codeBlock.getAttribute("data-value"); // Example: Numeric value associated with the code block 
             // Add the extracted data to the data array
             data.push({
@@ -983,13 +984,15 @@ class ARMMane{
         newDiv.style.display = "flex";
 
         newDiv.type = this.conf_list[index]["type"];
+        newDiv.device = this.conf_list[index]["device"];
         newDiv.value = this.conf_list[index]["value"];
         newDiv.min = this.conf_list[index]["min"];
         newDiv.max = this.conf_list[index]["max"];
         newDiv.num = this.conf_list[index]["num"];
         newDiv.setAttribute("data-type", this.conf_list[index]["type"]);
+        newDiv.setAttribute("data-device", this.conf_list[index]["device"]);
         newDiv.setAttribute("data-value", this.conf_list[index]["value"]);
-        newDiv.setAttribute("data-num", this.conf_list[index]["num"]);
+        // newDiv.setAttribute("data-num", this.conf_list[index]["num"]);
 
         return newDiv;
     }
@@ -1007,7 +1010,7 @@ class ARMMane{
 
     cloneCodeBlockElement(newDiv) {
         const clonedCodeBlock = this.elements["template"]["code_block"].cloneNode(true);
-        const codeBlockUniqueId = `code_block_${Date.now()}`;
+        const codeBlockUniqueId = `code_block_${Date.now()}${Math.floor(Math.random() * 1000000)}`;
         clonedCodeBlock.id = codeBlockUniqueId;
         clonedCodeBlock.style.display = "flex";
 
@@ -1028,7 +1031,9 @@ class ARMMane{
 
         clonedCodeBlock.setAttribute("data-type", newDiv.type);
         clonedCodeBlock.setAttribute("data-value", newDiv.value);
-        clonedCodeBlock.setAttribute("data-num", newDiv.num);
+        clonedCodeBlock.setAttribute("data-min", newDiv.min);
+        clonedCodeBlock.setAttribute("data-max", newDiv.max);
+        clonedCodeBlock.setAttribute("data-device", newDiv.device);
 
         clonedCodeBlock.removeEventListener("click", () => {});
 
