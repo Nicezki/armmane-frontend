@@ -953,15 +953,15 @@ class ARMMane{
     // }
 
     initializeSortable() {
-        const dragArea = this.elements["ui"]["drag_area"]
-
-        if (commandArea instanceof HTMLElement) {
+        const dragArea = this.elements["ui"]["drag_area"]; // Use dragArea here
+    
+        if (dragArea instanceof HTMLElement) { // Check if dragArea is an HTMLElement
             const sortable = new Sortable(dragArea, {
                 animation: 150,
                 ghostClass: 'blue-background-class'
             });
-        } else{
-            console.error("commandArea is not an HTMLElement");
+        } else {
+            console.error("dragArea is not an HTMLElement"); // Log an error message
         }
     }
 
