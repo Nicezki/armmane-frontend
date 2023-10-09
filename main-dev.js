@@ -79,7 +79,7 @@ class ARMMane{
                 "command_area" : document.querySelectorAll(".ins-command-area"),
                 "function_box" : document.querySelectorAll(".ins-func-box"),
                 "livepreview" : this.querySel(".livepreview"),
-                "drag_area" : this.querySel("#drag-area"),
+                "drag_area" : document.querySelectorAll("#drag-area"),
             },
             "btn" : {
                 "conn_connectsrv" : this.querySel(".btn-connectsrv"),
