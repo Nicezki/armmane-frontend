@@ -128,6 +128,7 @@ class ARMMane{
                 "device" : 0,
                 "min" : 0,
                 "max" : 180,
+                "num" : 0,
             },
             {
                 "type" : "conv",
@@ -135,6 +136,7 @@ class ARMMane{
                 "device" : 0,
                 "min" : 0,
                 "max" : 2,
+                "num" : 0,
             }
 
         ];
@@ -205,7 +207,7 @@ class ARMMane{
 
         this.createDraggableList(this.elements["ui"]["function_box"][0].querySelector("div"));
 
-        this.dragNdrop(this.elements["template"]["code_block"],this.elements["ui"]["command_area"]);
+        this.initializeSortable();
     }
 
 
@@ -903,57 +905,37 @@ class ARMMane{
 // DEPRECATED them all!!
 
     // initialize drag and drop function
-    dragNdrop(draggables_elem,droppables_elem) {
-        const draggables = Array.from(draggables_elem);
-        const droppables = Array.from(droppables_elem);
 
-        // Add dragstart and dragend event listeners to draggable elements
-        draggables.forEach(list => {
-            list.addEventListener("dragstart", () => {
-                list.classList.add("dragging");
-            });
-            list.addEventListener("dragend", () => {
-                list.classList.remove("dragging");
-            });
-            
-            
-            // Enable draggable behavior
-            list.draggable = true;
 
-        });
+    // // Insert draggable list above a target list based on mouseY
+    // insertAboveList(zone, mouseY) {
+    //     const els = Array.from(zone.querySelectorAll(".tp-ins-code-block:not(.dragging)"));
+    //     let closestList = null;
+    //     let closestOffset = Number.NEGATIVE_INFINITY;
+    
+    //     els.forEach(list => {
+    //         const { top, width } = list.getBoundingClientRect();
+    //         const offset = mouseY - top; // Calculate the offset from the top edge
+    //         if (offset < 0 && offset > closestOffset) {
+    //             closestList = list;
+    //             closestOffset = offset;
+    //         }
+    //     });
+    //     return closestList;
+    // }
 
-        // Add dragover event listeners to droppable zones
-        droppables.forEach(zone => {
-            zone.addEventListener("dragover", (e) => {
-                e.preventDefault();
-                const bottomList = this.insertAboveList(zone, e.clientY);
-                const curList = this.querySel(".dragging");
-                if (!bottomList) {
-                    zone.appendChild(curList);
-                } else {
-                    zone.insertBefore(curList, bottomList);
-                }
-            });
+    
+
+
+
+    initializeSortable() {
+        const dragArea = document.querySelector(".ins-command-area");
+        new Sortable(dragArea, {
+            animation: 150,
+            direction: 'vertical', // Only vertical sorting
         });
     }
-
-    // Insert draggable list above a target list based on mouseY
-    insertAboveList(zone, mouseY) {
-        const els = Array.from(zone.querySelectorAll(".tp-ins-code-block:not(.dragging)"));
-        let closestList = null;
-        let closestOffset = Number.NEGATIVE_INFINITY;
-    
-        els.forEach(list => {
-            const { top, width } = list.getBoundingClientRect();
-            const offset = mouseY - top; // Calculate the offset from the top edge
-            if (offset < 0 && offset > closestOffset) {
-                closestList = list;
-                closestOffset = offset;
-            }
-        });
-        return closestList;
-    }
-    
+  
     getData(element_name="ins-command-area",code_block="tp-ins-code-block") {
         const commandArea = this.querySel("." + element_name);
 
@@ -965,7 +947,7 @@ class ARMMane{
         codeBlocks.forEach(codeBlock => {
             // Extract the data you need from each codeBlock
             const type = codeBlock.getAttribute("data-type"); // Example: "servo" or "conv"
-            const value = codeBlock.getAttribute("data-value"); // Example: Numeric value associated with the code block
+            const value = codeBlock.getAttribute("data-value"); // Example: Numeric value associated with the code block 
             // Add the extracted data to the data array
             data.push({
                 type,
@@ -976,192 +958,106 @@ class ARMMane{
         return data;
     }
 
-    createDraggableList(spawnArea) {
-        
+    createDraggableList() {
+        const spawnArea = this.elements["ui"]["function_box"][0].querySelector("div");
+
         for (let i = 0; i < this.conf_list.length; i++) {
-            // Create a new element
-            let newDiv = this.elements["template"]["ins_function"][0].cloneNode(true);
-    
-            // Set the class and text content
-            newDiv.classList.add("ins_function", "" + i);
-            newDiv.querySelector(".tp-ins-func > div > h4").textContent = this.conf_list[i]["type"];
-            newDiv.style.display = "flex";
-    
-            // Add data attributes to store custom data
-            newDiv.type = this.conf_list[i]["type"];
-            newDiv.value = this.conf_list[i]["value"];
-            newDiv.device = this.conf_list[i]["device"];
-            newDiv.min = this.conf_list[i]["min"];
-            newDiv.max = this.conf_list[i]["max"];
-            newDiv.setAttribute("data-type", this.conf_list[i]["type"]);
-            newDiv.setAttribute("data-device", this.conf_list[i]["device"]);
-            newDiv.setAttribute("data-value", this.conf_list[i]["value"]);
+            const newDiv = this.createFunctionElement(i);
 
-    
-            // Add a click event listener to clone the element to the swim-lane
             newDiv.addEventListener("click", () => {
-                // Check the type of the clicked element
-                if (newDiv.type === "servo") {
-                    // Clone this.elements["tp-ins-code-block"]
-                    const clonedCodeBlock = this.elements["template"]["code_block"].cloneNode(true);
-                    clonedCodeBlock.id = "code_block_" + Math.floor(Math.random() * 1000000);
-                    clonedCodeBlock.querySelector(".cmd-del").addEventListener("click", () => {
-                        clonedCodeBlock.remove();
-                    });
-                    clonedCodeBlock.querySelector(".cmd-edit").addEventListener("click", () => {
-                        this.consoleLog("「ARMMANE」 Edit command");
-                        this.openConfigBox(clonedCodeBlock);
-                        
-                    });
-                    clonedCodeBlock.querySelector(".cmd-play").addEventListener("click", () => {
-                        this.consoleLog("「ARMMANE」 Run command");
-                    });
-                    clonedCodeBlock.setAttribute("data-type", newDiv.type);
-                    clonedCodeBlock.setAttribute("data-device", newDiv.device);
-                    clonedCodeBlock.setAttribute("data-value", newDiv.value);
-    
-                    // Remove the click event listener from the cloned element
+                this.handleFunctionElementClick(newDiv);
 
-                    clonedCodeBlock.removeEventListener("click", () => {});
-    
-                    // Add a dragstart event listener to make it draggable within the swim-lane
-                    clonedCodeBlock.addEventListener("dragstart", (e) => {
-                        clonedCodeBlock.classList.add("dragging");
-                        // Set a custom data attribute to track the element's origin
-                        e.dataTransfer.setData("origin", "command_area");
-                    });
-    
-                    // Add a dragend event listener to remove the dragging class
-                    clonedCodeBlock.addEventListener("dragend", () => {
-                        clonedCodeBlock.classList.remove("dragging");
-                    });
-    
-                    // Enable draggable behavior for the cloned element
-                    clonedCodeBlock.draggable = true;
-    
-                    // Append the cloned element to the swim-lane
-                    const swimLane = this.elements["ui"]["command_area"][0];
-                    swimLane.appendChild(clonedCodeBlock);
-                } else if (newDiv.type === "conv") {
-                    // Clone this.elements["tp-ins-code-block"]
-                    const clonedCodeBlock = this.elements["template"]["code_block"].cloneNode(true);
-                    clonedCodeBlock.querySelector(".cmd-text > div > h2").textContent = "setConV(0,1);";
-                    clonedCodeBlock.querySelector(".cmd-del").addEventListener("click", () => {
-                        clonedCodeBlock.remove();
-                    });
-                    clonedCodeBlock.querySelector(".cmd-edit").addEventListener("click", () => {
-                        this.consoleLog("「ARMMANE」 Edit command");
-                        this.openConfigBox(clonedCodeBlock);
-                    });
-                    clonedCodeBlock.querySelector(".cmd-play").addEventListener("click", () => {
-                        this.consoleLog("「ARMMANE」 Run command");
-                    });
-                    clonedCodeBlock.setAttribute("data-type", newDiv.type);
-                    clonedCodeBlock.setAttribute("data-device", newDiv.device);
-                    clonedCodeBlock.setAttribute("data-value", newDiv.value);
-    
-                    // Remove the click event listener from the cloned element
-                    clonedCodeBlock.removeEventListener("click", () => {});
-    
-                    // Add a dragstart event listener to make it draggable within the swim-lane
-                    clonedCodeBlock.addEventListener("dragstart", (e) => {
-                        clonedCodeBlock.classList.add("dragging");
-                        // Set a custom data attribute to track the element's origin
-                        e.dataTransfer.setData("origin", "command_area");
-                    });
-    
-                    // Add a dragend event listener to remove the dragging class
-                    clonedCodeBlock.addEventListener("dragend", () => {
-                        clonedCodeBlock.classList.remove("dragging");
-                    });
-    
-                    // Enable draggable behavior for the cloned element
-                    clonedCodeBlock.draggable = true;
-    
-                    // Append the cloned element to the swim-lane
-                    const swimLane = this.elements["ui"]["command_area"][0];
-                    swimLane.appendChild(clonedCodeBlock);
-                }
             });
-    
-            // Append the new element to the spawn area
+
             spawnArea.appendChild(newDiv);
         }
     }
 
+    createFunctionElement(index) {
+        const newDiv = this.elements["template"]["ins_function"][0].cloneNode(true);
+        const uniqueId = `ins_function_${index}`;
+        newDiv.id = uniqueId;
 
-    // this.elements = {
-    //     "mode" : ["btn", "form", "ui", "screen", "template","text"],
-    //     "screen" : {
-    //         "errorloading" : this.querySel(".scr-errload"),
-    //         "loading" : this.querySel(".scr-loading"),
-    //         "connect" : this.querySel(".scr-connect"),
-    //         "main" : this.querySel(".scr-main"),
-    //     },
-    //     "ui" : {
-    //         "statusarea" : this.querySel(".main-statusarea"),
-    //         "controlarea" : this.querySel(".main-controlarea"),
-    //         "settingarea" : this.querySel(".main-settingarea"),
-    //         "statusbox" : this.querySel(".main-statusbox"),
-    //         "controlbox" : this.querySel(".main-controlbox"),
-    //         "cconfbox" : this.querySel("cconfbox"),
-    //         "logmane" : this.querySel(".logmane"),
-    //         "log_disconnect" : this.querySel(".log-disconnect"),
-    //         "log_area" : this.querySel(".log-area"),
-    //         "log_disconnect" : this.querySel(".log-disconnect"),
-    //         "box_serverlist" : this.querySel(".box-serverlist"),
-    //         "status_inf_trigger" : this.querySel(".status-inf-triggered"),
-    //         "status_inf_idle" : this.querySel(".status-inf-idle"),
-    //         "status_conv00_forward" : this.querySel(".status-conv00-fw"),
-    //         "status_conv00_backward" : this.querySel(".status-conv00-bw"),
-    //         "status_conv00_stop" : this.querySel(".status-conv00-stop"),
-    //         "status_conv01_stop" : this.querySel(".status-conv01-stop"),
-    //         "status_conv01_forward" : this.querySel(".status-conv01-fw"),
-    //         "status_conv01_backward" : this.querySel(".status-conv01-bw"),
-    //         "command_area" : document.querySelectorAll(".ins-command-area"),
-    //         "function_box" : document.querySelectorAll(".ins-func-box"),
-    //         "livepreview" : this.querySel(".livepreview"),
-    //     },
-    //     "btn" : {
-    //         "conn_connectsrv" : this.querySel(".btn-connectsrv"),
-    //         "status_toggle" : this.querySel(".btn-status-toggle"),
-    //         "main_info" : this.querySel(".btn-main-info"),
-    //         "main_control" : this.querySel(".btn-main-control"),
-    //         "main_config" : this.querySel(".btn-main-config"),
-    //         "error_btn_selectserver" : this.querySel(".err-btn1"),
-    //         "error_btn_retry" : this.querySel(".err-btn2"),
-    //         "cconf_btn_save" : this.querySel(".cconf-btn-save"),
-    //         "cconf_btn_cancel" : this.querySel(".cconf-btn-cancel"),
-    //     },
-    //     "form" : {
-    //         "conn_address_field" : this.querySel("#form-field-srvaddress"),
-    //         "servo_00" : this.querySel("#form-field-s0"),
-    //         "servo_01" : this.querySel("#form-field-s1"),
-    //         "servo_02" : this.querySel("#form-field-s2"),
-    //         "servo_03" : this.querySel("#form-field-s3"),
-    //         "servo_04" : this.querySel("#form-field-s4"),
-    //         "servo_05" : this.querySel("#form-field-s5"),
-    //         "conv_00" : this.querySel("#form-field-conv0"),
-    //         "conv_01" : this.querySel("#form-field-conv1"),
-    //         "cconf_01" : this.querySel("#form-field-cconf-s1"),
-    //         "cconf_02" : this.querySel("#form-field-cconf-s2"),
-    //         "cconf_03" : this.querySel("#form-field-cconf-s3"),
-    //     },
-    //     "template" : {
-    //         "btn_serverlist" : this.querySel(".tp-btn-server"),
-    //         "log_alert" : this.querySel(".tp-log-alert"),
-    //         "ins_function" : document.querySelectorAll(".tp-ins-func"),
-    //         "code_block" : this.querySel(".tp-ins-code-block"),
-    //     },
-    //     "text" : {
-    //         "connect_url" : this.querySel(".connecting-url").querySelector("div > h2"),
-    //         "connect_status" : this.querySel(".connecting-status").querySelector("div > h2"),
-    //         "cconf_title_1" : this.querySel(".cconf-title-1").querySelector("div > h2"),
-    //         "cconf_title_2" : this.querySel(".cconf-title-2").querySelector("div > h2"),
-    //         "cconf_title_3" : this.querySel(".cconf-title-3").querySelector("div > h2"),
-    //         "prediction_class" : this.querySel(".prediction-class").querySelector("div > h2"),
-    //     }
-    // }
+        newDiv.classList.add("ins_function", "" + index);
+        newDiv.querySelector(".tp-ins-func > div > h4").textContent = this.conf_list[index]["type"];
+        newDiv.style.display = "flex";
+
+        newDiv.type = this.conf_list[index]["type"];
+        newDiv.value = this.conf_list[index]["value"];
+        newDiv.min = this.conf_list[index]["min"];
+        newDiv.max = this.conf_list[index]["max"];
+        newDiv.num = this.conf_list[index]["num"];
+        newDiv.setAttribute("data-type", this.conf_list[index]["type"]);
+        newDiv.setAttribute("data-value", this.conf_list[index]["value"]);
+        newDiv.setAttribute("data-num", this.conf_list[index]["num"]);
+
+        return newDiv;
+    }
+
+    handleFunctionElementClick(newDiv) {
+        if (newDiv.type === "servo") {
+            const clonedCodeBlock = this.cloneCodeBlockElement(newDiv);
+            this.attachCodeBlockEventListeners(clonedCodeBlock, newDiv);
+        } else if (newDiv.type === "conv") {
+            const clonedCodeBlock = this.cloneCodeBlockElement(newDiv);
+            clonedCodeBlock.querySelector(".cmd-text > div > h2").textContent = "setConV(0,1);";
+            this.attachCodeBlockEventListeners(clonedCodeBlock, newDiv);
+        }
+    }
+
+    cloneCodeBlockElement(newDiv) {
+        const clonedCodeBlock = this.elements["template"]["code_block"].cloneNode(true);
+        const codeBlockUniqueId = `code_block_${Date.now()}`;
+        clonedCodeBlock.id = codeBlockUniqueId;
+        clonedCodeBlock.style.display = "flex";
+
+        return clonedCodeBlock;
+    }
+
+    attachCodeBlockEventListeners(clonedCodeBlock, newDiv) {
+        clonedCodeBlock.querySelector(".cmd-del").addEventListener("click", () => {
+            clonedCodeBlock.remove();
+        });
+        clonedCodeBlock.querySelector(".cmd-edit").addEventListener("click", () => {
+            this.consoleLog("「ARMMANE」 Edit command");
+        });
+        clonedCodeBlock.querySelector(".cmd-play").addEventListener("click", () => {
+            this.consoleLog("「ARMMANE」 Run command");
+        });
+
+        clonedCodeBlock.setAttribute("data-type", newDiv.type);
+        clonedCodeBlock.setAttribute("data-value", newDiv.value);
+        clonedCodeBlock.setAttribute("data-num", newDiv.num);
+
+        clonedCodeBlock.removeEventListener("click", () => {});
+
+        clonedCodeBlock.addEventListener("dragstart", (e) => {
+            clonedCodeBlock.classList.add("dragging");
+            e.dataTransfer.setData("origin", "command_area");
+        });
+
+        clonedCodeBlock.addEventListener("dragend", () => {
+            clonedCodeBlock.classList.remove("dragging");
+        });
+
+        clonedCodeBlock.draggable = true;
+
+        const swimLane = this.elements["ui"]["command_area"][0];
+        swimLane.appendChild(clonedCodeBlock);
+    }
+
+    selectAndViewById(uniqueElementId) {
+        // Use querySelector to select the element by its unique ID
+        const selectedElement = document.querySelector(`#${uniqueElementId}`);
+    
+        if (selectedElement) {
+            // You can now work with the selected element
+            console.log(selectedElement);
+        } else {
+            console.error(`Element with ID '${uniqueElementId}' not found.`);
+        }
+    }
+    
 
     //This will change the property of the element after click save button
     openConfigBox(element){
