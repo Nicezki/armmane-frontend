@@ -1068,6 +1068,7 @@ class ARMMane{
     //This will change the property of the element after click save button
     openConfigBox(element_name) {
         let element = document.getElementById(element_name);
+        this.consoleLog("「ARMMANE」 Open config box for " + element_name);
         let type = element.getAttribute("data-type");
         if(type == "setServo"){
             this.changeText("cconf_title_1", "คำสั่ง");
@@ -1094,7 +1095,9 @@ class ARMMane{
                 element.setAttribute("data-type", this.elements["form"]["cconf_01"].value);
                 element.setAttribute("data-device", this.elements["form"]["cconf_02"].value);
                 element.setAttribute("data-value", this.elements["form"]["cconf_03"].value);
+                this.consoleLog("「ARMMANE」 Command changed to " + this.elements["form"]["cconf_01"].value + "(" + this.elements["form"]["cconf_02"].value + "," + this.elements["form"]["cconf_03"].value + ");");
                 element.querySelector(".cmd-text > div > h2").textContent = this.elements["form"]["cconf_01"].value + "(" + this.elements["form"]["cconf_02"].value + "," + this.elements["form"]["cconf_03"].value + ");";
+                this.consoleLog("「ARMMANE」 Command changed to element " + element.id + " with value " + element.getAttribute("data-type") + "(" + element.getAttribute("data-device") + "," + element.getAttribute("data-value") + ");");
                 this.hideElement("ui", "cconfbox");
                 // Remove event listener
                 this.elements["btn"]["cconf_btn_save"].removeEventListener("click", () => {});
