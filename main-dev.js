@@ -79,6 +79,7 @@ class ARMMane{
                 "command_area" : document.querySelectorAll(".ins-command-area"),
                 "function_box" : document.querySelectorAll(".ins-func-box"),
                 "livepreview" : this.querySel(".livepreview"),
+                "drag_area" : this.querySel("#drag-area"),
             },
             "btn" : {
                 "conn_connectsrv" : this.querySel(".btn-connectsrv"),
@@ -208,6 +209,8 @@ class ARMMane{
         // this.dragNdrop(this.elements["template"]["code_block"],this.elements["ui"]["command_area"]);
 
         // this.enableMobileDragAndDrop();
+
+        this.initializeSortable();
     }
 
 
@@ -948,6 +951,15 @@ class ARMMane{
     //     });
     //     return closestList;
     // }
+
+    initializeSortable() {
+        const dragArea = this.elements["ui"]["command_area"]
+
+        const sortable = new Sortable(dragArea, {
+            animation: 150,
+            ghostClass: 'blue-background-class'
+        });
+    }
 
     getData(element_name="ins-command-area",code_block="tp-ins-code-block") {
         const commandArea = this.querySel("." + element_name);
