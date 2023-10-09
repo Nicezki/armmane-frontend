@@ -900,54 +900,54 @@ class ARMMane{
 // DEPRECATED them all!!
 
     // initialize drag and drop function
-    dragNdrop(draggables_elem,droppables_elem) {
-        const draggables = Array.from(draggables_elem);
-        const droppables = Array.from(droppables_elem);
+    // dragNdrop(draggables_elem,droppables_elem) {
+    //     const draggables = Array.from(draggables_elem);
+    //     const droppables = Array.from(droppables_elem);
 
-        // Add dragstart and dragend event listeners to draggable elements
-        draggables.forEach(list => {
-            list.addEventListener("dragstart", () => {
-                list.classList.add("dragging");
-            });
-            list.addEventListener("dragend", () => {
-                list.classList.remove("dragging");
-            });
+    //     // Add dragstart and dragend event listeners to draggable elements
+    //     draggables.forEach(list => {
+    //         list.addEventListener("dragstart", () => {
+    //             list.classList.add("dragging");
+    //         });
+    //         list.addEventListener("dragend", () => {
+    //             list.classList.remove("dragging");
+    //         });
 
-            // Enable draggable behavior
-            list.draggable = true;
-        });
+    //         // Enable draggable behavior
+    //         list.draggable = true;
+    //     });
 
-        // Add dragover event listeners to droppable zones
-        droppables.forEach(zone => {
-            zone.addEventListener("dragover", (e) => {
-                e.preventDefault();
-                const bottomList = this.insertAboveList(zone, e.clientY);
-                const curList = this.querySel(".dragging");
-                if (!bottomList) {
-                    zone.appendChild(curList);
-                } else {
-                    zone.insertBefore(curList, bottomList);
-                }
-            });
-        });
-    }
+    //     // Add dragover event listeners to droppable zones
+    //     droppables.forEach(zone => {
+    //         zone.addEventListener("dragover", (e) => {
+    //             e.preventDefault();
+    //             const bottomList = this.insertAboveList(zone, e.clientY);
+    //             const curList = this.querySel(".dragging");
+    //             if (!bottomList) {
+    //                 zone.appendChild(curList);
+    //             } else {
+    //                 zone.insertBefore(curList, bottomList);
+    //             }
+    //         });
+    //     });
+    // }
 
-    // Insert draggable list above a target list based on mouseY
-    insertAboveList(zone, mouseY) {
-        const els = Array.from(zone.querySelectorAll(".tp-ins-code-block:not(.dragging)"));
-        let closestList = null;
-        let closestOffset = Number.NEGATIVE_INFINITY;
+    // // Insert draggable list above a target list based on mouseY
+    // insertAboveList(zone, mouseY) {
+    //     const els = Array.from(zone.querySelectorAll(".tp-ins-code-block:not(.dragging)"));
+    //     let closestList = null;
+    //     let closestOffset = Number.NEGATIVE_INFINITY;
     
-        els.forEach(list => {
-            const { top, width } = list.getBoundingClientRect();
-            const offset = mouseY - top; // Calculate the offset from the top edge
-            if (offset < 0 && offset > closestOffset) {
-                closestList = list;
-                closestOffset = offset;
-            }
-        });
-        return closestList;
-    }
+    //     els.forEach(list => {
+    //         const { top, width } = list.getBoundingClientRect();
+    //         const offset = mouseY - top; // Calculate the offset from the top edge
+    //         if (offset < 0 && offset > closestOffset) {
+    //             closestList = list;
+    //             closestOffset = offset;
+    //         }
+    //     });
+    //     return closestList;
+    // }
     
     getData(element_name="ins-command-area",code_block="tp-ins-code-block") {
         const commandArea = this.querySel("." + element_name);
@@ -1056,47 +1056,6 @@ class ARMMane{
 
         const swimLane = this.elements["ui"]["command_area"][0];
         swimLane.appendChild(clonedCodeBlock);
-    }
-    
-    enableMobileDragAndDrop() {
-        const draggables = Array.from(document.querySelectorAll('.tp-ins-code-block'));
-        const droppables = Array.from(this.elements["ui"]["command_area"]);
-
-        let activeElement = null;
-        let initialY;
-
-        // Add touch event listeners to draggable elements
-        draggables.forEach(element => {
-            element.addEventListener('touchstart', (e) => {
-                activeElement = element;
-                const touch = e.touches[0];
-                initialY = touch.clientY - element.getBoundingClientRect().top;
-            });
-
-            element.addEventListener('touchmove', (e) => {
-                if (activeElement === element) {
-                    const touch = e.touches[0];
-                    const newY = touch.clientY - initialY;
-
-                    element.style.transform = `translateY(${newY}px)`;
-                }
-            });
-
-            element.addEventListener('touchend', () => {
-                if (activeElement === element) {
-                    // Reset the transform property
-                    element.style.transform = 'translateY(0)';
-                    activeElement = null;
-                }
-            });
-        });
-
-        // Add touch event listeners to droppable zones
-        droppables.forEach(zone => {
-            zone.addEventListener('touchmove', (e) => {
-                e.preventDefault();
-            });
-        });
     }
 
     selectAndViewById(uniqueElementId) {
