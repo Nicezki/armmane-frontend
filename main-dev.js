@@ -1020,7 +1020,7 @@ class ARMMane{
         });
         clonedCodeBlock.querySelector(".cmd-edit").addEventListener("click", () => {
             this.consoleLog("「ARMMANE」 Edit command");
-            this.openConfigBox(this.querySel("#" + clonedCodeBlock.id));
+            this.openConfigBox("code_block_" + newDiv.num);
         });
         clonedCodeBlock.querySelector(".cmd-play").addEventListener("click", () => {
             this.consoleLog("「ARMMANE」 Run command");
@@ -1061,17 +1061,18 @@ class ARMMane{
     
 
     //This will change the property of the element after click save button
-    openConfigBox(element){
+    openConfigBox(elementname){
+        let element = this.querySel("#" + elementname.id);
         let type = element.getAttribute("data-type");
         
-        if(type == "servo"){
+        if(type == "setServo"){
             this.changeText("cconf_title_1", "คำสั่ง");
             this.changeText("cconf_title_2", "อุปกรณ์ที่ต้องการ");
             this.changeText("cconf_title_3", "องศา");
             // Set min and max value
             this.elements["form"]["cconf_03"].setAttribute("min", element.getAttribute("data-min"));
             this.elements["form"]["cconf_03"].setAttribute("max", element.getAttribute("data-max"));
-        }else if(type == "conv"){
+        }else if(type == "setConv"){
             this.changeText("cconf_title_1", "คำสั่ง");
             this.changeText("cconf_title_2", "อุปกรณ์ที่ต้องการ");
             this.changeText("cconf_title_3", "โหมด");
