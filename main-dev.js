@@ -79,7 +79,7 @@ class ARMMane{
                 "command_area" : document.querySelectorAll(".ins-command-area"),
                 "function_box" : document.querySelectorAll(".ins-func-box"),
                 "livepreview" : this.querySel(".livepreview"),
-                "drag_area" : document.querySelectorAll("#drag-area"),
+                "drag_area" : document.querySelectorAll("#dragArea"),
             },
             "btn" : {
                 "conn_connectsrv" : this.querySel(".btn-connectsrv"),
@@ -953,7 +953,7 @@ class ARMMane{
     // }
 
     initializeSortable() {
-        const dragArea = this.elements["ui"]["command_area"]
+        const dragArea = this.elements["ui"]["drag_area"]
 
         const sortable = new Sortable(dragArea, {
             animation: 150,
