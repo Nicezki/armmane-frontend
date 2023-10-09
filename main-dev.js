@@ -79,7 +79,6 @@ class ARMMane{
                 "command_area" : document.querySelectorAll(".ins-command-area"),
                 "function_box" : document.querySelectorAll(".ins-func-box"),
                 "livepreview" : this.querySel(".livepreview"),
-                "drag_area" : document.querySelectorAll("#dragArea"),
             },
             "btn" : {
                 "conn_connectsrv" : this.querySel(".btn-connectsrv"),
@@ -953,16 +952,12 @@ class ARMMane{
     // }
 
     initializeSortable() {
-        const dragArea = this.elements["ui"]["drag_area"]; // Use dragArea here
-    
-        if (dragArea instanceof HTMLElement) { // Check if dragArea is an HTMLElement
-            const sortable = new Sortable(dragArea, {
-                animation: 150,
-                ghostClass: 'blue-background-class'
-            });
-        } else {
-            console.error("dragArea is not an HTMLElement"); // Log an error message
-        }
+        const dragArea = document.querySelectorAll("#dragArea");
+        new Sortable(dragArea, {
+            animation: 150,
+            ghostClass: 'blue-background-class',
+            direction: 'vertical', // Only vertical sorting
+        });
     }
 
     getData(element_name="ins-command-area",code_block="tp-ins-code-block") {
