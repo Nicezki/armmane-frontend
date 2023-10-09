@@ -759,12 +759,17 @@ class ARMMane{
         // url is /stream/video (without prediction overlay) and /stream/video2 (with prediction overlay)
         //From StreamingResponse(generate(), media_type="multipart/x-mixed-replace; boundary=frame")
         this.elements["ui"]["livepreview"].querySelector("img").src = this.appStatus["server"]["fullURL"] + "/stream/video2";
-
+        var retryVideoStreamCount = 0;
         // Detect if the server connection is lost
-        this.elements["ui"]["livepreview"].querySelector("img").addEventListener("error", () => {
-            // Try to reconnect
-            this.elements["ui"]["livepreview"].querySelector("img").src = this.appStatus["server"]["fullURL"] + "/stream/video2";
-        });
+        if(retryVideoStreamCount < 20){
+            this.elements["ui"]["livepreview"].querySelector("img").addEventListener("error", () => {
+                // Try to reconnect
+                this.elements["ui"]["livepreview"].querySelector("img").src = this.appStatus["server"]["fullURL"] + "/stream/video2";
+                retryCount++;
+            });
+        }else{
+            this.consoleLog("「ARMMANE」 Cannot connect to video stream", "ERROR");
+        }
 
     }
 
@@ -910,9 +915,11 @@ class ARMMane{
             list.addEventListener("dragend", () => {
                 list.classList.remove("dragging");
             });
-
+            
+            
             // Enable draggable behavior
             list.draggable = true;
+
         });
 
         // Add dragover event listeners to droppable zones
