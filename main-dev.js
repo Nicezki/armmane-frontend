@@ -29,6 +29,7 @@ class ARMMane{
                 ];
         }
 
+        this.serverURL = "https://pi.nicezki.com/";
 
         this.appStatus = {
             "connected" : false,
@@ -1062,6 +1063,23 @@ class ARMMane{
         } else {
             console.error(`Element with ID '${uniqueElementId}' not found.`);
         }
+    }
+
+    getPreset() {
+        // send GET api to {server}/api/train
+        fetch(this.serverURL + "/config", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }).then((response) => {
+            if (response.status == 200) {
+                this.consoleLog("Train request sent successfully", "SUCCESS");
+            }
+            else {
+                this.consoleLog("Train request sent failed", "ERROR");
+            }
+        });
     }
     
 
