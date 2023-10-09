@@ -952,7 +952,7 @@ class ARMMane{
     // }
 
     initializeSortable() {
-        const dragArea = document.querySelectorAll("#dragArea");
+        const dragArea = document.querySelector(".ins-command-area");
         new Sortable(dragArea, {
             animation: 150,
             ghostClass: 'blue-background-class',
