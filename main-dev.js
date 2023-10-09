@@ -29,7 +29,7 @@ class ARMMane{
                 ];
         }
 
-        this.serverURL = "https://pi.nicezki.com/";
+        this.serverURL = "https://pi.nicezki.com";
 
         this.appStatus = {
             "connected" : false,
