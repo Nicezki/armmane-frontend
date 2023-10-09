@@ -1068,6 +1068,17 @@ class ARMMane{
     //This will change the property of the element after click save button
     openConfigBox(element_name) {
         let element = document.getElementById(element_name);
+        if (element == null) {
+            this.consoleLog("「ARMMANE」 Element not found", "ERROR");
+            return;
+        }
+        try{
+            this.elements["btn"]["cconf_btn_save"].removeEventListener("click", saveButtonHandler);
+            this.elements["btn"]["cconf_btn_cancel"].removeEventListener("click", cancelButtonHandler);
+        }
+        catch(err){
+            this.consoleLog("「ARMMANE」 Element seems not have event listener So it's ok", "INFO");
+        }
         this.consoleLog("「ARMMANE」 Open config box for " + element_name);
         let type = element.getAttribute("data-type");
         if(type == "setServo"){
