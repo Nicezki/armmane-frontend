@@ -1061,10 +1061,9 @@ class ARMMane{
     
 
     //This will change the property of the element after click save button
-    openConfigBox(elementname){
-        let element = this.querySel("#" + elementname);
+    openConfigBox(element_name) {
+        let element = document.getElementById(element_name);
         let type = element.getAttribute("data-type");
-        
         if(type == "setServo"){
             this.changeText("cconf_title_1", "คำสั่ง");
             this.changeText("cconf_title_2", "อุปกรณ์ที่ต้องการ");
