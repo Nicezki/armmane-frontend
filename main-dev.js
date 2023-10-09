@@ -1020,7 +1020,7 @@ class ARMMane{
         });
         clonedCodeBlock.querySelector(".cmd-edit").addEventListener("click", () => {
             this.consoleLog("「ARMMANE」 Edit command");
-            this.openConfigBox("code_block_" + newDiv.num);
+            this.openConfigBox(clonedCodeBlock.id);
         });
         clonedCodeBlock.querySelector(".cmd-play").addEventListener("click", () => {
             this.consoleLog("「ARMMANE」 Run command");
