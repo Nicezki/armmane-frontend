@@ -62,7 +62,7 @@ class ARMMane{
                 "settingarea" : this.querySel(".main-settingarea"),
                 "statusbox" : this.querySel(".main-statusbox"),
                 "controlbox" : this.querySel(".main-controlbox"),
-                "cconfbox" : this.querySel("cconfbox"),
+                "cconfbox" : this.querySel(".cconfbox"),
                 "logmane" : this.querySel(".logmane"),
                 "log_disconnect" : this.querySel(".log-disconnect"),
                 "log_area" : this.querySel(".log-area"),
@@ -125,6 +125,7 @@ class ARMMane{
             {
                 "type" : "servo",
                 "value" : 0,
+                "device" : 0,
                 "min" : 0,
                 "max" : 180,
                 "num" : 0,
@@ -132,6 +133,7 @@ class ARMMane{
             {
                 "type" : "conv",
                 "value" : 0,
+                "device" : 0,
                 "min" : 0,
                 "max" : 2,
                 "num" : 0,
@@ -204,10 +206,6 @@ class ARMMane{
         this.setupElementTrigger();
 
         this.createDraggableList(this.elements["ui"]["function_box"][0].querySelector("div"));
-
-        // this.dragNdrop(this.elements["template"]["code_block"],this.elements["ui"]["command_area"]);
-
-        // this.enableMobileDragAndDrop();
 
         this.initializeSortable();
     }
@@ -570,10 +568,7 @@ class ARMMane{
         }, time);
     }
 
-    //This will change the property of the element after click save button
-    openConfigBox(element){
-        
-    }
+
 
 
 
@@ -766,12 +761,17 @@ class ARMMane{
         // url is /stream/video (without prediction overlay) and /stream/video2 (with prediction overlay)
         //From StreamingResponse(generate(), media_type="multipart/x-mixed-replace; boundary=frame")
         this.elements["ui"]["livepreview"].querySelector("img").src = this.appStatus["server"]["fullURL"] + "/stream/video2";
-
+        var retryVideoStreamCount = 0;
         // Detect if the server connection is lost
-        this.elements["ui"]["livepreview"].querySelector("img").addEventListener("error", () => {
-            // Try to reconnect
-            this.elements["ui"]["livepreview"].querySelector("img").src = this.appStatus["server"]["fullURL"] + "/stream/video2";
-        });
+        if(retryVideoStreamCount < 20){
+            this.elements["ui"]["livepreview"].querySelector("img").addEventListener("error", () => {
+                // Try to reconnect
+                this.elements["ui"]["livepreview"].querySelector("img").src = this.appStatus["server"]["fullURL"] + "/stream/video2";
+                retryCount++;
+            });
+        }else{
+            this.consoleLog("「ARMMANE」 Cannot connect to video stream", "ERROR");
+        }
 
     }
 
@@ -880,6 +880,9 @@ class ARMMane{
     }
 
 
+    
+
+
     // setStatus(status,
 
 
@@ -902,37 +905,7 @@ class ARMMane{
 // DEPRECATED them all!!
 
     // initialize drag and drop function
-    // dragNdrop(draggables_elem,droppables_elem) {
-    //     const draggables = Array.from(draggables_elem);
-    //     const droppables = Array.from(droppables_elem);
 
-    //     // Add dragstart and dragend event listeners to draggable elements
-    //     draggables.forEach(list => {
-    //         list.addEventListener("dragstart", () => {
-    //             list.classList.add("dragging");
-    //         });
-    //         list.addEventListener("dragend", () => {
-    //             list.classList.remove("dragging");
-    //         });
-
-    //         // Enable draggable behavior
-    //         list.draggable = true;
-    //     });
-
-    //     // Add dragover event listeners to droppable zones
-    //     droppables.forEach(zone => {
-    //         zone.addEventListener("dragover", (e) => {
-    //             e.preventDefault();
-    //             const bottomList = this.insertAboveList(zone, e.clientY);
-    //             const curList = this.querySel(".dragging");
-    //             if (!bottomList) {
-    //                 zone.appendChild(curList);
-    //             } else {
-    //                 zone.insertBefore(curList, bottomList);
-    //             }
-    //         });
-    //     });
-    // }
 
     // // Insert draggable list above a target list based on mouseY
     // insertAboveList(zone, mouseY) {
@@ -962,7 +935,7 @@ class ARMMane{
             direction: 'vertical', // Only vertical sorting
         });
     }
-
+  
     getData(element_name="ins-command-area",code_block="tp-ins-code-block") {
         const commandArea = this.querySel("." + element_name);
 
@@ -993,6 +966,7 @@ class ARMMane{
 
             newDiv.addEventListener("click", () => {
                 this.handleFunctionElementClick(newDiv);
+
             });
 
             spawnArea.appendChild(newDiv);
@@ -1084,6 +1058,49 @@ class ARMMane{
         }
     }
     
+
+    //This will change the property of the element after click save button
+    openConfigBox(element){
+        let type = element.getAttribute("data-type");
+        
+        if(type == "servo"){
+            this.changeText("cconf_title_1", "คำสั่ง");
+            this.changeText("cconf_title_2", "อุปกรณ์ที่ต้องการ");
+            this.changeText("cconf_title_3", "องศา");
+            // Set min and max value
+            this.elements["form"]["cconf_03"].setAttribute("min", element.getAttribute("data-min"));
+            this.elements["form"]["cconf_03"].setAttribute("max", element.getAttribute("data-max"));
+        }else if(type == "conv"){
+            this.changeText("cconf_title_1", "คำสั่ง");
+            this.changeText("cconf_title_2", "อุปกรณ์ที่ต้องการ");
+            this.changeText("cconf_title_3", "โหมด");
+            // Set min and max value
+            this.elements["form"]["cconf_03"].setAttribute("min", element.getAttribute("data-min"));
+            this.elements["form"]["cconf_03"].setAttribute("max", element.getAttribute("data-max"));
+        }
+            this.elements["form"]["cconf_01"].value = element.getAttribute("data-type");
+            this.elements["form"]["cconf_02"].value = element.getAttribute("data-device");
+            this.elements["form"]["cconf_03"].value = element.getAttribute("data-value");
+            this.showElement("ui", "cconfbox");
+
+            // Add event listener to save button
+            this.elements["btn"]["cconf_btn_save"].addEventListener("click", () => {
+                element.setAttribute("data-type", this.elements["form"]["cconf_01"].value);
+                element.setAttribute("data-device", this.elements["form"]["cconf_02"].value);
+                element.setAttribute("data-value", this.elements["form"]["cconf_03"].value);
+                element.querySelector(".cmd-text > div > h2").textContent = this.elements["form"]["cconf_01"].value + "(" + this.elements["form"]["cconf_02"].value + "," + this.elements["form"]["cconf_03"].value + ");";
+                this.hideElement("ui", "cconfbox");
+                // Remove event listener
+                this.elements["btn"]["cconf_btn_save"].removeEventListener("click", () => {});
+            });
+
+            // Add event listener to cancel button
+            this.elements["btn"]["cconf_btn_cancel"].addEventListener("click", () => {
+                this.hideElement("ui", "cconfbox");
+                // Remove event listener
+                this.elements["btn"]["cconf_btn_cancel"].removeEventListener("click", () => {});
+            });
+    }
 
     createPresetButton(){
         this.getConfig();
