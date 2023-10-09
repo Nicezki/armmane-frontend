@@ -951,11 +951,14 @@ class ARMMane{
     //     return closestList;
     // }
 
+    
+
+
+
     initializeSortable() {
         const dragArea = document.querySelector(".ins-command-area");
         new Sortable(dragArea, {
             animation: 150,
-            ghostClass: 'blue-background-class',
             direction: 'vertical', // Only vertical sorting
         });
     }
