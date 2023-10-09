@@ -205,9 +205,9 @@ class ARMMane{
 
         this.createDraggableList(this.elements["ui"]["function_box"][0].querySelector("div"));
 
-        this.dragNdrop(this.elements["template"]["code_block"],this.elements["ui"]["command_area"]);
+        // this.dragNdrop(this.elements["template"]["code_block"],this.elements["ui"]["command_area"]);
 
-        this.enableMobileDragAndDrop();
+        // this.enableMobileDragAndDrop();
     }
 
 
@@ -948,7 +948,7 @@ class ARMMane{
     //     });
     //     return closestList;
     // }
-    
+
     getData(element_name="ins-command-area",code_block="tp-ins-code-block") {
         const commandArea = this.querySel("." + element_name);
 
