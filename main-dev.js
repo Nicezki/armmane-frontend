@@ -1087,10 +1087,19 @@ class ARMMane{
                     // Extract preset names from the 'instructions' object
                     const presetNames = Object.keys(instructions);
     
-                    console.log("Preset Names:", presetNames);
+                    // Iterate through preset names and extract step instructions
+                    const presetsWithSteps = presetNames.map(presetName => {
+                        const steps = instructions[presetName].step;
+                        return {
+                            presetName,
+                            steps
+                        };
+                    });
     
-                    // Resolve the promise with preset names
-                    return presetNames;
+                    console.log("Presets with Steps:", presetsWithSteps);
+    
+                    // Resolve the promise with presets and step instructions
+                    return presetsWithSteps;
                 } else {
                     console.error("Data format is invalid. Missing 'config' or 'instructions'.");
                     throw new Error("Data format is invalid.");
@@ -1104,6 +1113,7 @@ class ARMMane{
             throw error; // Re-throw the error to propagate it
         }
     }
+    
     
     async initializePresetElements() {
         try {
@@ -1138,6 +1148,8 @@ class ARMMane{
             spawnArea.appendChild(newDiv);
         });
     }
+
+
     
     
 
