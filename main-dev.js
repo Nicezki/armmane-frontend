@@ -1126,25 +1126,24 @@ class ARMMane{
     }
     
     // Add the translateInstruction function to your class
+    // Add the translateInstruction function to your class
     translateInstruction(instruction) {
         const type = instruction[0];
         const id = parseInt(instruction[1]);
-        const mode = parseInt(instruction[2]);
-        const value = parseInt(instruction.substring(3));
-    
-        let command;
-    
-        if (type === 'C') {
-            command = `setConv(${id},${value});`;
-        } else if (type === 'S') {
-            command = `setServo(${id},${value});`;
+
+        if (type === 'S') {
+            const degree = parseInt(instruction.substring(3));
+            return `setServo(${id},${degree});`;
+        } else if (type === 'C') {
+            const mode = parseInt(instruction[2]);
+            const speed = parseInt(instruction.substring(3));
+            return `setConV(${id},${mode},${speed});`;
         } else {
             // Handle unsupported instruction type
-            command = `Unsupported instruction type: ${type}`;
+            return `Unsupported instruction type: ${type}`;
         }
-    
-        return command;
     }
+
     
     
     
