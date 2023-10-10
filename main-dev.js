@@ -1033,15 +1033,16 @@ class ARMMane{
         clonedCodeBlock.querySelector(".cmd-play").addEventListener("click", () => {
             this.consoleLog("「ARMMANE」 Run command");
         });
-        codeBlock.querySelector(".cmd-edit").addEventListener("click", () => {
-            this.consoleLog("「ARMMANE」 Edit command");
-        });
-        codeBlock.querySelector(".cmd-play").addEventListener("click", () => {
-            this.consoleLog("「ARMMANE」 Run command");
-        });
-        codeBlock.querySelector(".cmd-del").addEventListener("click", () => {
-            codeBlock.remove();
-        });
+        // codeBlock.querySelector(".cmd-edit").addEventListener("click", () => {
+        //     this.consoleLog("「ARMMANE」 Edit command");
+        //     this.openConfigBox(clonedCodeBlock.id);
+        // });
+        // codeBlock.querySelector(".cmd-play").addEventListener("click", () => {
+        //     this.consoleLog("「ARMMANE」 Run command");
+        // });
+        // codeBlock.querySelector(".cmd-del").addEventListener("click", () => {
+        //     codeBlock.remove();
+        // });
 
         clonedCodeBlock.setAttribute("data-type", newDiv.type);
         clonedCodeBlock.setAttribute("data-value", newDiv.value);
