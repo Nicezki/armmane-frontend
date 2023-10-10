@@ -1100,6 +1100,7 @@ class ARMMane{
     
                     // Resolve the promise with presets and step instructions
                     return presetsWithSteps;
+                    return presetNames;
                 } else {
                     console.error("Data format is invalid. Missing 'config' or 'instructions'.");
                     throw new Error("Data format is invalid.");
