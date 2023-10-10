@@ -211,6 +211,8 @@ class ARMMane{
         this.createDraggableList(this.elements["ui"]["function_box"][0].querySelector("div"));
 
         this.initializeSortable();
+
+        this.initializePresetElements();
     }
 
 
@@ -1020,7 +1022,7 @@ class ARMMane{
         return clonedCodeBlock;
     }
 
-    attachCodeBlockEventListeners(clonedCodeBlock, newDiv) {
+    attachCodeBlockEventListeners(clonedCodeBlock, newDiv, codeBlock) {
         clonedCodeBlock.querySelector(".cmd-del").addEventListener("click", () => {
             clonedCodeBlock.remove();
         });
@@ -1030,6 +1032,16 @@ class ARMMane{
         });
         clonedCodeBlock.querySelector(".cmd-play").addEventListener("click", () => {
             this.consoleLog("「ARMMANE」 Run command");
+        });
+        codeBlock.querySelector(".cmd-edit").addEventListener("click", () => {
+            this.consoleLog("「ARMMANE」 Edit command");
+            this.openConfigBox(codeBlock.id);
+        });
+        codeBlock.querySelector(".cmd-play").addEventListener("click", () => {
+            this.consoleLog("「ARMMANE」 Run command");
+        });
+        codeBlock.querySelector(".cmd-del").addEventListener("click", () => {
+            codeBlock.remove();
         });
 
         clonedCodeBlock.setAttribute("data-type", newDiv.type);
@@ -1151,6 +1163,64 @@ class ARMMane{
             // Add the element to the spawn area
             spawnArea.appendChild(newDiv);
         });
+    }
+
+    // Add an event listener to preset elements
+    attachPresetClickEventListeners() {
+        const presetElements = this.elements["ui"]["preset_box"][0].querySelectorAll(".ins-preset");
+        presetElements.forEach(presetElement => {
+            presetElement.addEventListener("click", () => {
+                this.handlePresetElementClick(presetElement);
+            });
+        });
+    }
+
+    // Handle click on a preset element
+    handlePresetElementClick(presetElement) {
+        // Get the preset name associated with the clicked element
+        const presetName = presetElement.querySelector(".ins-preset-box > div > h4").textContent;
+
+        // Find the preset in the presetsWithSteps array
+        const selectedPreset = this.presetsWithSteps.find(preset => preset.presetName === presetName);
+
+        if (selectedPreset) {
+            // Clear existing code blocks
+            this.clearCodeBlocks();
+
+            // Create code blocks based on the step instructions
+            selectedPreset.steps.forEach(instruction => {
+                const codeBlock = this.createCodeBlockElement(instruction);
+                this.attachCodeBlockEventListeners(codeBlock);
+                this.addElementToSwimLane(codeBlock);
+            });
+        } else {
+            console.error(`Preset with name '${presetName}' not found.`);
+        }
+    }
+
+    // Clear existing code blocks from the swim lane
+    clearCodeBlocks() {
+        const swimLane = this.elements["ui"]["command_area"][0];
+        swimLane.innerHTML = "";
+    }
+
+    // Create a code block element based on an instruction
+    createCodeBlockElement(instruction) {
+        const codeBlock = this.elements["template"]["code_block"].cloneNode(true);
+        const codeBlockUniqueId = `code_block_${Date.now()}`;
+        codeBlock.id = codeBlockUniqueId;
+        codeBlock.style.display = "flex";
+
+        // Set the instruction as the code block content
+        codeBlock.querySelector(".cmd-text > div > h2").textContent = instruction;
+
+        return codeBlock;
+    }
+
+    // Add a code block element to the swim lane
+    addElementToSwimLane(element) {
+        const swimLane = this.elements["ui"]["command_area"][0];
+        swimLane.appendChild(element);
     }
 
 
