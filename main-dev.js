@@ -1129,7 +1129,7 @@ class ARMMane{
             newDiv.id = uniqueId;
     
             // Add the preset name to the element
-            newDiv.querySelector(".tp-preset > div > h4").textContent = presetName;
+            newDiv.querySelector(".ins-preset-box > div > h4").textContent = presetName;
     
             // Show the element
             newDiv.style.display = "flex";
