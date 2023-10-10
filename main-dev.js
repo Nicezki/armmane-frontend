@@ -1066,21 +1066,32 @@ class ARMMane{
     }
 
     getPreset() {
-        // send GET api to {server}/api/train
-        fetch(this.serverURL + "/config", {
+        // Send GET request to {server}/config
+        fetch(`${this.serverURL}/config`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json"
             }
-        }).then((response) => {
-            if (response.status == 200) {
-                this.consoleLog("Train request sent successfully", "SUCCESS");
-            }
-            else {
+        })
+        .then((response) => {
+            if (response.status === 200) {
+                return response.json(); // Parse the response body as JSON
+            } else {
                 this.consoleLog("Train request sent failed", "ERROR");
+                throw new Error("Request failed with status: " + response.status);
             }
+        })
+        .then((data) => {
+            // Handle the retrieved data here
+            console.log("Received data:", data);
+    
+            // You can now use 'data' to update your application state or UI
+        })
+        .catch((error) => {
+            console.error("Error:", error);
         });
     }
+    
     
 
     //This will change the property of the element after click save button
