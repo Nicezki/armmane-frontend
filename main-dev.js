@@ -1119,7 +1119,7 @@ class ARMMane{
     
     clonePresetElements(presetNames) {
         const presetBox = this.elements["ui"]["preset_box"][0];
-        const insPresetTemplate = this.elements["ui"]["ins_preset"];
+        const insPresetTemplate = this.elements["ui"]["ins_preset"][0];
     
         // Clear existing elements in the preset box
         presetBox.innerHTML = "";
