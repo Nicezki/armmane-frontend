@@ -1156,27 +1156,46 @@ class ARMMane{
             // Call clonePresetElements to populate the preset elements
             this.clonePresetElements(presetsWithSteps);
     
-            // Assuming you have a list of elements in "ins-preset-box"
-            const insPresetBox = document.querySelector(".ins-preset-box");
-    
-            // Attach a single click event listener to the parent element (insPresetBox)
-            insPresetBox.addEventListener("click", (event) => {
-                // Check if the clicked element is an "ins-preset"
-                if (event.target.classList.contains("tp-ins-preset")) {
-                    // Find the index of the clicked ins-preset element (you may need to customize this logic)
-                    const index = Array.from(insPresetBox.children).indexOf(event.target);
-    
-                    // Call the existing function to clone the code block when an ins-preset is clicked
-                    console.log("Clicked on an ins-preset element");
-                    const newDiv = this.createFunctionElement(index);
-                    // You may need to customize the newDiv based on the ins-preset that was clicked
-                    this.cloneCodeBlockElement(newDiv); // Call the existing function
-                }
+            // Add click event listeners to preset elements
+            const presetElements = document.querySelectorAll(".ins-preset");
+            presetElements.forEach(presetElement => {
+                presetElement.addEventListener("click", () => {
+                    this.handlePresetElementClick(presetElement);
+                });
             });
         } catch (error) {
             console.error("Error:", error);
         }
     }
+    
+    async handlePresetElementClick(presetElement) {
+        try {
+            // Get the preset name from the clicked element
+            const presetName = presetElement.querySelector(".preset_name").textContent;
+    
+            // Get the presets with steps using getPreset()
+            const presetsWithSteps = await this.getPreset();
+    
+            // Find the selected preset by name
+            const selectedPreset = presetsWithSteps.find(preset => preset.presetName === presetName);
+    
+            if (selectedPreset) {
+                // Clear existing code blocks (if any)
+                const swimLane = this.elements["ui"]["command_area"][0];
+                swimLane.innerHTML = "";
+    
+                // Append code blocks for each step
+                selectedPreset.steps.forEach((step, index) => {
+                    const newDiv = this.cloneCodeBlockElement(presetElement);
+                    newDiv.querySelector(".cmd-text > div > h2").textContent = this.translateInstruction(step);
+                    swimLane.appendChild(newDiv);
+                });
+            }
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    }
+    
     
     
     
