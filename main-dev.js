@@ -1020,7 +1020,7 @@ class ARMMane{
         return clonedCodeBlock;
     }
 
-    attachCodeBlockEventListeners(clonedCodeBlock, newDiv) {
+    attachCodeBlockEventListeners(clonedCodeBlock, newDiv, codeBlock) {
         clonedCodeBlock.querySelector(".cmd-del").addEventListener("click", () => {
             clonedCodeBlock.remove();
         });
@@ -1065,6 +1065,62 @@ class ARMMane{
         } else {
             console.error(`Element with ID '${uniqueElementId}' not found.`);
         }
+    }
+
+    attachPresetClickEventListeners() {
+        const presetElements = this.elements["ui"]["preset_box"][0].querySelectorAll(".ins-preset");
+        presetElements.forEach(presetElement => {
+            presetElement.addEventListener("click", () => {
+                this.handlePresetElementClick(presetElement);
+            });
+        });
+    }
+
+    // Handle click on a preset element
+    handlePresetElementClick(presetElement) {
+        // Get the preset name associated with the clicked element
+        const presetName = presetElement.querySelector(".ins-preset-box > div > h4").textContent;
+
+        // Find the preset in the presetsWithSteps array
+        const selectedPreset = this.presetsWithSteps.find(preset => preset.presetName === presetName);
+
+        if (selectedPreset) {
+            // Clear existing code blocks
+            this.clearCodeBlocks();
+
+            // Create code blocks based on the step instructions
+            selectedPreset.steps.forEach(instruction => {
+                const codeBlock = this.createCodeBlockElement(instruction);
+                this.attachCodeBlockEventListeners(codeBlock);
+                this.addElementToSwimLane(codeBlock);
+            });
+        } else {
+            console.error(`Preset with name '${presetName}' not found.`);
+        }
+    }
+
+    addElementToSwimLane(element) {
+        const swimLane = this.elements["ui"]["command_area"][0];
+        swimLane.appendChild(element);
+    }
+
+    // Clear existing code blocks from the swim lane
+    clearCodeBlocks() {
+        const swimLane = this.elements["ui"]["command_area"][0];
+        swimLane.innerHTML = "";
+    }
+
+    // Create a code block element based on an instruction
+    createCodeBlockElement(instruction) {
+        const codeBlock = this.elements["template"]["code_block"].cloneNode(true);
+        const codeBlockUniqueId = `code_block_${Date.now()}`;
+        codeBlock.id = codeBlockUniqueId;
+        codeBlock.style.display = "flex";
+
+        // Set the instruction as the code block content
+        codeBlock.querySelector(".cmd-text > div > h2").textContent = instruction;
+
+        return codeBlock;
     }
 
     async getPreset() {
