@@ -1130,7 +1130,7 @@ class ARMMane{
             clonedPreset.classList.add("ins_preset");
     
             // Set the preset name in the element
-            clonedPreset.querySelector(".preset_name").textContent = presetName;
+            clonedPreset.querySelector("h4").textContent = presetName;
     
             // Add any additional logic or event listeners if needed
     
