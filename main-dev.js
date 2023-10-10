@@ -1129,7 +1129,7 @@ class ARMMane{
             const insPresetElements = document.querySelectorAll(".tp-ins-preset");
     
             // Attach a click event listener to each ins-preset element
-            insPresetElements.forEach(insPreset => {
+            insPresetElements.forEach((insPreset, index) => {
                 insPreset.addEventListener("click", () => {
                     // Call the existing function to clone the code block when an ins-preset is clicked
                     console.log("Clicked on an ins-preset element");
