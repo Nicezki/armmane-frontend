@@ -1035,7 +1035,6 @@ class ARMMane{
         });
         codeBlock.querySelector(".cmd-edit").addEventListener("click", () => {
             this.consoleLog("「ARMMANE」 Edit command");
-            this.openConfigBox(codeBlock.id);
         });
         codeBlock.querySelector(".cmd-play").addEventListener("click", () => {
             this.consoleLog("「ARMMANE」 Run command");
