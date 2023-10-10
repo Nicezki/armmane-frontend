@@ -1128,26 +1128,24 @@ class ARMMane{
     
     async initializePresetElements() {
         try {
-            // Get the preset names with steps using getPreset()
+            // Get the presets with steps using getPreset()
             const presetsWithSteps = await this.getPreset();
     
-            // Extract and display only the preset names
-            const presetNames = presetsWithSteps.map(preset => preset.presetName);
-            console.log("Preset Names:", presetNames);
-    
             // Call clonePresetElements to populate the preset elements
-            this.clonePresetElements(presetNames);
+            this.clonePresetElements(presetsWithSteps);
         } catch (error) {
             console.error("Error:", error);
         }
     }
     
-    clonePresetElements(presetNames) {
+    clonePresetElements(presetsWithSteps) {
         // Get the spawn area of the preset elements
         const spawnArea = this.elements["ui"]["preset_box"][0].querySelector("div");
     
-        // Iterate through the preset names
-        presetNames.forEach(presetName => {
+        // Iterate through the presets with steps
+        presetsWithSteps.forEach(preset => {
+            const { presetName, steps } = preset;
+    
             // Clone the preset element template
             const newDiv = this.elements["template"]["ins_preset"][0].cloneNode(true);
             const uniqueId = `preset_${presetName}`;
@@ -1161,6 +1159,9 @@ class ARMMane{
     
             // Add the element to the spawn area
             spawnArea.appendChild(newDiv);
+    
+            // Log the step instructions for this preset
+            console.log(`Step Instructions for ${presetName}:`, steps);
         });
     }
 
