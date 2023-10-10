@@ -1133,7 +1133,7 @@ class ARMMane{
                 insPreset.addEventListener("click", () => {
                     // Call the existing function to clone the code block when an ins-preset is clicked
                     console.log("Clicked on an ins-preset element");
-                    const newDiv = this.createFunctionElement();
+                    const newDiv = this.createFunctionElement(index);
                     // You may need to customize the newDiv based on the ins-preset that was clicked
                     this.cloneCodeBlockElement(newDiv); // Call the existing function
                 });
