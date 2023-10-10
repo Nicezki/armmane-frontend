@@ -1127,7 +1127,7 @@ class ARMMane{
         // Iterate through the preset names
         presetNames.forEach((presetNames, index) => {
             const clonedPreset = insPresetTemplate.cloneNode(true);
-            clonedPreset.classList.remove("ins_preset_template");
+            clonedPreset.classList.remove("ins_preset");
             clonedPreset.classList.add("ins_preset");
     
             // Set the preset name in the element
