@@ -1118,24 +1118,24 @@ class ARMMane{
     }
     
     clonePresetElements(presetNames) {
-        const presetBox = this.elements["ui"]["preset_box"][0];
-        const insPresetTemplate = this.elements["template"]["ins_preset"][0];
-    
-        // Clear existing elements in the preset box
-        presetBox.innerHTML = "";
+        // Get the spawn area of the preset elements
+        const spawnArea = this.elements["ui"]["preset_box"][0].querySelector("div");
     
         // Iterate through the preset names
-        presetNames.forEach((presetName, index) => {
-            const clonedPreset = this.elements["template"]["ins_preset"].cloneNode(true);
-            clonedPreset.classList.add("ins_preset");
+        presetNames.forEach(presetName => {
+            // Clone the preset element template
+            const newDiv = this.elements["template"]["preset"][0].cloneNode(true);
+            const uniqueId = `preset_${presetName}`;
+            newDiv.id = uniqueId;
     
-            // Set the preset name in the element
-            clonedPreset.querySelector("h4").textContent = presetName;
+            // Add the preset name to the element
+            newDiv.querySelector(".tp-preset > div > h4").textContent = presetName;
     
-            // Add any additional logic or event listeners if needed
+            // Show the element
+            newDiv.style.display = "flex";
     
-            // Append the cloned element to the preset box
-            presetBox.appendChild(clonedPreset);
+            // Add the element to the spawn area
+            spawnArea.appendChild(newDiv);
         });
     }
     
