@@ -1126,7 +1126,7 @@ class ARMMane{
             this.clonePresetElements(presetsWithSteps);
     
             // Assuming you have a list of elements in "ins-preset-box"
-            const insPresetElements = document.querySelectorAll(".ins-preset");
+            const insPresetElements = document.querySelectorAll(".tp-ins-preset");
     
             // Attach a click event listener to each ins-preset element
             insPresetElements.forEach(insPreset => {
