@@ -1124,7 +1124,7 @@ class ARMMane{
         // Iterate through the preset names
         presetNames.forEach(presetName => {
             // Clone the preset element template
-            const newDiv = this.elements["template"]["preset"][0].cloneNode(true);
+            const newDiv = this.elements["template"]["ins_preset"][0].cloneNode(true);
             const uniqueId = `preset_${presetName}`;
             newDiv.id = uniqueId;
     
