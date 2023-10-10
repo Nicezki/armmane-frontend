@@ -1033,15 +1033,6 @@ class ARMMane{
         clonedCodeBlock.querySelector(".cmd-play").addEventListener("click", () => {
             this.consoleLog("「ARMMANE」 Run command");
         });
-        // codeBlock.querySelector(".cmd-edit").addEventListener("click", () => {
-        //     this.consoleLog("「ARMMANE」 Edit command");
-        // });
-        // codeBlock.querySelector(".cmd-play").addEventListener("click", () => {
-        //     this.consoleLog("「ARMMANE」 Run command");
-        // });
-        // codeBlock.querySelector(".cmd-del").addEventListener("click", () => {
-        //     codeBlock.remove();
-        // });
 
         clonedCodeBlock.setAttribute("data-type", newDiv.type);
         clonedCodeBlock.setAttribute("data-value", newDiv.value);
@@ -1133,10 +1124,24 @@ class ARMMane{
     
             // Call clonePresetElements to populate the preset elements
             this.clonePresetElements(presetsWithSteps);
+    
+            // Assuming you have a list of elements in "ins-preset-box"
+            const insPresetElements = document.querySelectorAll(".ins-preset");
+    
+            // Attach a click event listener to each ins-preset element
+            insPresetElements.forEach(insPreset => {
+                insPreset.addEventListener("click", () => {
+                    // Call the existing function to clone the code block when an ins-preset is clicked
+                    const newDiv = this.createFunctionElement(/* provide the index or other data needed */);
+                    // You may need to customize the newDiv based on the ins-preset that was clicked
+                    this.cloneCodeBlockElement(newDiv); // Call the existing function
+                });
+            });
         } catch (error) {
             console.error("Error:", error);
         }
     }
+    
     
     clonePresetElements(presetsWithSteps) {
         // Get the spawn area of the preset elements
