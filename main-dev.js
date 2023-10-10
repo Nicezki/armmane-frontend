@@ -79,6 +79,7 @@ class ARMMane{
                 "status_conv01_backward" : this.querySel(".status-conv01-bw"),
                 "command_area" : document.querySelectorAll(".ins-command-area"),
                 "function_box" : document.querySelectorAll(".ins-func-box"),
+                "preset_box" : document.querySelectorAll(".ins-preset-box"),
                 "livepreview" : this.querySel(".livepreview"),
             },
             "btn" : {
@@ -110,6 +111,7 @@ class ARMMane{
                 "btn_serverlist" : this.querySel(".tp-btn-server"),
                 "log_alert" : this.querySel(".tp-log-alert"),
                 "ins_function" : document.querySelectorAll(".tp-ins-func"),
+                "ins_preset" : document.querySelectorAll(".tp-ins-preset"),
                 "code_block" : this.querySel(".tp-ins-code-block"),
             },
             "text" : {
@@ -1065,42 +1067,76 @@ class ARMMane{
         }
     }
 
-    getPreset() {
-        // Send GET request to {server}/config
-        fetch(`${this.serverURL}/config`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json"
-            }
-        })
-        .then((response) => {
+    async getPreset() {
+        try {
+            // Send GET request to {server}/config
+            const response = await fetch(`${this.serverURL}/config`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+    
             if (response.status === 200) {
-                return response.json(); // Parse the response body as JSON
+                const data = await response.json(); // Parse the response body as JSON
+    
+                // Check if 'config' and 'instructions' exist in the data
+                if (data.config && data.config.instructions) {
+                    const instructions = data.config.instructions;
+    
+                    // Extract preset names from the 'instructions' object
+                    const presetNames = Object.keys(instructions);
+    
+                    console.log("Preset Names:", presetNames);
+    
+                    // Resolve the promise with preset names
+                    return presetNames;
+                } else {
+                    console.error("Data format is invalid. Missing 'config' or 'instructions'.");
+                    throw new Error("Data format is invalid.");
+                }
             } else {
-                this.consoleLog("Train request sent failed", "ERROR");
+                console.error("Train request sent failed", "ERROR");
                 throw new Error("Request failed with status: " + response.status);
             }
-        })
-        .then((data) => {
-            // Handle the retrieved data here
-            console.log("Received data:", data);
-    
-            // Check if 'config' and 'instructions' exist in the data
-            if (data.config && data.config.instructions) {
-                const instructions = data.config.instructions;
-                
-                // Extract preset names from the 'instructions' object
-                const presetNames = Object.keys(instructions);
-                
-                console.log("Preset Names:", presetNames);
-    
-                // You can now use 'presetNames' to work with the names of presets
-            } else {
-                console.error("Data format is invalid. Missing 'config' or 'instructions'.");
-            }
-        })
-        .catch((error) => {
+        } catch (error) {
             console.error("Error:", error);
+            throw error; // Re-throw the error to propagate it
+        }
+    }
+    
+    async initializePresetElements() {
+        try {
+            // Get the preset names using getPreset()
+            const presetNames = await this.getPreset();
+    
+            // Call clonePresetElements to populate the preset elements
+            this.clonePresetElements(presetNames);
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    }
+    
+    clonePresetElements(presetNames) {
+        const presetBox = this.elements["ui"]["preset_box"][0];
+        const insPresetTemplate = this.elements["ui"]["ins_preset"][0];
+    
+        // Clear existing elements in the preset box
+        presetBox.innerHTML = "";
+    
+        // Iterate through the preset names
+        presetNames.forEach((presetName, index) => {
+            const clonedPreset = insPresetTemplate.cloneNode(true);
+            clonedPreset.classList.remove("ins_preset_template");
+            clonedPreset.classList.add("ins_preset");
+    
+            // Set the preset name in the element
+            clonedPreset.querySelector(".preset_name").textContent = presetName;
+    
+            // Add any additional logic or event listeners if needed
+    
+            // Append the cloned element to the preset box
+            presetBox.appendChild(clonedPreset);
         });
     }
     
