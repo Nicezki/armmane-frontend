@@ -1100,7 +1100,6 @@ class ARMMane{
     
                     // Resolve the promise with presets and step instructions
                     return presetsWithSteps;
-                    return presetNames;
                 } else {
                     console.error("Data format is invalid. Missing 'config' or 'instructions'.");
                     throw new Error("Data format is invalid.");
@@ -1118,8 +1117,12 @@ class ARMMane{
     
     async initializePresetElements() {
         try {
-            // Get the preset names using getPreset()
-            const presetNames = await this.getPreset();
+            // Get the preset names with steps using getPreset()
+            const presetsWithSteps = await this.getPreset();
+    
+            // Extract and display only the preset names
+            const presetNames = presetsWithSteps.map(preset => preset.presetName);
+            console.log("Preset Names:", presetNames);
     
             // Call clonePresetElements to populate the preset elements
             this.clonePresetElements(presetNames);
