@@ -940,7 +940,7 @@ class ARMMane{
             direction: 'vertical', // Only vertical sorting
         });
     }
-  
+
     getData(element_name="ins-command-area",code_block="tp-ins-code-block") {
         const commandArea = this.querySel("." + element_name);
 
@@ -1157,22 +1157,27 @@ class ARMMane{
             this.clonePresetElements(presetsWithSteps);
     
             // Assuming you have a list of elements in "ins-preset-box"
-            const insPresetElements = document.querySelectorAll(".tp-ins-preset");
+            const insPresetBox = document.querySelector(".ins-preset-box");
     
-            // Attach a click event listener to each ins-preset element
-            insPresetElements.forEach((insPreset, index) => {
-                insPreset.addEventListener("click", () => {
+            // Attach a single click event listener to the parent element (insPresetBox)
+            insPresetBox.addEventListener("click", (event) => {
+                // Check if the clicked element is an "ins-preset"
+                if (event.target.classList.contains("tp-ins-preset")) {
+                    // Find the index of the clicked ins-preset element (you may need to customize this logic)
+                    const index = Array.from(insPresetBox.children).indexOf(event.target);
+    
                     // Call the existing function to clone the code block when an ins-preset is clicked
                     console.log("Clicked on an ins-preset element");
                     const newDiv = this.createFunctionElement(index);
                     // You may need to customize the newDiv based on the ins-preset that was clicked
                     this.cloneCodeBlockElement(newDiv); // Call the existing function
-                });
+                }
             });
         } catch (error) {
             console.error("Error:", error);
         }
     }
+    
     
     
     clonePresetElements(presetsWithSteps) {
