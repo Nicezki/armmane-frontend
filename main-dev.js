@@ -1094,7 +1094,13 @@ class ARMMane{
     
                     // Iterate through preset names and extract step instructions
                     const presetsWithSteps = presetNames.map(presetName => {
-                        const steps = instructions[presetName].step;
+                        const steps = instructions[presetName].step.map(step => {
+                            // Translate each step instruction
+                            const translatedStep = this.translateInstruction(step);
+                            console.log(translatedStep); // Print the translated step
+                            return translatedStep;
+                        });
+    
                         return {
                             presetName,
                             steps
@@ -1118,6 +1124,28 @@ class ARMMane{
             throw error; // Re-throw the error to propagate it
         }
     }
+    
+    // Add the translateInstruction function to your class
+    translateInstruction(instruction) {
+        const type = instruction[0];
+        const id = parseInt(instruction[1]);
+        const mode = parseInt(instruction[2]);
+        const value = parseInt(instruction.substring(3));
+    
+        let command;
+    
+        if (type === 'C') {
+            command = `setConv(${id},${value});`;
+        } else if (type === 'S') {
+            command = `setServo(${id},${value});`;
+        } else {
+            // Handle unsupported instruction type
+            command = `Unsupported instruction type: ${type}`;
+        }
+    
+        return command;
+    }
+    
     
     
     async initializePresetElements() {
