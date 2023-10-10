@@ -1085,7 +1085,19 @@ class ARMMane{
             // Handle the retrieved data here
             console.log("Received data:", data);
     
-            // You can now use 'data' to update your application state or UI
+            // Check if 'config' and 'instructions' exist in the data
+            if (data.config && data.config.instructions) {
+                const instructions = data.config.instructions;
+                
+                // Extract preset names from the 'instructions' object
+                const presetNames = Object.keys(instructions);
+                
+                console.log("Preset Names:", presetNames);
+    
+                // You can now use 'presetNames' to work with the names of presets
+            } else {
+                console.error("Data format is invalid. Missing 'config' or 'instructions'.");
+            }
         })
         .catch((error) => {
             console.error("Error:", error);
