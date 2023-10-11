@@ -129,7 +129,7 @@ class ARMMane{
 
         this.conf_list = [
             {
-                "type" : "servo",
+                "type" : "setServo",
                 "value" : 0,
                 "device" : 0,
                 "min" : 0,
@@ -137,7 +137,7 @@ class ARMMane{
                 "num" : 0,
             },
             {
-                "type" : "conv",
+                "type" : "setConv",
                 "value" : 0,
                 "device" : 0,
                 "min" : 0,
