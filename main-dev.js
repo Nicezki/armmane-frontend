@@ -1072,22 +1072,23 @@ class ARMMane{
         }
     }
 
-    getPreset(callback) {
-        try {
-            // Send GET request to {server}/config
-            fetch(`${this.serverURL}/config`, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            }).then((response) => {
+    getPreset() {
+        // Return the promise for the fetch operation
+        return fetch(`${this.serverURL}/config`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+            .then((response) => {
                 if (response.status === 200) {
                     return response.json();
                 } else {
                     this.consoleLog("Train request sent failed", "ERROR");
                     throw new Error("Request failed with status: " + response.status);
                 }
-            }).then((data) => {
+            })
+            .then((data) => {
                 if (data.config && data.config.instructions) {
                     const instructions = data.config.instructions;
                     const presetNames = Object.keys(instructions);
@@ -1099,20 +1100,16 @@ class ARMMane{
                         };
                     });
                     console.log("Presets with Steps:", presetsWithSteps);
-                    // Execute the provided callback function with the data
-                    callback(presetsWithSteps);
+                    return presetsWithSteps;
                 } else {
                     console.error("Data format is invalid. Missing 'config' or 'instructions'.");
                     throw new Error("Data format is invalid.");
                 }
-            }).catch((error) => {
+            })
+            .catch((error) => {
                 console.error("Error:", error);
                 throw error;
             });
-        } catch (error) {
-            console.error("Error:", error);
-            throw error;
-        }
     }
     
     // Add the translateInstruction function to your class
@@ -1137,24 +1134,24 @@ class ARMMane{
     
     
     
-    async initializePresetElements() {
-        try {
-            // Get the presets with steps using getPreset()
-            const presetsWithSteps = await this.getPreset();
+    initializePresetElements() {
+        // Get the presets with steps using getPreset()
+        this.getPreset()
+            .then((presetsWithSteps) => {
+                // Call clonePresetElements to populate the preset elements
+                this.clonePresetElements(presetsWithSteps);
     
-            // Call clonePresetElements to populate the preset elements
-            this.clonePresetElements(presetsWithSteps);
-    
-            // Add click event listeners to preset elements
-            const presetElements = document.querySelectorAll(".ins-preset");
-            presetElements.forEach(presetElement => {
-                presetElement.addEventListener("click", () => {
-                    this.handlePresetElementClick(presetElement);
+                // Add click event listeners to preset elements
+                const presetElements = document.querySelectorAll(".ins-preset");
+                presetElements.forEach(presetElement => {
+                    presetElement.addEventListener("click", () => {
+                        this.handlePresetElementClick(presetElement);
+                    });
                 });
+            })
+            .catch((error) => {
+                console.error("Error:", error);
             });
-        } catch (error) {
-            console.error("Error:", error);
-        }
     }
     
     handlePresetElementClick(presetElement) {
