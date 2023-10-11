@@ -1072,60 +1072,49 @@ class ARMMane{
         }
     }
 
-    async getPreset() {
+    getPreset(callback) {
         try {
             // Send GET request to {server}/config
-            const response = await fetch(`${this.serverURL}/config`, {
+            fetch(`${this.serverURL}/config`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json"
                 }
-            });
-    
-            if (response.status === 200) {
-                const data = await response.json(); // Parse the response body as JSON
-    
-                // Check if 'config' and 'instructions' exist in the data
+            }).then((response) => {
+                if (response.status === 200) {
+                    return response.json();
+                } else {
+                    this.consoleLog("Train request sent failed", "ERROR");
+                    throw new Error("Request failed with status: " + response.status);
+                }
+            }).then((data) => {
                 if (data.config && data.config.instructions) {
                     const instructions = data.config.instructions;
-    
-                    // Extract preset names from the 'instructions' object
                     const presetNames = Object.keys(instructions);
-    
-                    // Iterate through preset names and extract step instructions
                     const presetsWithSteps = presetNames.map(presetName => {
-                        const steps = instructions[presetName].step.map(step => {
-                            // Translate each step instruction
-                            const translatedStep = this.translateInstruction(step);
-                            console.log(translatedStep); // Print the translated step
-                            return translatedStep;
-                        });
-    
+                        const steps = instructions[presetName].step;
                         return {
                             presetName,
                             steps
                         };
                     });
-    
                     console.log("Presets with Steps:", presetsWithSteps);
-    
-                    // Resolve the promise with presets and step instructions
-                    return presetsWithSteps;
+                    // Execute the provided callback function with the data
+                    callback(presetsWithSteps);
                 } else {
                     console.error("Data format is invalid. Missing 'config' or 'instructions'.");
                     throw new Error("Data format is invalid.");
                 }
-            } else {
-                console.error("Train request sent failed", "ERROR");
-                throw new Error("Request failed with status: " + response.status);
-            }
+            }).catch((error) => {
+                console.error("Error:", error);
+                throw error;
+            });
         } catch (error) {
             console.error("Error:", error);
-            throw error; // Re-throw the error to propagate it
+            throw error;
         }
     }
     
-    // Add the translateInstruction function to your class
     // Add the translateInstruction function to your class
     translateInstruction(instruction) {
         const type = instruction[0];
@@ -1168,32 +1157,31 @@ class ARMMane{
         }
     }
     
-    async handlePresetElementClick(presetElement) {
+    handlePresetElementClick(presetElement) {
         try {
             // Get the preset name from the clicked element
             const presetName = presetElement.querySelector(".preset_name").textContent;
     
-            // Get the presets with steps using getPreset()
-            const presetsWithSteps = await this.getPreset();
+            // Fetch the preset data and provide a callback function
+            this.getPreset((presetsWithSteps) => {
+                // Find the selected preset by name
+                const selectedPreset = presetsWithSteps.find(preset => preset.presetName === presetName);
     
-            // Find the selected preset by name
-            const selectedPreset = presetsWithSteps.find(preset => preset.presetName === presetName);
+                if (selectedPreset) {
+                    // Get the swim lane (the container for code blocks)
+                    const swimLane = this.elements["ui"]["command_area"][0];
     
-            if (selectedPreset) {
-                // Get the swim lane (the container for code blocks)
-                const swimLane = this.elements["ui"]["command_area"][0];
-                
-                // Clear existing code blocks by setting innerHTML to an empty string
-                swimLane.innerHTML = "";
+                    // Clear existing code blocks by setting innerHTML to an empty string
+                    swimLane.innerHTML = "";
     
-                // Iterate through the steps and append code blocks for each step
-                selectedPreset.steps.forEach(step => {
-                    const newDiv = this.cloneCodeBlockElement(presetElement);
-                    this.consoleLog("「ARMMANE」 Add command " + step);
-                    newDiv.querySelector(".cmd-text > div > h2").textContent = this.translateInstruction(step);
-                    swimLane.appendChild(newDiv);
-                });
-            }
+                    // Iterate through the steps and append code blocks for each step
+                    selectedPreset.steps.forEach(step => {
+                        const newDiv = this.cloneCodeBlockElement(presetElement);
+                        newDiv.querySelector(".cmd-text > div > h2").textContent = this.translateInstruction(step);
+                        swimLane.appendChild(newDiv);
+                    });
+                }
+            });
         } catch (error) {
             console.error("Error:", error);
         }
