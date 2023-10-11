@@ -218,7 +218,6 @@ class ARMMane{
 
         this.initializeSortable();
 
-        this.initializePreset();
     }
 
 
@@ -667,6 +666,8 @@ class ARMMane{
             this.handlePrediction(event.data);
         });
 
+
+        this.initializePreset();
         this.handleVideoStream();
     }
     
