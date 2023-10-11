@@ -41,6 +41,7 @@ class ARMMane{
                 "port" : port,
                 "protocol" : protocol,
             },
+            "currentEditCodeBlock" : null,
             "currentScreen" : "screen_connect",
             "commandMode" : false,
             "manualControl" : false, // Trigger whwn manual control is active in 10 last second
@@ -279,6 +280,39 @@ class ARMMane{
         // error_btn_retry
         this.setTriggerEvent("btn", "error_btn_retry", "click", () => {
             this.connect();
+        });
+
+                // // Add event listener to save button
+                // this.elements["btn"]["cconf_btn_save"].addEventListener("click", saveButtonHandler);
+
+                // // Add event listener to cancel button
+                // this.elements["btn"]["cconf_btn_cancel"].addEventListener("click", cancelButtonHandler);
+                // const saveButtonHandler = () => {
+                //     element.setAttribute("data-type", this.elements["form"]["cconf_01"].value);
+                //     element.setAttribute("data-device", this.elements["form"]["cconf_02"].value);
+                //     element.setAttribute("data-value", this.elements["form"]["cconf_03"].value);
+                //     this.consoleLog("「ARMMANE」 Command changed to " + this.elements["form"]["cconf_01"].value + "(" + this.elements["form"]["cconf_02"].value + "," + this.elements["form"]["cconf_03"].value + ");");
+                //     element.querySelector(".cmd-text > div > h2").textContent = this.elements["form"]["cconf_01"].value + "(" + this.elements["form"]["cconf_02"].value + "," + this.elements["form"]["cconf_03"].value + ");";
+                //     this.consoleLog("「ARMMANE」 Command changed to element " + element.id + " with value " + element.getAttribute("data-type") + "(" + element.getAttribute("data-device") + "," + element.getAttribute("data-value") + ");");
+                //     this.hideElement("ui", "cconfbox");
+                //     this.elements["btn"]["cconf_btn_save"].removeEventListener("click", saveButtonHandler);
+                // };
+        
+                // const cancelButtonHandler = () => {
+                //     this.hideElement("ui", "cconfbox");
+                //     this.elements["btn"]["cconf_btn_cancel"].removeEventListener("click", cancelButtonHandler);
+                // };
+
+        this.setTriggerEvent("btn", "cconf_btn_save", "click", () => {
+            var selectedElement = document.getElementById(this.appStatus["currentEditCodeBlock"]);
+            selectedElement.setAttribute("data-type", this.elements["form"]["cconf_01"].value);
+            selectedElement.setAttribute("data-device", this.elements["form"]["cconf_02"].value);
+            selectedElement.setAttribute("data-value", this.elements["form"]["cconf_03"].value);
+            this.consoleLog("「ARMMANE」 Command changed to " + this.elements["form"]["cconf_01"].value + "(" + this.elements["form"]["cconf_02"].value + "," + this.elements["form"]["cconf_03"].value + ");");
+        });
+
+        this.setTriggerEvent("btn", "cconf_btn_cancel", "click", () => {
+            this.hideElement("ui", "cconfbox");
         });
 
         // let element_fw = this.elements["ui"]["status_conv" + conv + "_forward"].querySelector(".elementor-icon");
@@ -1031,7 +1065,8 @@ class ARMMane{
         });
         clonedCodeBlock.querySelector(".cmd-edit").addEventListener("click", () => {
             this.consoleLog("「ARMMANE」 Edit command");
-            this.openConfigBox(clonedCodeBlock.id);
+            this.appStatus["currentEditCodeBlock"] = clonedCodeBlock.id;
+            this.openConfigBox();
         });
         clonedCodeBlock.querySelector(".cmd-play").addEventListener("click", () => {
             this.consoleLog("「ARMMANE」 Run command");
@@ -1187,20 +1222,24 @@ class ARMMane{
     }
 
     //This will change the property of the element after click save button
-    openConfigBox(element_name) {
-        let element = document.getElementById(element_name);
-        if (element == null) {
+    openConfigBox() {
+        if (this.appStatus["currentEditCodeBlock"] == null) {
             this.consoleLog("「ARMMANE」 Element not found", "ERROR");
             return;
         }
         try{
-            this.elements["btn"]["cconf_btn_save"].removeEventListener("click", saveButtonHandler);
-            this.elements["btn"]["cconf_btn_cancel"].removeEventListener("click", cancelButtonHandler);
+            var element = document.getElementById(this.appStatus["currentEditCodeBlock"]);
+            if (element == null) {
+                this.consoleLog("「ARMMANE」 Element not found", "ERROR");
+                return;
+            }
         }
         catch(err){
-            this.consoleLog("「ARMMANE」 Element seems not have event listener So it's ok", "INFO");
+            this.consoleLog("「ARMMANE」 Element not found", "ERROR");
+            return;
         }
-        this.consoleLog("「ARMMANE」 Open config box for " + element_name);
+
+        this.consoleLog("「ARMMANE」 Open config box for " + element.id);
         let type = element.getAttribute("data-type");
         if(type == "setServo"){
             this.changeText("cconf_title_1", "คำสั่ง");
@@ -1221,30 +1260,6 @@ class ARMMane{
             this.elements["form"]["cconf_02"].value = element.getAttribute("data-device");
             this.elements["form"]["cconf_03"].value = element.getAttribute("data-value");
             this.showElement("ui", "cconfbox");
-
-        // Define the event handlers as named functions
-        const saveButtonHandler = () => {
-            element.setAttribute("data-type", this.elements["form"]["cconf_01"].value);
-            element.setAttribute("data-device", this.elements["form"]["cconf_02"].value);
-            element.setAttribute("data-value", this.elements["form"]["cconf_03"].value);
-            this.consoleLog("「ARMMANE」 Command changed to " + this.elements["form"]["cconf_01"].value + "(" + this.elements["form"]["cconf_02"].value + "," + this.elements["form"]["cconf_03"].value + ");");
-            element.querySelector(".cmd-text > div > h2").textContent = this.elements["form"]["cconf_01"].value + "(" + this.elements["form"]["cconf_02"].value + "," + this.elements["form"]["cconf_03"].value + ");";
-            this.consoleLog("「ARMMANE」 Command changed to element " + element.id + " with value " + element.getAttribute("data-type") + "(" + element.getAttribute("data-device") + "," + element.getAttribute("data-value") + ");");
-            this.hideElement("ui", "cconfbox");
-            this.elements["btn"]["cconf_btn_save"].removeEventListener("click", saveButtonHandler);
-        };
-
-        const cancelButtonHandler = () => {
-            this.hideElement("ui", "cconfbox");
-            this.elements["btn"]["cconf_btn_cancel"].removeEventListener("click", cancelButtonHandler);
-        };
-
-        // Add event listener to save button
-        this.elements["btn"]["cconf_btn_save"].addEventListener("click", saveButtonHandler);
-
-        // Add event listener to cancel button
-        this.elements["btn"]["cconf_btn_cancel"].addEventListener("click", cancelButtonHandler);
-
     }
 
     createPresetButton(){
