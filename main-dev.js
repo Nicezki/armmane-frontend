@@ -123,6 +123,7 @@ class ARMMane{
                 "cconf_title_1" : this.querySel(".cconf-title-1").querySelector("div > h2"),
                 "cconf_title_2" : this.querySel(".cconf-title-2").querySelector("div > h2"),
                 "cconf_title_3" : this.querySel(".cconf-title-3").querySelector("div > h2"),
+                "cconf_title_4" : this.querySel(".cconf-title-4").querySelector("div > h2"),
                 "prediction_class" : this.querySel(".prediction-class").querySelector("div > h2"),
             }
         }
@@ -1041,7 +1042,7 @@ class ARMMane{
             this.attachCodeBlockEventListeners(clonedCodeBlock, newDiv);
         } else if (newDiv.type === "conv") {
             const clonedCodeBlock = this.cloneCodeBlockElement(newDiv);
-            clonedCodeBlock.querySelector(".cmd-text > div > h2").textContent = "setConV(0,1);";
+            clonedCodeBlock.querySelector(".cmd-text > div > h2").textContent = "setConv(0,0,0)";
             this.attachCodeBlockEventListeners(clonedCodeBlock, newDiv);
         }
     }
