@@ -982,6 +982,14 @@ class ARMMane{
         }
     }
 
+    createPresetList() {
+        const spawnArea = this.element["ui"]["preset_box"][0].querySelector("div");
+
+        // Capture 'this' in another variable for use inside the event listener
+        const self = this;
+
+    }
+
     createFunctionElement(index) {
         const newDiv = this.elements["template"]["ins_function"][0].cloneNode(true);
         const uniqueId = `ins_function_${index}`;
@@ -1025,7 +1033,7 @@ class ARMMane{
         return clonedCodeBlock;
     }
 
-    attachCodeBlockEventListeners(clonedCodeBlock, newDiv, codeBlock) {
+    attachCodeBlockEventListeners(clonedCodeBlock, newDiv) {
         clonedCodeBlock.querySelector(".cmd-del").addEventListener("click", () => {
             clonedCodeBlock.remove();
         });
@@ -1131,95 +1139,58 @@ class ARMMane{
         }
     }
 
-    
-    
-    
-    initializePresetElements() {
-        // Get the presets with steps using getPreset()
-        this.getPreset()
-            .then((presetsWithSteps) => {
-                // Call clonePresetElements to populate the preset elements
-                this.clonePresetElements(presetsWithSteps);
-    
-                // Add click event listeners to preset elements
-                const presetElements = document.querySelectorAll(".ins-preset");
-                presetElements.forEach(presetElement => {
-                    presetElement.addEventListener("click", () => {
-                        this.handlePresetElementClick(presetElement);
-                    });
-                });
-            })
-            .catch((error) => {
-                console.error("Error:", error);
-            });
-    }
-    
-    handlePresetElementClick(presetElement) {
-        try {
-            // Get the preset name from the clicked element
-            const presetName = presetElement.querySelector(".preset_name").textContent;
-    
-            // Fetch the preset data and provide a callback function
-            this.getPreset((presetsWithSteps) => {
-                // Find the selected preset by name
-                const selectedPreset = presetsWithSteps.find(preset => preset.presetName === presetName);
-    
-                if (selectedPreset) {
-                    // Get the swim lane (the container for code blocks)
-                    const swimLane = this.elements["ui"]["command_area"][0];
-    
-                    // Clear existing code blocks by setting innerHTML to an empty string
-                    swimLane.innerHTML = "";
-    
-                    // Iterate through the steps and append code blocks for each step
-                    selectedPreset.steps.forEach(step => {
-                        const newDiv = this.cloneCodeBlockElement(presetElement);
-                        newDiv.querySelector(".cmd-text > div > h2").textContent = this.translateInstruction(step);
-                        swimLane.appendChild(newDiv);
-                    });
-                }
-            });
-        } catch (error) {
-            console.error("Error:", error);
-        }
-    }
-    
-    
-    
-    
-    
-    clonePresetElements(presetsWithSteps) {
-        // Get the spawn area of the preset elements
+    createPresetElements(presets) {
         const spawnArea = this.elements["ui"]["preset_box"][0].querySelector("div");
     
-        // Iterate through the presets with steps
-        presetsWithSteps.forEach(preset => {
-            const { presetName, steps } = preset;
+        presets.forEach(preset => {
+            const newDiv = this.createPresetElement(preset.presetName);
     
-            // Clone the preset element template
-            const newDiv = this.elements["template"]["ins_preset"][0].cloneNode(true);
-            const uniqueId = `preset_${presetName}`;
-            newDiv.id = uniqueId;
-    
-            // Add the preset name to the element
-            newDiv.querySelector(".tp-ins-preset > div > h4").textContent = presetName;
-    
-            // Show the element
-            newDiv.style.display = "flex";
-
             newDiv.addEventListener("click", () => {
                 this.handlePresetElementClick(newDiv);
             });
     
-            // Add the element to the spawn area
             spawnArea.appendChild(newDiv);
-    
-            // Log the step instructions for this preset
-            console.log(`Step Instructions for ${presetName}:`, steps);
         });
     }
-
     
+    createPresetElement(presetName) {
+        const newDiv = this.createFunctionElement(presetName); // Reuse the existing createFunctionElement
+        newDiv.classList.remove("ins_function"); // Remove the "ins_function" class
+        newDiv.classList.add("ins-preset", "" + presetName);
+        newDiv.style.display = "flex";
+        newDiv.querySelector(".tp-ins-func > div > h4").textContent = presetName;
+        newDiv.setAttribute("data-preset-name", presetName);
+    
+        return newDiv;
+    }
+    
+    createFunctionElement(name) {
+        const newDiv = this.elements["template"]["ins_function"][0].cloneNode(true);
+        const uniqueId = `ins_function_${name}`;
+        newDiv.id = uniqueId;
+    
+        newDiv.querySelector(".tp-ins-func > div > h4").textContent = name;
+        newDiv.style.display = "flex";
+        newDiv.setAttribute("data-preset-name", name);
+    
+        return newDiv;
+    }
+    
+    handlePresetElementClick(presetElement) {
+        const presetName = presetElement.getAttribute("data-preset-name");
+        const presetSteps = findPresetStepsByName(presetName); // Implement this function
+    
+        if (presetSteps) {
+            const swimLane = this.elements["ui"]["command_area"][0];
+            swimLane.innerHTML = "";
+    
+            presetSteps.forEach(step => {
+                const newDiv = this.cloneCodeBlockElement(step);
+                newDiv.querySelector(".cmd-text > div > h2").textContent = this.translateInstruction(step);
+                swimLane.appendChild(newDiv);
+            });
+        }
+    }
 
     //This will change the property of the element after click save button
     openConfigBox(element_name) {
