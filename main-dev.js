@@ -1163,6 +1163,7 @@ class ARMMane{
     
         preset.steps.forEach(step => {
             const newDiv = this.cloneCodeBlockElement();
+            this.attachCodeBlockEventListeners(clonedCodeBlock, newDiv);
             newDiv.querySelector(".cmd-text > div > h2").textContent = this.translateInstruction(step);
             swimLane.appendChild(newDiv);
         });
