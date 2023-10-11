@@ -1180,12 +1180,14 @@ class ARMMane{
             const selectedPreset = presetsWithSteps.find(preset => preset.presetName === presetName);
     
             if (selectedPreset) {
-                // Clear existing code blocks (if any)
+                // Get the swim lane (the container for code blocks)
                 const swimLane = this.elements["ui"]["command_area"][0];
+                
+                // Clear existing code blocks by setting innerHTML to an empty string
                 swimLane.innerHTML = "";
     
-                // Append code blocks for each step
-                selectedPreset.steps.forEach((step, index) => {
+                // Iterate through the steps and append code blocks for each step
+                selectedPreset.steps.forEach(step => {
                     const newDiv = this.cloneCodeBlockElement(presetElement);
                     newDiv.querySelector(".cmd-text > div > h2").textContent = this.translateInstruction(step);
                     swimLane.appendChild(newDiv);
@@ -1195,6 +1197,7 @@ class ARMMane{
             console.error("Error:", error);
         }
     }
+    
     
     
     
