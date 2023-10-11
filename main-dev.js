@@ -1135,69 +1135,56 @@ class ARMMane{
     
     
     initializePresetElements() {
-        try {
-            // Get the presets with steps using getPreset()
-            this.getPreset(presetsWithSteps => {
+        // Get the presets with steps using getPreset()
+        this.getPreset()
+            .then((presetsWithSteps) => {
                 // Call clonePresetElements to populate the preset elements
                 this.clonePresetElements(presetsWithSteps);
-        
+    
                 // Add click event listeners to preset elements
                 const presetElements = document.querySelectorAll(".ins-preset");
                 presetElements.forEach(presetElement => {
                     presetElement.addEventListener("click", () => {
-                        const presetName = presetElement.getAttribute("data-preset-name");
-                        this.handlePresetElementClick(presetName);
+                        this.handlePresetElementClick(presetElement);
                     });
                 });
+            })
+            .catch((error) => {
+                console.error("Error:", error);
+            });
+    }
+    
+    handlePresetElementClick(presetElement) {
+        try {
+            // Get the preset name from the clicked element
+            const presetName = presetElement.querySelector(".preset_name").textContent;
+    
+            // Fetch the preset data and provide a callback function
+            this.getPreset((presetsWithSteps) => {
+                // Find the selected preset by name
+                const selectedPreset = presetsWithSteps.find(preset => preset.presetName === presetName);
+    
+                if (selectedPreset) {
+                    // Get the swim lane (the container for code blocks)
+                    const swimLane = this.elements["ui"]["command_area"][0];
+    
+                    // Clear existing code blocks by setting innerHTML to an empty string
+                    swimLane.innerHTML = "";
+    
+                    // Iterate through the steps and append code blocks for each step
+                    selectedPreset.steps.forEach(step => {
+                        const newDiv = this.cloneCodeBlockElement(presetElement);
+                        newDiv.querySelector(".cmd-text > div > h2").textContent = this.translateInstruction(step);
+                        swimLane.appendChild(newDiv);
+                    });
+                }
             });
         } catch (error) {
             console.error("Error:", error);
         }
     }
     
-    handlePresetElementClick(presetName) {
-        try {
-            // Fetch the preset data based on the preset name
-            // (You may need to implement a search or filtering mechanism)
-            const selectedPreset = this.findPresetByName(presetName);
     
-            if (selectedPreset) {
-                // Get the swim lane (the container for code blocks)
-                const swimLane = this.elements["ui"]["command_area"][0];
-    
-                // Clear existing code blocks by setting innerHTML to an empty string
-                swimLane.innerHTML = "";
-    
-                // Iterate through the steps and append code blocks for each step
-                selectedPreset.steps.forEach(step => {
-                    const newDiv = this.cloneCodeBlockElement(presetElement);
-                    newDiv.querySelector(".cmd-text > div > h2").textContent = this.translateInstruction(step);
-                    swimLane.appendChild(newDiv);
-                });
-            }
-        } catch (error) {
-            console.error("Error:", error);
-        }
-    }
-    
-    findPresetByName(presetName) {
-        // Get all the preset elements
-        const presetElements = document.querySelectorAll(".ins-preset");
-    
-        // Iterate through the elements and find the one with a matching data-preset-name attribute
-        for (let i = 0; i < presetElements.length; i++) {
-            const element = presetElements[i];
-            const elementPresetName = element.getAttribute("data-preset-name");
-    
-            if (elementPresetName === presetName) {
-                // Match found, return the corresponding preset data
-                return element;
-            }
-        }
-    
-        // If no match is found, return null or handle the case appropriately
-        return null;
-    }
     
     
     
@@ -1219,6 +1206,11 @@ class ARMMane{
     
             // Show the element
             newDiv.style.display = "flex";
+
+            newDiv.addEventListener("click", () => {
+                this.handlePresetElementClick(newDiv);
+            });
+    
             // Add the element to the spawn area
             spawnArea.appendChild(newDiv);
     
