@@ -1191,7 +1191,7 @@ class ARMMane{
     
             if (elementPresetName === presetName) {
                 // Match found, return the corresponding preset data
-                return presetsWithSteps.find(preset => preset.presetName === presetName);
+                return element;
             }
         }
     
