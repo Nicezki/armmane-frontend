@@ -1206,6 +1206,10 @@ class ARMMane{
     
             // Show the element
             newDiv.style.display = "flex";
+
+            newDiv.addEventListener("click", () => {
+                this.handlePresetElementClick(newDiv);
+            });
     
             // Add the element to the spawn area
             spawnArea.appendChild(newDiv);
