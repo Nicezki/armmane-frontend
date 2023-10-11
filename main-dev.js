@@ -41,7 +41,6 @@ class ARMMane{
                 "port" : port,
                 "protocol" : protocol,
             },
-            "currentEditCodeBlock" : null,
             "currentScreen" : "screen_connect",
             "commandMode" : false,
             "manualControl" : false, // Trigger whwn manual control is active in 10 last second
@@ -280,39 +279,6 @@ class ARMMane{
         // error_btn_retry
         this.setTriggerEvent("btn", "error_btn_retry", "click", () => {
             this.connect();
-        });
-
-                // // Add event listener to save button
-                // this.elements["btn"]["cconf_btn_save"].addEventListener("click", saveButtonHandler);
-
-                // // Add event listener to cancel button
-                // this.elements["btn"]["cconf_btn_cancel"].addEventListener("click", cancelButtonHandler);
-                // const saveButtonHandler = () => {
-                //     element.setAttribute("data-type", this.elements["form"]["cconf_01"].value);
-                //     element.setAttribute("data-device", this.elements["form"]["cconf_02"].value);
-                //     element.setAttribute("data-value", this.elements["form"]["cconf_03"].value);
-                //     this.consoleLog("「ARMMANE」 Command changed to " + this.elements["form"]["cconf_01"].value + "(" + this.elements["form"]["cconf_02"].value + "," + this.elements["form"]["cconf_03"].value + ");");
-                //     element.querySelector(".cmd-text > div > h2").textContent = this.elements["form"]["cconf_01"].value + "(" + this.elements["form"]["cconf_02"].value + "," + this.elements["form"]["cconf_03"].value + ");";
-                //     this.consoleLog("「ARMMANE」 Command changed to element " + element.id + " with value " + element.getAttribute("data-type") + "(" + element.getAttribute("data-device") + "," + element.getAttribute("data-value") + ");");
-                //     this.hideElement("ui", "cconfbox");
-                //     this.elements["btn"]["cconf_btn_save"].removeEventListener("click", saveButtonHandler);
-                // };
-        
-                // const cancelButtonHandler = () => {
-                //     this.hideElement("ui", "cconfbox");
-                //     this.elements["btn"]["cconf_btn_cancel"].removeEventListener("click", cancelButtonHandler);
-                // };
-
-        this.setTriggerEvent("btn", "cconf_btn_save", "click", () => {
-            var selectedElement = document.getElementById(this.appStatus["currentEditCodeBlock"]);
-            selectedElement.setAttribute("data-type", this.elements["form"]["cconf_01"].value);
-            selectedElement.setAttribute("data-device", this.elements["form"]["cconf_02"].value);
-            selectedElement.setAttribute("data-value", this.elements["form"]["cconf_03"].value);
-            this.consoleLog("「ARMMANE」 Command changed to " + this.elements["form"]["cconf_01"].value + "(" + this.elements["form"]["cconf_02"].value + "," + this.elements["form"]["cconf_03"].value + ");");
-        });
-
-        this.setTriggerEvent("btn", "cconf_btn_cancel", "click", () => {
-            this.hideElement("ui", "cconfbox");
         });
 
         // let element_fw = this.elements["ui"]["status_conv" + conv + "_forward"].querySelector(".elementor-icon");
