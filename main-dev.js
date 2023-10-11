@@ -201,7 +201,7 @@ class ARMMane{
      * The init function sets up the initial state of the app.
      */
     init() {
-        this.consoleLog("「ARMMANE」 by Nattawut Manjai-araya  v1.5.0 Build 202309280147");
+        this.consoleLog("「ARMMANE」 by Nattawut Manjai-araya  v1.5.0 Build 20231011184329");
 
         // Hide element log_disconnect
         this.hideElement("ui", "log_disconnect");
@@ -217,6 +217,8 @@ class ARMMane{
         this.createDraggableList(this.elements["ui"]["function_box"][0].querySelector("div"));
 
         this.initializeSortable();
+
+        this.initializePreset();
     }
 
 
@@ -1162,6 +1164,120 @@ class ARMMane{
         array.forEach(element => {
 
         });
+    }
+
+    getPreset() {
+        // Return the promise for the fetch operation
+        return fetch(`${this.serverURL}/config`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+            .then((response) => {
+                if (response.status === 200) {
+                    return response.json();
+                } else {
+                    this.consoleLog("Train request sent failed", "ERROR");
+                    throw new Error("Request failed with status: " + response.status);
+                }
+            })
+            .then((data) => {
+                if (data.config && data.config.instructions) {
+                    const instructions = data.config.instructions;
+                    const presetNames = Object.keys(instructions);
+                    const presetsWithSteps = presetNames.map(presetName => {
+                        const steps = instructions[presetName].step;
+                        return {
+                            presetName,
+                            steps
+                        };
+                    });
+                    console.log("Presets with Steps:", presetsWithSteps);
+                    return presetsWithSteps;
+                } else {
+                    console.error("Data format is invalid. Missing 'config' or 'instructions'.");
+                    throw new Error("Data format is invalid.");
+                }
+            })
+            .catch((error) => {
+                console.error("Error:", error);
+                throw error;
+            });
+    }
+    
+    // Add the translateInstruction function to your class
+    translateInstruction(instruction) {
+        const type = instruction[0];
+
+        if (type === 'S') {
+            const id = parseInt(instruction[2]);
+            const degree = parseInt(instruction.substring(4));
+            return `setServo(${id},${degree});`;
+        } else if (type === 'C') {
+            const id = parseInt(instruction[1]);
+            const mode = parseInt(instruction[3]);
+            const speed = parseInt(instruction.substring(5));
+            return `setConV(${id},${mode},${speed});`;
+        } else {
+            // Handle unsupported instruction type
+            return `Unsupported instruction type: ${type}`;
+        }
+    }
+
+    createPresetList(presetsWithSteps) {
+        const spawnArea = this.elements["ui"]["preset_box"][0].querySelector("div");
+        
+        presetsWithSteps.forEach(preset => {
+            const newPresetElement = this.createPresetElement(preset.presetName);
+            newPresetElement.addEventListener("click", () => {
+                this.handlePresetElementClick(preset, newPresetElement);
+            });
+    
+            spawnArea.appendChild(newPresetElement);
+        });
+    }
+    
+    createPresetElement(presetName) {
+        const newPresetElement = this.elements["template"]["ins_preset"][0].cloneNode(true);
+        const uniqueId = `preset_${presetName}`;
+        newPresetElement.id = uniqueId;
+    
+        newPresetElement.classList.add("ins-preset", presetName);
+        newPresetElement.querySelector(".tp-ins-preset > div > h4").textContent = presetName;
+        newPresetElement.style.display = "flex";
+        newPresetElement.setAttribute("data-preset-name", presetName);
+    
+        return newPresetElement;
+    }
+    
+    handlePresetElementClick(preset, newPresetElement) {
+        const swimLane = this.elements["ui"]["command_area"][0];
+        swimLane.innerHTML = "";
+    
+        preset.steps.forEach(step => {
+            const newDiv = this.cloneCodeBlockElement(newPresetElement); // Pass newPresetElement as an argument
+            this.attachCodeBlockEventListeners(newDiv, newPresetElement); // Pass newPresetElement as well
+            newDiv.querySelector(".cmd-text > div > h2").textContent = this.translateInstruction(step);
+            swimLane.appendChild(newDiv);
+        });
+    }
+
+    initializePreset() {
+        // Fetch the presets and steps
+        this.getPreset()
+            .then(presetsWithSteps => {
+                // Create the draggable list of elements
+                this.createDraggableList();
+    
+                // Create the preset list in the preset_box
+                this.createPresetList(presetsWithSteps);
+    
+                // You can add other initialization code here.
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
     }
 
 
