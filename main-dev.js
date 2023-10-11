@@ -966,13 +966,16 @@ class ARMMane{
 
     createDraggableList() {
         const spawnArea = this.elements["ui"]["function_box"][0].querySelector("div");
-
+    
+        // Capture 'this' in another variable for use inside the event listener
+        const self = this;
+    
         for (let i = 0; i < this.conf_list.length; i++) {
             const newDiv = this.createFunctionElement(i);
     
             newDiv.addEventListener("click", function() {
                 // Inside this function, use 'self' instead of 'this'
-                this.handleFunctionElementClick(newDiv);
+                self.handleFunctionElementClick(newDiv);
             });
     
             spawnArea.appendChild(newDiv);
