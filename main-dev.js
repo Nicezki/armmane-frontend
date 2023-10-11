@@ -212,7 +212,7 @@ class ARMMane{
 
         this.initializeSortable();
 
-        this.initializePresetElements();
+        this.initialize()
     }
 
 
@@ -982,14 +982,6 @@ class ARMMane{
         }
     }
 
-    createPresetList() {
-        const spawnArea = this.element["ui"]["preset_box"][0].querySelector("div");
-
-        // Capture 'this' in another variable for use inside the event listener
-        const self = this;
-
-    }
-
     createFunctionElement(index) {
         const newDiv = this.elements["template"]["ins_function"][0].cloneNode(true);
         const uniqueId = `ins_function_${index}`;
@@ -1139,57 +1131,58 @@ class ARMMane{
         }
     }
 
-    createPresetElements(presets) {
+    createPresetList(presetsWithSteps) {
         const spawnArea = this.elements["ui"]["preset_box"][0].querySelector("div");
-    
-        presets.forEach(preset => {
-            const newDiv = this.createPresetElement(preset.presetName);
-    
-            newDiv.addEventListener("click", () => {
-                this.handlePresetElementClick(newDiv);
+        
+        presetsWithSteps.forEach(preset => {
+            const newPresetElement = this.createPresetElement(preset.presetName);
+            newPresetElement.addEventListener("click", () => {
+                this.handlePresetElementClick(preset, newPresetElement);
             });
     
-            spawnArea.appendChild(newDiv);
+            spawnArea.appendChild(newPresetElement);
         });
     }
     
     createPresetElement(presetName) {
-        const newDiv = this.createFunctionElement(presetName); // Reuse the existing createFunctionElement
-        newDiv.classList.remove("ins_function"); // Remove the "ins_function" class
-        newDiv.classList.add("ins-preset", "" + presetName);
-        newDiv.style.display = "flex";
-        newDiv.querySelector(".tp-ins-func > div > h4").textContent = presetName;
-        newDiv.setAttribute("data-preset-name", presetName);
+        const newPresetElement = this.elements["template"]["ins_preset"][0].cloneNode(true);
+        const uniqueId = `preset_${presetName}`;
+        newPresetElement.id = uniqueId;
     
-        return newDiv;
+        newPresetElement.classList.add("ins-preset", presetName);
+        newPresetElement.querySelector(".tp-ins-preset > div > h4").textContent = presetName;
+        newPresetElement.style.display = "flex";
+        newPresetElement.setAttribute("data-preset-name", presetName);
+    
+        return newPresetElement;
     }
     
-    createFunctionElement(name) {
-        const newDiv = this.elements["template"]["ins_function"][0].cloneNode(true);
-        const uniqueId = `ins_function_${name}`;
-        newDiv.id = uniqueId;
+    handlePresetElementClick(preset, newPresetElement) {
+        const swimLane = this.elements["ui"]["command_area"][0];
+        swimLane.innerHTML = "";
     
-        newDiv.querySelector(".tp-ins-func > div > h4").textContent = name;
-        newDiv.style.display = "flex";
-        newDiv.setAttribute("data-preset-name", name);
-    
-        return newDiv;
+        preset.steps.forEach(step => {
+            const newDiv = this.cloneCodeBlockElement();
+            newDiv.querySelector(".cmd-text > div > h2").textContent = this.translateInstruction(step);
+            swimLane.appendChild(newDiv);
+        });
     }
+
+    initialize() {
+        // Fetch the presets and steps
+        this.getPreset()
+            .then(presetsWithSteps => {
+                // Create the draggable list of elements
+                this.createDraggableList();
     
-    handlePresetElementClick(presetElement) {
-        const presetName = presetElement.getAttribute("data-preset-name");
-        const presetSteps = findPresetStepsByName(presetName); // Implement this function
+                // Create the preset list in the preset_box
+                this.createPresetList(presetsWithSteps);
     
-        if (presetSteps) {
-            const swimLane = this.elements["ui"]["command_area"][0];
-            swimLane.innerHTML = "";
-    
-            presetSteps.forEach(step => {
-                const newDiv = this.cloneCodeBlockElement(step);
-                newDiv.querySelector(".cmd-text > div > h2").textContent = this.translateInstruction(step);
-                swimLane.appendChild(newDiv);
+                // You can add other initialization code here.
+            })
+            .catch(error => {
+                console.error("Error:", error);
             });
-        }
     }
 
     //This will change the property of the element after click save button
