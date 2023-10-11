@@ -129,7 +129,7 @@ class ARMMane{
 
         this.conf_list = [
             {
-                "type" : "setServo",
+                "type" : "servo",
                 "value" : 0,
                 "device" : 0,
                 "min" : 0,
@@ -137,7 +137,7 @@ class ARMMane{
                 "num" : 0,
             },
             {
-                "type" : "setConv",
+                "type" : "conv",
                 "value" : 0,
                 "device" : 0,
                 "min" : 0,
@@ -309,7 +309,18 @@ class ARMMane{
             selectedElement.setAttribute("data-device", this.elements["form"]["cconf_02"].value);
             selectedElement.setAttribute("data-value", this.elements["form"]["cconf_03"].value);
             selectedElement.setAttribute("data-speed", this.elements["form"]["cconf_04"].value);
-            this.consoleLog("「ARMMANE」 Command changed to " + this.elements["form"]["cconf_01"].value + "(" + this.elements["form"]["cconf_02"].value + "," + this.elements["form"]["cconf_03"].value + ");");
+            let commandType = this.elements["form"]["cconf_01"].value;
+            if(commandType == "servo"){
+                // format setServo(device, angle);
+                // format setServo(0, 90);
+                selectedElement.querySelector(".cmd-text > div > h2").textContent = "setServo(" + this.elements["form"]["cconf_02"].value + ", " + this.elements["form"]["cconf_03"].value + ");";
+                this.consoleLog("「ARMMANE」 Command changed to " + this.elements["form"]["cconf_01"].value + "(" + this.elements["form"]["cconf_02"].value + "," + this.elements["form"]["cconf_03"].value + ");");
+            }else if(commandType == "conv"){
+                // format setConv(device, direction, speed);
+                // format setConv(0, 1,255);
+                selectedElement.querySelector(".cmd-text > div > h2").textContent = "setConv(" + this.elements["form"]["cconf_02"].value + ", " + this.elements["form"]["cconf_03"].value + ", " + this.elements["form"]["cconf_04"].value + ");";
+                this.consoleLog("「ARMMANE」 Command changed to " + this.elements["form"]["cconf_01"].value + "(" + this.elements["form"]["cconf_02"].value + "," + this.elements["form"]["cconf_03"].value + "," + this.elements["form"]["cconf_04"].value + ");");
+            }
         });
 
         this.setTriggerEvent("btn", "cconf_btn_cancel", "click", () => {
@@ -1103,8 +1114,9 @@ class ARMMane{
         }
         try{
             var element = document.getElementById(this.appStatus["currentEditCodeBlock"]);
+            this.consoleLog("「ARMMANE」 Open config box for " + element.id);
             if (element == null) {
-                this.consoleLog("「ARMMANE」 Element not found", "ERROR");
+                this.consoleLog("「ARMMANE」 Element + " + this.appStatus["currentEditCodeBlock"] + " not found", "ERROR");
                 return;
             }
         }
@@ -1115,7 +1127,7 @@ class ARMMane{
 
         this.consoleLog("「ARMMANE」 Open config box for " + element.id);
         let type = element.getAttribute("data-type");
-        if(type == "setServo"){
+        if(type == "servo"){
             this.changeText("cconf_title_1", "คำสั่ง");
             this.changeText("cconf_title_2", "อุปกรณ์ที่ต้องการ");
             this.changeText("cconf_title_3", "องศา");
@@ -1123,7 +1135,7 @@ class ARMMane{
             // Set min and max value [TODO]
             // this.elements["form"]["cconf_03"].setAttribute("min", element.getAttribute("data-min"));
             // this.elements["form"]["cconf_03"].setAttribute("max", element.getAttribute("data-max"));
-        }else if(type == "setConv"){
+        }else if(type == "conv"){
             this.changeText("cconf_title_1", "คำสั่ง");
             this.changeText("cconf_title_2", "อุปกรณ์ที่ต้องการ");
             this.changeText("cconf_title_3", "โหมด");
