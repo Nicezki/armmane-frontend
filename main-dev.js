@@ -1189,6 +1189,7 @@ class ARMMane{
                 // Iterate through the steps and append code blocks for each step
                 selectedPreset.steps.forEach(step => {
                     const newDiv = this.cloneCodeBlockElement(presetElement);
+                    this.consoleLog("「ARMMANE」 Add command " + step);
                     newDiv.querySelector(".cmd-text > div > h2").textContent = this.translateInstruction(step);
                     swimLane.appendChild(newDiv);
                 });
