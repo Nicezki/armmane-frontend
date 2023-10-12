@@ -1249,6 +1249,18 @@ class ARMMane{
         newPresetElement.querySelector(".tp-ins-preset > div > h4").textContent = presetName;
         newPresetElement.style.display = "flex";
         newPresetElement.setAttribute("data-preset-name", presetName);
+
+        // Call translateInstruction to get the data
+        const translatedData = this.translateInstruction(instruction);
+
+        // Set attributes based on the translated data
+        newPresetElement.setAttribute("data-type", translatedData.type);
+        newPresetElement.setAttribute("data-device", translatedData.device);
+        newPresetElement.setAttribute("data-value", translatedData.value);
+        newPresetElement.setAttribute("data-speed", translatedData.speed);
+        newPresetElement.setAttribute("data-min", translatedData.min);
+        newPresetElement.setAttribute("data-max", translatedData.max);
+        newPresetElement.setAttribute("data-num", translatedData.num);
     
         return newPresetElement;
     }
