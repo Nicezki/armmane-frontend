@@ -79,6 +79,7 @@ class ARMMane{
                 "status_conv01_backward" : this.querySel(".status-conv01-bw"),
                 "command_area" : document.querySelectorAll(".ins-command-area"),
                 "function_box" : document.querySelectorAll(".ins-func-box"),
+                "preset_box" : document.querySelectorAll(".ins-preset-box"),
                 "livepreview" : this.querySel(".livepreview"),
                 "settingbox1" : this.querySel(".settingbox-1"),
                 "settingbox2" : this.querySel(".settingbox-2"),
