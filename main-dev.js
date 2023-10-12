@@ -1210,7 +1210,7 @@ class ARMMane{
     
     // Add the translateInstruction function to your class
     translateInstruction(instruction) {
-        const type = instruction[0];
+        const type = instruction;
 
         if (type === 'S') {
             const id = parseInt(instruction[2]);
