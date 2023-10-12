@@ -29,7 +29,6 @@ class ARMMane{
                 ];
         }
 
-        this.serverURL = "https://pi.nicezki.com";
 
         this.appStatus = {
             "connected" : false,
@@ -41,6 +40,7 @@ class ARMMane{
                 "port" : port,
                 "protocol" : protocol,
             },
+            "currentEditCodeBlock" : null,
             "currentScreen" : "screen_connect",
             "commandMode" : false,
             "manualControl" : false, // Trigger whwn manual control is active in 10 last second
@@ -79,8 +79,11 @@ class ARMMane{
                 "status_conv01_backward" : this.querySel(".status-conv01-bw"),
                 "command_area" : document.querySelectorAll(".ins-command-area"),
                 "function_box" : document.querySelectorAll(".ins-func-box"),
-                "preset_box" : document.querySelectorAll(".ins-preset-box"),
                 "livepreview" : this.querySel(".livepreview"),
+                "settingbox1" : this.querySel(".settingbox-1"),
+                "settingbox2" : this.querySel(".settingbox-2"),
+                "settingbox3" : this.querySel(".settingbox-3"),
+                "settingbox4" : this.querySel(".settingbox-4"),
             },
             "btn" : {
                 "conn_connectsrv" : this.querySel(".btn-connectsrv"),
@@ -106,12 +109,12 @@ class ARMMane{
                 "cconf_01" : this.querySel("#form-field-cconf-s1"),
                 "cconf_02" : this.querySel("#form-field-cconf-s2"),
                 "cconf_03" : this.querySel("#form-field-cconf-s3"),
+                "cconf_04" : this.querySel("#form-field-cconf-s4"),
             },
             "template" : {
                 "btn_serverlist" : this.querySel(".tp-btn-server"),
                 "log_alert" : this.querySel(".tp-log-alert"),
                 "ins_function" : document.querySelectorAll(".tp-ins-func"),
-                "ins_preset" : document.querySelectorAll(".tp-ins-preset"),
                 "code_block" : this.querySel(".tp-ins-code-block"),
             },
             "text" : {
@@ -120,6 +123,7 @@ class ARMMane{
                 "cconf_title_1" : this.querySel(".cconf-title-1").querySelector("div > h2"),
                 "cconf_title_2" : this.querySel(".cconf-title-2").querySelector("div > h2"),
                 "cconf_title_3" : this.querySel(".cconf-title-3").querySelector("div > h2"),
+                "cconf_title_4" : this.querySel(".cconf-title-4").querySelector("div > h2"),
                 "prediction_class" : this.querySel(".prediction-class").querySelector("div > h2"),
             }
         }
@@ -129,6 +133,7 @@ class ARMMane{
                 "type" : "servo",
                 "value" : 0,
                 "device" : 0,
+                "speed": 0,
                 "min" : 0,
                 "max" : 180,
                 "num" : 0,
@@ -137,6 +142,7 @@ class ARMMane{
                 "type" : "conv",
                 "value" : 0,
                 "device" : 0,
+                "speed": 255,
                 "min" : 0,
                 "max" : 2,
                 "num" : 0,
@@ -195,7 +201,7 @@ class ARMMane{
      * The init function sets up the initial state of the app.
      */
     init() {
-        this.consoleLog("「ARMMANE」 by Nattawut Manjai-araya  v1.5.0 Build 202309280147");
+        this.consoleLog("「ARMMANE」 by Nattawut Manjai-araya  v1.5.0 Build 20231011184329");
 
         // Hide element log_disconnect
         this.hideElement("ui", "log_disconnect");
@@ -212,7 +218,6 @@ class ARMMane{
 
         this.initializeSortable();
 
-        this.initialize()
     }
 
 
@@ -279,6 +284,51 @@ class ARMMane{
         // error_btn_retry
         this.setTriggerEvent("btn", "error_btn_retry", "click", () => {
             this.connect();
+        });
+
+                // // Add event listener to save button
+                // this.elements["btn"]["cconf_btn_save"].addEventListener("click", saveButtonHandler);
+
+                // // Add event listener to cancel button
+                // this.elements["btn"]["cconf_btn_cancel"].addEventListener("click", cancelButtonHandler);
+                // const saveButtonHandler = () => {
+                //     element.setAttribute("data-type", this.elements["form"]["cconf_01"].value);
+                //     element.setAttribute("data-device", this.elements["form"]["cconf_02"].value);
+                //     element.setAttribute("data-value", this.elements["form"]["cconf_03"].value);
+                //     this.consoleLog("「ARMMANE」 Command changed to " + this.elements["form"]["cconf_01"].value + "(" + this.elements["form"]["cconf_02"].value + "," + this.elements["form"]["cconf_03"].value + ");");
+                //     element.querySelector(".cmd-text > div > h2").textContent = this.elements["form"]["cconf_01"].value + "(" + this.elements["form"]["cconf_02"].value + "," + this.elements["form"]["cconf_03"].value + ");";
+                //     this.consoleLog("「ARMMANE」 Command changed to element " + element.id + " with value " + element.getAttribute("data-type") + "(" + element.getAttribute("data-device") + "," + element.getAttribute("data-value") + ");");
+                //     this.hideElement("ui", "cconfbox");
+                //     this.elements["btn"]["cconf_btn_save"].removeEventListener("click", saveButtonHandler);
+                // };
+        
+                // const cancelButtonHandler = () => {
+                //     this.hideElement("ui", "cconfbox");
+                //     this.elements["btn"]["cconf_btn_cancel"].removeEventListener("click", cancelButtonHandler);
+                // };
+
+        this.setTriggerEvent("btn", "cconf_btn_save", "click", () => {
+            let selectedElement = document.getElementById(this.appStatus["currentEditCodeBlock"]);
+            selectedElement.setAttribute("data-type", this.elements["form"]["cconf_01"].value);
+            selectedElement.setAttribute("data-device", this.elements["form"]["cconf_02"].value);
+            selectedElement.setAttribute("data-value", this.elements["form"]["cconf_03"].value);
+            selectedElement.setAttribute("data-speed", this.elements["form"]["cconf_04"].value);
+            let commandType = this.elements["form"]["cconf_01"].value;
+            if(commandType == "servo"){
+                // format setServo(device, angle);
+                // format setServo(0, 90);
+                selectedElement.querySelector(".cmd-text > div > h2").textContent = "setServo(" + this.elements["form"]["cconf_02"].value + ", " + this.elements["form"]["cconf_03"].value + ");";
+                this.consoleLog("「ARMMANE」 Command changed to " + this.elements["form"]["cconf_01"].value + "(" + this.elements["form"]["cconf_02"].value + "," + this.elements["form"]["cconf_03"].value + ");");
+            }else if(commandType == "conv"){
+                // format setConv(device, direction, speed);
+                // format setConv(0, 1,255);
+                selectedElement.querySelector(".cmd-text > div > h2").textContent = "setConv(" + this.elements["form"]["cconf_02"].value + ", " + this.elements["form"]["cconf_03"].value + ", " + this.elements["form"]["cconf_04"].value + ");";
+                this.consoleLog("「ARMMANE」 Command changed to " + this.elements["form"]["cconf_01"].value + "(" + this.elements["form"]["cconf_02"].value + "," + this.elements["form"]["cconf_03"].value + "," + this.elements["form"]["cconf_04"].value + ");");
+            }
+        });
+
+        this.setTriggerEvent("btn", "cconf_btn_cancel", "click", () => {
+            this.hideElement("ui", "cconfbox");
         });
 
         // let element_fw = this.elements["ui"]["status_conv" + conv + "_forward"].querySelector(".elementor-icon");
@@ -616,6 +666,8 @@ class ARMMane{
             this.handlePrediction(event.data);
         });
 
+
+        this.initializePreset();
         this.handleVideoStream();
     }
     
@@ -840,7 +892,7 @@ class ARMMane{
         if (available == 0 || available == false) {
             if (this.appStatus["sensorWarningTrigger"] == null) {
                 this.appStatus["sensorWarningTrigger"] = setInterval(() => {
-                    this.playSound("https://design.nicezki.com/dev/sound/red-beep.mp3");
+                    // this.playSound("https://design.nicezki.com/dev/sound/red-beep.mp3");
                     element_trigger.style.backgroundColor = warning;
                     element_idle.style.backgroundColor = warning;
                     setTimeout(() => {
@@ -866,7 +918,7 @@ class ARMMane{
                 clearInterval(this.appStatus["sensorWarningTrigger"]);
                 this.appStatus["sensorWarningTrigger"] = null;
             }
-            this.playSound("https://design.nicezki.com/dev/sound/beep-2.mp3");
+            // this.playSound("https://design.nicezki.com/dev/sound/beep-2.mp3");
             element_trigger.style.backgroundColor = active;
             element_idle.style.backgroundColor = inactive;
         }else{
@@ -886,53 +938,10 @@ class ARMMane{
 
 
     
-
-
-    // setStatus(status,
-
-
-    // connect() {
-    //     let ssesource = this.setupSSE();
-    //     if (ssesource) {
-    //         this.consoleLog("Connected to server at " + this.appStatus["server"]["fullURL"]);
-    //         this.appStatus["connected"] = true;
-    //         // Delay 1 second to show main screen
-
-    //     }else{
-    //         this.consoleLog("Connection to server at " + this.appStatus["server"]["fullURL"] + " failed", "ERROR");
-    //         this.appStatus["connected"] = false;
-    //     }
-    // }
-
-
-
-// Shit code still need to be clear
-// DEPRECATED them all!!
-
-    // initialize drag and drop function
-
-
-    // // Insert draggable list above a target list based on mouseY
-    // insertAboveList(zone, mouseY) {
-    //     const els = Array.from(zone.querySelectorAll(".tp-ins-code-block:not(.dragging)"));
-    //     let closestList = null;
-    //     let closestOffset = Number.NEGATIVE_INFINITY;
-    
-    //     els.forEach(list => {
-    //         const { top, width } = list.getBoundingClientRect();
-    //         const offset = mouseY - top; // Calculate the offset from the top edge
-    //         if (offset < 0 && offset > closestOffset) {
-    //             closestList = list;
-    //             closestOffset = offset;
-    //         }
-    //     });
-    //     return closestList;
-    // }
-
-    
-
-
-
+    /**
+     * The initializeSortable function initializes the drag and drop functionality of the command area.
+     * 
+     */
     initializeSortable() {
         const dragArea = document.querySelector(".ins-command-area");
         new Sortable(dragArea, {
@@ -941,6 +950,20 @@ class ARMMane{
         });
     }
 
+
+    
+
+    
+    /**
+     * The getData function extracts the data from each code block and returns an array of objects.
+     * Each object contains the type, device, value, and speed associated with a particular code block.
+     *
+     * @param element_name Specify the class name of the element that contains all of the code blocks
+     * @param code_block Identify the class name of the code blocks
+     *
+     * @return An array of objects
+     *
+     */
     getData(element_name="ins-command-area",code_block="tp-ins-code-block") {
         const commandArea = this.querySel("." + element_name);
 
@@ -954,33 +977,40 @@ class ARMMane{
             const type = codeBlock.getAttribute("data-type"); // Example: "servo" or "conv"
             const device = codeBlock.getAttribute("data-device"); // Example: "servo" or "conv"
             const value = codeBlock.getAttribute("data-value"); // Example: Numeric value associated with the code block 
+            const speed = codeBlock.getAttribute("data-speed"); // Example: Numeric value associated with the code block
             // Add the extracted data to the data array
             data.push({
                 type,
-                value
+                device,
+                value,
+                speed
             });
         });
 
         return data;
     }
 
+
+    
+    /**
+     * The createDraggableList function creates a draggable list of functions that can be dragged into the code area.
+     * 
+     */
     createDraggableList() {
         const spawnArea = this.elements["ui"]["function_box"][0].querySelector("div");
-    
-        // Capture 'this' in another variable for use inside the event listener
-        const self = this;
-    
+
         for (let i = 0; i < this.conf_list.length; i++) {
             const newDiv = this.createFunctionElement(i);
-    
-            newDiv.addEventListener("click", function() {
-                // Inside this function, use 'self' instead of 'this'
-                self.handleFunctionElementClick(newDiv);
+
+            newDiv.addEventListener("click", () => {
+                this.handleFunctionElementClick(newDiv);
+
             });
-    
+
             spawnArea.appendChild(newDiv);
         }
     }
+
 
     createFunctionElement(index) {
         const newDiv = this.elements["template"]["ins_function"][0].cloneNode(true);
@@ -1000,10 +1030,14 @@ class ARMMane{
         newDiv.setAttribute("data-type", this.conf_list[index]["type"]);
         newDiv.setAttribute("data-device", this.conf_list[index]["device"]);
         newDiv.setAttribute("data-value", this.conf_list[index]["value"]);
+        newDiv.setAttribute("data-speed", this.conf_list[index]["speed"]);
+        newDiv.setAttribute("data-min", this.conf_list[index]["min"]);
+        newDiv.setAttribute("data-max", this.conf_list[index]["max"]);
+        newDiv.setAttribute("data-num", this.conf_list[index]["num"]);
         // newDiv.setAttribute("data-num", this.conf_list[index]["num"]);
-
         return newDiv;
     }
+
 
     handleFunctionElementClick(newDiv) {
         if (newDiv.type === "servo") {
@@ -1011,10 +1045,11 @@ class ARMMane{
             this.attachCodeBlockEventListeners(clonedCodeBlock, newDiv);
         } else if (newDiv.type === "conv") {
             const clonedCodeBlock = this.cloneCodeBlockElement(newDiv);
-            clonedCodeBlock.querySelector(".cmd-text > div > h2").textContent = "setConV(0,1);";
+            clonedCodeBlock.querySelector(".cmd-text > div > h2").textContent = "setConv(0,0,0)";
             this.attachCodeBlockEventListeners(clonedCodeBlock, newDiv);
         }
     }
+
 
     cloneCodeBlockElement(newDiv) {
         const clonedCodeBlock = this.elements["template"]["code_block"].cloneNode(true);
@@ -1024,6 +1059,7 @@ class ARMMane{
 
         return clonedCodeBlock;
     }
+
 
     attachCodeBlockEventListeners(clonedCodeBlock, newDiv) {
         clonedCodeBlock.querySelector(".cmd-del").addEventListener("click", () => {
@@ -1039,10 +1075,12 @@ class ARMMane{
         });
 
         clonedCodeBlock.setAttribute("data-type", newDiv.type);
+        clonedCodeBlock.setAttribute("data-device", newDiv.device);
         clonedCodeBlock.setAttribute("data-value", newDiv.value);
+        clonedCodeBlock.setAttribute("data-speed", newDiv.speed);
         clonedCodeBlock.setAttribute("data-min", newDiv.min);
         clonedCodeBlock.setAttribute("data-max", newDiv.max);
-        clonedCodeBlock.setAttribute("data-device", newDiv.device);
+
 
         clonedCodeBlock.removeEventListener("click", () => {});
 
@@ -1071,6 +1109,62 @@ class ARMMane{
         } else {
             console.error(`Element with ID '${uniqueElementId}' not found.`);
         }
+    }
+    
+
+    //This will change the property of the element after click save button
+    openConfigBox() {
+        if (this.appStatus["currentEditCodeBlock"] == null) {
+            this.consoleLog("「ARMMANE」 Element not found", "ERROR");
+            return;
+        }
+        try{
+            var element = document.getElementById(this.appStatus["currentEditCodeBlock"]);
+            this.consoleLog("「ARMMANE」 Open config box for " + element.id);
+            if (element == null) {
+                this.consoleLog("「ARMMANE」 Element + " + this.appStatus["currentEditCodeBlock"] + " not found", "ERROR");
+                return;
+            }
+        }
+        catch(err){
+            this.consoleLog("「ARMMANE」 Element not found", "ERROR");
+            return;
+        }
+
+        this.consoleLog("「ARMMANE」 Open config box for " + element.id);
+        let type = element.getAttribute("data-type");
+        if(type == "servo"){
+            this.changeText("cconf_title_1", "คำสั่ง");
+            this.changeText("cconf_title_2", "อุปกรณ์ที่ต้องการ");
+            this.changeText("cconf_title_3", "องศา");
+            this.hideElement("ui", "settingbox4");
+            // Set min and max value [TODO]
+            // this.elements["form"]["cconf_03"].setAttribute("min", element.getAttribute("data-min"));
+            // this.elements["form"]["cconf_03"].setAttribute("max", element.getAttribute("data-max"));
+        }else if(type == "conv"){
+            this.changeText("cconf_title_1", "คำสั่ง");
+            this.changeText("cconf_title_2", "อุปกรณ์ที่ต้องการ");
+            this.changeText("cconf_title_3", "โหมด");
+            this.changeText("cconf_title_4", "ความเร็ว");
+            this.showElement("ui", "settingbox4");
+            
+            // Set min and max value [TODO]
+            // this.elements["form"]["cconf_03"].setAttribute("min", element.getAttribute("data-min"));
+            // this.elements["form"]["cconf_03"].setAttribute("max", element.getAttribute("data-max"));
+        }
+            this.elements["form"]["cconf_01"].value = element.getAttribute("data-type");
+            this.elements["form"]["cconf_02"].value = element.getAttribute("data-device");
+            this.elements["form"]["cconf_03"].value = element.getAttribute("data-value");
+            this.elements["form"]["cconf_04"].value = element.getAttribute("data-speed");
+            this.showElement("ui", "cconfbox");
+    }
+
+    createPresetButton(){
+        this.getConfig();
+        let config = this.config;
+        array.forEach(element => {
+
+        });
     }
 
     getPreset() {
@@ -1170,7 +1264,7 @@ class ARMMane{
         });
     }
 
-    initialize() {
+    initializePreset() {
         // Fetch the presets and steps
         this.getPreset()
             .then(presetsWithSteps => {
@@ -1185,55 +1279,6 @@ class ARMMane{
             .catch(error => {
                 console.error("Error:", error);
             });
-    }
-
-    //This will change the property of the element after click save button
-    openConfigBox() {
-        if (this.appStatus["currentEditCodeBlock"] == null) {
-            this.consoleLog("「ARMMANE」 Element not found", "ERROR");
-            return;
-        }
-        try{
-            var element = document.getElementById(this.appStatus["currentEditCodeBlock"]);
-            if (element == null) {
-                this.consoleLog("「ARMMANE」 Element not found", "ERROR");
-                return;
-            }
-        }
-        catch(err){
-            this.consoleLog("「ARMMANE」 Element not found", "ERROR");
-            return;
-        }
-
-        this.consoleLog("「ARMMANE」 Open config box for " + element.id);
-        let type = element.getAttribute("data-type");
-        if(type == "setServo"){
-            this.changeText("cconf_title_1", "คำสั่ง");
-            this.changeText("cconf_title_2", "อุปกรณ์ที่ต้องการ");
-            this.changeText("cconf_title_3", "องศา");
-            // Set min and max value
-            this.elements["form"]["cconf_03"].setAttribute("min", element.getAttribute("data-min"));
-            this.elements["form"]["cconf_03"].setAttribute("max", element.getAttribute("data-max"));
-        }else if(type == "setConv"){
-            this.changeText("cconf_title_1", "คำสั่ง");
-            this.changeText("cconf_title_2", "อุปกรณ์ที่ต้องการ");
-            this.changeText("cconf_title_3", "โหมด");
-            // Set min and max value
-            this.elements["form"]["cconf_03"].setAttribute("min", element.getAttribute("data-min"));
-            this.elements["form"]["cconf_03"].setAttribute("max", element.getAttribute("data-max"));
-        }
-            this.elements["form"]["cconf_01"].value = element.getAttribute("data-type");
-            this.elements["form"]["cconf_02"].value = element.getAttribute("data-device");
-            this.elements["form"]["cconf_03"].value = element.getAttribute("data-value");
-            this.showElement("ui", "cconfbox");
-    }
-
-    createPresetButton(){
-        this.getConfig();
-        let config = this.config;
-        array.forEach(element => {
-
-        });
     }
 
 
