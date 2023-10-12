@@ -117,6 +117,7 @@ class ARMMane{
                 "log_alert" : this.querySel(".tp-log-alert"),
                 "ins_function" : document.querySelectorAll(".tp-ins-func"),
                 "code_block" : this.querySel(".tp-ins-code-block"),
+                "ins_preset" : this.querySel(".tp-ins-preset"),
             },
             "text" : {
                 "connect_url" : this.querySel(".connecting-url").querySelector("div > h2"),
