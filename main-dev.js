@@ -1241,7 +1241,7 @@ class ARMMane{
     }
     
     createPresetElement(presetName) {
-        const newPresetElement = this.elements["template"]["ins_preset"][0].cloneNode(true);
+        const newPresetElement = this.elements["template"]["ins_preset"].cloneNode(true);
         const uniqueId = `preset_${presetName}`;
         newPresetElement.id = uniqueId;
     
