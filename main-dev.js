@@ -1168,7 +1168,7 @@ class ARMMane{
 
     getPreset() {
         // Return the promise for the fetch operation
-        return fetch(`${this.serverURL}/config`, {
+        return fetch(`${this.appStatus["server"]["fullURL"]}/config`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json"
