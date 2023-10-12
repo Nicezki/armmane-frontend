@@ -1240,19 +1240,21 @@ class ARMMane{
         });
     }
     
-    createPresetElement(presetName) {
+    createPresetElement(presetName, instruction) {
+        // Clone the preset template
         const newPresetElement = this.elements["template"]["ins_preset"].cloneNode(true);
         const uniqueId = `preset_${presetName}`;
         newPresetElement.id = uniqueId;
     
+        // Add preset class and set the preset name
         newPresetElement.classList.add("ins-preset", presetName);
         newPresetElement.querySelector(".tp-ins-preset > div > h4").textContent = presetName;
         newPresetElement.style.display = "flex";
         newPresetElement.setAttribute("data-preset-name", presetName);
-
+    
         // Call translateInstruction to get the data
         const translatedData = this.translateInstruction(instruction);
-
+    
         // Set attributes based on the translated data
         newPresetElement.setAttribute("data-type", translatedData.type);
         newPresetElement.setAttribute("data-device", translatedData.device);
@@ -1263,7 +1265,7 @@ class ARMMane{
         newPresetElement.setAttribute("data-num", translatedData.num);
     
         return newPresetElement;
-    }
+    }    
     
     handlePresetElementClick(preset, newPresetElement) {
         const swimLane = this.elements["ui"]["command_area"][0];
