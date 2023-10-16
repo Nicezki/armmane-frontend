@@ -1238,8 +1238,8 @@ class ARMMane{
             spawnArea.appendChild(newPresetElement);
         });
     }
-
-    createPresetElement(presetName, steps) {
+    
+    createPresetElement(presetName) {
         const newPresetElement = this.elements["template"]["ins_preset"][0].cloneNode(true);
         const uniqueId = `preset_${presetName}`;
         newPresetElement.id = uniqueId;
@@ -1249,12 +1249,6 @@ class ARMMane{
         newPresetElement.style.display = "flex";
         newPresetElement.setAttribute("data-preset-name", presetName);
 
-        const data = this.translateInstruction(steps);
-        newPresetElement.setAttribute("data-type", data.type);
-        newPresetElement.setAttribute("data-device", data.id);
-        newPresetElement.setAttribute("data-value", data.degree);
-        newPresetElement.setAttribute("data-speed", data.speed);
-    
         return newPresetElement;
     }
     
