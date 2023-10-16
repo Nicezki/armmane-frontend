@@ -1211,7 +1211,6 @@ class ARMMane{
     // Add the translateInstruction function to your class
     translateInstruction(instruction) {
         const type = instruction[0];
-    
         if (type === 'S') {
             const id = parseInt(instruction[2]);
             const degree = parseInt(instruction.substring(4));
@@ -1225,8 +1224,7 @@ class ARMMane{
             // Handle unsupported instruction type
             return `Unsupported instruction type: ${type}`;
         }
-    }    
-
+    }
     createPresetList(presetsWithSteps) {
         const spawnArea = this.elements["ui"]["preset_box"][0].querySelector("div");
         
@@ -1239,33 +1237,19 @@ class ARMMane{
             spawnArea.appendChild(newPresetElement);
         });
     }
-    
-    createPresetElement(presetName, instruction) {
-        // Clone the preset template
+
+    createPresetElement(presetName) {
         const newPresetElement = this.elements["template"]["ins_preset"][0].cloneNode(true);
         const uniqueId = `preset_${presetName}`;
         newPresetElement.id = uniqueId;
-    
-        // Add preset class and set the preset name
+
         newPresetElement.classList.add("ins-preset", presetName);
         newPresetElement.querySelector(".tp-ins-preset > div > h4").textContent = presetName;
         newPresetElement.style.display = "flex";
         newPresetElement.setAttribute("data-preset-name", presetName);
     
-        // Call translateInstruction to get the data
-        const translatedData = this.translateInstruction(instruction);
-    
-        // Set attributes based on the translated data
-        newPresetElement.setAttribute("data-type", translatedData.type);
-        newPresetElement.setAttribute("data-device", translatedData.device);
-        newPresetElement.setAttribute("data-value", translatedData.value);
-        newPresetElement.setAttribute("data-speed", translatedData.speed);
-        newPresetElement.setAttribute("data-min", translatedData.min);
-        newPresetElement.setAttribute("data-max", translatedData.max);
-        newPresetElement.setAttribute("data-num", translatedData.num);
-    
         return newPresetElement;
-    }    
+    }
     
     handlePresetElementClick(preset, newPresetElement) {
         const swimLane = this.elements["ui"]["command_area"][0];
@@ -1278,7 +1262,6 @@ class ARMMane{
             swimLane.appendChild(newDiv);
         });
     }
-
     initializePreset() {
         // Fetch the presets and steps
         this.getPreset()
