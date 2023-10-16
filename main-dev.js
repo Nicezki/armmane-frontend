@@ -1210,6 +1210,7 @@ class ARMMane{
     
     // Add the translateInstruction function to your class
     translateInstruction(instruction) {
+        console.log("Instruction:", instruction);
         const type = instruction[0];
         if (type === 'S') {
             const id = parseInt(instruction[2]);
@@ -1248,7 +1249,7 @@ class ARMMane{
         newPresetElement.style.display = "flex";
         newPresetElement.setAttribute("data-preset-name", presetName);
 
-        const data = this.translateInstruction(instruction);
+        new data = this.translateInstruction(instruction);
         newPresetElement.setAttribute("data-type", data.type);
         newPresetElement.setAttribute("data-device", data.id);
         newPresetElement.setAttribute("data-value", data.degree);
