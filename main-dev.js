@@ -1210,7 +1210,7 @@ class ARMMane{
     
     // Add the translateInstruction function to your class
     translateInstruction(instruction) {
-        const type = parseInt(instruction[0]);
+        const type = instruction[0];
     
         if (type === 'S') {
             const id = parseInt(instruction[2]);
@@ -1242,7 +1242,7 @@ class ARMMane{
     
     createPresetElement(presetName, instruction) {
         // Clone the preset template
-        const newPresetElement = this.elements["template"]["ins_preset"].cloneNode(true);
+        const newPresetElement = this.elements["template"]["ins_preset"][0].cloneNode(true);
         const uniqueId = `preset_${presetName}`;
         newPresetElement.id = uniqueId;
     
