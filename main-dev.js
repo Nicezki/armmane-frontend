@@ -1253,7 +1253,7 @@ class ARMMane{
         newPresetElement.setAttribute("data-preset-name", presetName);
     
         // Call translateInstruction to get the data
-        const translatedData = this.translateInstruction(instruction);
+        //const translatedData = this.translateInstruction(instruction);
     
         // Set attributes based on the translated data
         // newPresetElement.setAttribute("data-type", translatedData.type);
