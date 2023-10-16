@@ -1249,7 +1249,7 @@ class ARMMane{
         newPresetElement.style.display = "flex";
         newPresetElement.setAttribute("data-preset-name", presetName);
 
-        new data = this.translateInstruction(instruction);
+        const data = this.translateInstruction(instruction);
         newPresetElement.setAttribute("data-type", data.type);
         newPresetElement.setAttribute("data-device", data.id);
         newPresetElement.setAttribute("data-value", data.degree);
