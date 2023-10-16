@@ -1238,7 +1238,7 @@ class ARMMane{
         });
     }
 
-    createPresetElement(presetName) {
+    createPresetElement(presetName, instruction) {
         const newPresetElement = this.elements["template"]["ins_preset"][0].cloneNode(true);
         const uniqueId = `preset_${presetName}`;
         newPresetElement.id = uniqueId;
@@ -1247,6 +1247,12 @@ class ARMMane{
         newPresetElement.querySelector(".tp-ins-preset > div > h4").textContent = presetName;
         newPresetElement.style.display = "flex";
         newPresetElement.setAttribute("data-preset-name", presetName);
+
+        const data = this.translateInstruction(instruction);
+        newPresetElement.setAttribute("data-type", data.type);
+        newPresetElement.setAttribute("data-device", data.id);
+        newPresetElement.setAttribute("data-value", data.degree);
+        newPresetElement.setAttribute("data-speed", data.speed);
     
         return newPresetElement;
     }
