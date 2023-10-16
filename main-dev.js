@@ -1196,6 +1196,7 @@ class ARMMane{
                         };
                     });
                     console.log("Presets with Steps:", presetsWithSteps);
+                    this.translateInstruction(presetNames, presetsWithSteps); // Call the translateInstruction function
                     return presetsWithSteps;
                 } else {
                     console.error("Data format is invalid. Missing 'config' or 'instructions'.");
