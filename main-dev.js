@@ -1298,6 +1298,18 @@ class ARMMane{
         }
     }
 
+    runInstruction(instruction) {
+        const extdata = this.extractInstruction(instruction);
+        if (extdata.type === "servo") {
+            this.controlServo(extdata.id, extdata.degree);
+        } else if (extdata.type === "conv") {
+            this.controlConv(extdata.id, extdata.mode, extdata.speed);
+        } else {
+            // Handle unsupported instruction type
+            return `Unsupported instruction: ${instruction}`;
+        }
+    }
+
 
 
     createPresetList(presetsWithSteps) {
