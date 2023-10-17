@@ -1286,7 +1286,7 @@ class ARMMane{
         } else if (instruction.startsWith("setConv(")) {
             const type = "conv";
             const id = parseInt(instruction[7]);
-            const mode = parseInt(instruction[9]);
+            const degree = parseInt(instruction[9]);
             const speed = parseInt(instruction.substring(11, instruction.length - 2));
             return {
                 type,
