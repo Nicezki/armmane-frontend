@@ -79,6 +79,7 @@ class ARMMane{
                 "status_conv01_backward" : this.querySel(".status-conv01-bw"),
                 "command_area" : document.querySelectorAll(".ins-command-area"),
                 "function_box" : document.querySelectorAll(".ins-func-box"),
+                "preset_box" : document.querySelectorAll(".ins-preset-box"),
                 "livepreview" : this.querySel(".livepreview"),
                 "settingbox1" : this.querySel(".settingbox-1"),
                 "settingbox2" : this.querySel(".settingbox-2"),
@@ -117,6 +118,7 @@ class ARMMane{
                 "log_alert" : this.querySel(".tp-log-alert"),
                 "ins_function" : document.querySelectorAll(".tp-ins-func"),
                 "code_block" : this.querySel(".tp-ins-code-block"),
+                "ins_preset" : document.querySelectorAll(".tp-ins-preset"),
             },
             "text" : {
                 "connect_url" : this.querySel(".connecting-url").querySelector("div > h2"),
@@ -1148,7 +1150,6 @@ class ARMMane{
             console.error(`Element with ID '${uniqueElementId}' not found.`);
         }
     }
-    
 
     //This will change the property of the element after click save button
     openConfigBox() {
@@ -1207,7 +1208,7 @@ class ARMMane{
 
     getPreset() {
         // Return the promise for the fetch operation
-        return fetch(`${this.serverURL}/config`, {
+        return fetch(`${this.appStatus["server"]["fullURL"]}/config`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json"
@@ -1247,8 +1248,8 @@ class ARMMane{
     
     // Add the translateInstruction function to your class
     translateInstruction(instruction) {
+        console.log("Instruction:", instruction);
         const type = instruction[0];
-
         if (type === 'S') {
             const id = parseInt(instruction[2]);
             const degree = parseInt(instruction.substring(4));
@@ -1263,7 +1264,6 @@ class ARMMane{
             return `Unsupported instruction type: ${type}`;
         }
     }
-
     createPresetList(presetsWithSteps) {
         const spawnArea = this.elements["ui"]["preset_box"][0].querySelector("div");
         
@@ -1281,12 +1281,12 @@ class ARMMane{
         const newPresetElement = this.elements["template"]["ins_preset"][0].cloneNode(true);
         const uniqueId = `preset_${presetName}`;
         newPresetElement.id = uniqueId;
-    
+
         newPresetElement.classList.add("ins-preset", presetName);
         newPresetElement.querySelector(".tp-ins-preset > div > h4").textContent = presetName;
         newPresetElement.style.display = "flex";
         newPresetElement.setAttribute("data-preset-name", presetName);
-    
+
         return newPresetElement;
     }
     
@@ -1296,12 +1296,16 @@ class ARMMane{
     
         preset.steps.forEach(step => {
             const newDiv = this.cloneCodeBlockElement(newPresetElement); // Pass newPresetElement as an argument
+            const data = this.translateInstruction(step);
             this.attachCodeBlockEventListeners(newDiv, newPresetElement); // Pass newPresetElement as well
             newDiv.querySelector(".cmd-text > div > h2").textContent = this.translateInstruction(step);
+            newDiv.setAttribute("data-type", data.type);
+            newDiv.setAttribute("data-device", data.id);
+            newDiv.setAttribute("data-value", data.degree);
+            newDiv.setAttribute("data-speed", data.speed);
             swimLane.appendChild(newDiv);
         });
     }
-
     initializePreset() {
         // Fetch the presets and steps
         this.getPreset()
