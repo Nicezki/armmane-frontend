@@ -1336,11 +1336,11 @@ class ARMMane{
             let instructionText = this.translateInstruction(step);
             newDiv.querySelector(".cmd-text > div > h2").textContent = instructionText;
             // Translate the instruction to data
-            data = this.extractInstruction(instructionText);
-            newDiv.setAttribute("data-type", data.type || "servo");
-            newDiv.setAttribute("data-device", data.id || 0);
-            newDiv.setAttribute("data-value", data.degree || 0);
-            newDiv.setAttribute("data-speed", data.speed || 0);
+            let extdata = this.extractInstruction(instructionText);
+            newDiv.setAttribute("data-type", extdata.type || "servo");
+            newDiv.setAttribute("data-device", extdata.id || 0);
+            newDiv.setAttribute("data-value", extdata.degree || 0);
+            newDiv.setAttribute("data-speed", extdata.speed || 0);
             swimLane.appendChild(newDiv);
         });
     }
