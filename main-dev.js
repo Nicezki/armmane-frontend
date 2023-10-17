@@ -1264,6 +1264,41 @@ class ARMMane{
             return `Unsupported instruction type: ${type}`;
         }
     }
+
+    // Input: setServo(0,90); or setConV(0,0,0);
+    //Output {type: "servo", id: 0, degree: 90, speed: 0}
+    extractInstruction(instruction) {
+        // check if instruction is valid
+        if (instruction.startsWith("setServo(")) {
+            const type = "servo";
+            const id = parseInt(instruction[9]);
+            const degree = parseInt(instruction.substring(11, instruction.length - 2));
+            const speed = 0;
+            return {
+                type,
+                id,
+                degree,
+                speed
+            };
+        } else if (instruction.startsWith("setConv(")) {
+            const type = "conv";
+            const id = parseInt(instruction[7]);
+            const mode = parseInt(instruction[9]);
+            const speed = parseInt(instruction.substring(11, instruction.length - 2));
+            return {
+                type,
+                id,
+                degree,
+                speed
+            };
+        } else {
+            // Handle unsupported instruction type
+            return `Unsupported instruction: ${instruction}`;
+        }
+    }
+
+
+
     createPresetList(presetsWithSteps) {
         const spawnArea = this.elements["ui"]["preset_box"][0].querySelector("div");
         
@@ -1298,11 +1333,14 @@ class ARMMane{
             const newDiv = this.cloneCodeBlockElement(newPresetElement); // Pass newPresetElement as an argument
             const data = this.translateInstruction(step);
             this.attachCodeBlockEventListeners(newDiv, newPresetElement); // Pass newPresetElement as well
-            newDiv.querySelector(".cmd-text > div > h2").textContent = this.translateInstruction(step);
-            newDiv.setAttribute("data-type", data.type);
-            newDiv.setAttribute("data-device", data.id);
-            newDiv.setAttribute("data-value", data.degree);
-            newDiv.setAttribute("data-speed", data.speed);
+            let instructionText = this.translateInstruction(step);
+            newDiv.querySelector(".cmd-text > div > h2").textContent = instructionText;
+            // Translate the instruction to data
+            data = this.extractInstruction(instructionText);
+            newDiv.setAttribute("data-type", data.type || "servo");
+            newDiv.setAttribute("data-device", data.id || 0);
+            newDiv.setAttribute("data-value", data.degree || 0);
+            newDiv.setAttribute("data-speed", data.speed || 0);
             swimLane.appendChild(newDiv);
         });
     }
