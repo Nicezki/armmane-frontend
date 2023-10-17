@@ -223,8 +223,6 @@ class ARMMane{
 
         this.setupElementTrigger();
 
-        this.createDraggableList();
-
         this.initializeSortable();
 
     }
