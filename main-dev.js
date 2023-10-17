@@ -1259,9 +1259,9 @@ class ARMMane{
             return `setServo(${id},${degree});`;
         } else if (type === 'C') {
             const id = parseInt(instruction[1]);
-            const mode = parseInt(instruction[3]);
+            const degree = parseInt(instruction[3]);
             const speed = parseInt(instruction.substring(5));
-            return `setConv(${id},${mode},${speed});`;
+            return `setConv(${id},${degree},${speed});`;
         } else {
             // Handle unsupported instruction type
             return `Unsupported instruction type: ${type}`;
@@ -1285,9 +1285,9 @@ class ARMMane{
             };
         } else if (instruction.startsWith("setConv(")) {
             const type = "conv";
-            const id = parseInt(instruction[7]);
-            const degree = parseInt(instruction[9]);
-            const speed = parseInt(instruction.substring(11, instruction.length - 2));
+            const id = parseInt(instruction[8]);
+            const degree = parseInt(instruction[10]);
+            const speed = parseInt(instruction.substring(12, instruction.length - 2));
             return {
                 type,
                 id,
