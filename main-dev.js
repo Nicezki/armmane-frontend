@@ -1132,6 +1132,8 @@ class ARMMane{
         });
         clonedCodeBlock.querySelector(".cmd-play").addEventListener("click", () => {
             this.consoleLog("「ARMMANE」 Run command");
+            this.appStatus["currentEditCodeBlock"] = clonedCodeBlock.id;
+            this.runInstruction();
         });
 
         clonedCodeBlock.setAttribute("data-type", newDiv.type);
@@ -1276,9 +1278,9 @@ class ARMMane{
             return `setServo(${id},${degree});`;
         } else if (type === 'C') {
             const id = parseInt(instruction[1]);
-            const mode = parseInt(instruction[3]);
+            const degree = parseInt(instruction[3]);
             const speed = parseInt(instruction.substring(5));
-            return `setConV(${id},${mode},${speed});`;
+            return `setConv(${id},${degree},${speed});`;
         } else {
             // Handle unsupported instruction type
             return `Unsupported instruction type: ${type}`;
@@ -1302,9 +1304,9 @@ class ARMMane{
             };
         } else if (instruction.startsWith("setConv(")) {
             const type = "conv";
-            const id = parseInt(instruction[7]);
-            const mode = parseInt(instruction[9]);
-            const speed = parseInt(instruction.substring(11, instruction.length - 2));
+            const id = parseInt(instruction[8]);
+            const degree = parseInt(instruction[10]);
+            const speed = parseInt(instruction.substring(12, instruction.length - 2));
             return {
                 type,
                 id,
@@ -1314,6 +1316,18 @@ class ARMMane{
         } else {
             // Handle unsupported instruction type
             return `Unsupported instruction: ${instruction}`;
+        }
+    }
+
+    runInstruction() {
+        var element = document.getElementById(this.appStatus["currentEditCodeBlock"]);
+        console.log(element);
+        let type = element.getAttribute("data-type");
+        if(type == "servo"){
+            this.controlServo(element.getAttribute("data-device"), element.getAttribute("data-value"));
+        }
+        else if(type == "conv"){
+            this.controlConv(element.getAttribute("data-device"), element.getAttribute("data-value"), element.getAttribute("data-speed"));
         }
     }
 
