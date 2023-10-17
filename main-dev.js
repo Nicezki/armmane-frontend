@@ -1107,7 +1107,7 @@ class ARMMane{
 
 
     runInstruction(instruction) {    
-        if (instruction.length == 0) {
+        if (instructions.length == 0) {
             this.consoleLog("「ARMMANE」 No instruction to run", "WARN");
             return;
         }
