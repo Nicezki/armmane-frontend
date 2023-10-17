@@ -146,6 +146,7 @@ class ARMMane{
                 "min" : 0,
                 "max" : 180,
                 "num" : 0,
+                "instruction": "S0D000"
             },
             {
                 "type" : "conv",
@@ -155,6 +156,7 @@ class ARMMane{
                 "min" : 0,
                 "max" : 2,
                 "num" : 0,
+                "instruction": "C0M0S255"
             }
 
         ];
@@ -1075,6 +1077,7 @@ class ARMMane{
         newDiv.setAttribute("data-min", this.conf_list[index]["min"]);
         newDiv.setAttribute("data-max", this.conf_list[index]["max"]);
         newDiv.setAttribute("data-num", this.conf_list[index]["num"]);
+        newDiv.instructions = this.conf_list[index]["instruction"];
         // newDiv.setAttribute("data-num", this.conf_list[index]["num"]);
         return newDiv;
     }
@@ -1102,6 +1105,35 @@ class ARMMane{
     }
 
 
+
+    runInstruction(instruction) {    
+        if (instructions.length == 0) {
+            this.consoleLog("「ARMMANE」 No instruction to run", "WARN");
+            return;
+        }
+        if (instruction.startsWith("C")) {
+            //C0M1S180 = conv device 0 mode 1 speed 180
+            this.consoleLog("「ARMMANE」 Run instruction: " + instruction);
+            let convDevice = instruction.split(",")[0].split("(")[1];
+            let convMode = instruction.split(",")[1];
+            let convSpeed = instruction.split(",")[2].split(")")[0];
+            this.consoleLog("「ARMMANE」 Control conv: " + convDevice + " mode: " + convMode + " speed: " + convSpeed);
+            this.controlConv(convDevice, convMode, convSpeed);
+        } else if (instruction.startsWith("S")) {
+            //S0D180
+            this.consoleLog("「ARMMANE」 Run instruction: " + instruction);
+            let servoDevice = instruction.split(",")[0].split("(")[1];
+            let servoDegree = instruction.split(",")[1].split(")")[0];
+            this.consoleLog("「ARMMANE」 Control servo: " + servoDevice + " degree: " + servoDegree);
+            this.controlServo(servoDevice, servoDegree);
+        } else {
+            this.consoleLog("「ARMMANE」 Unknown instruction: " + instruction, "ERROR");
+        }
+    }
+
+
+
+
     attachCodeBlockEventListeners(clonedCodeBlock, newDiv) {
         clonedCodeBlock.querySelector(".cmd-del").addEventListener("click", () => {
             clonedCodeBlock.remove();
@@ -1112,7 +1144,7 @@ class ARMMane{
             this.openConfigBox();
         });
         clonedCodeBlock.querySelector(".cmd-play").addEventListener("click", () => {
-            this.consoleLog("「ARMMANE」 Run command");
+            this.runInstruction(clonedCodeBlock.instruction);
         });
 
         clonedCodeBlock.setAttribute("data-type", newDiv.type);
@@ -1121,6 +1153,7 @@ class ARMMane{
         clonedCodeBlock.setAttribute("data-speed", newDiv.speed);
         clonedCodeBlock.setAttribute("data-min", newDiv.min);
         clonedCodeBlock.setAttribute("data-max", newDiv.max);
+        clonedCodeBlock.instructions = newDiv.instructions;
 
 
         clonedCodeBlock.removeEventListener("click", () => {});
@@ -1341,6 +1374,7 @@ class ARMMane{
             newDiv.setAttribute("data-device", extdata.id || 0);
             newDiv.setAttribute("data-value", extdata.degree || 0);
             newDiv.setAttribute("data-speed", extdata.speed || 0);
+            newDiv.instructions = instructionText;
             swimLane.appendChild(newDiv);
         });
     }
