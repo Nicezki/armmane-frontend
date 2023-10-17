@@ -1261,7 +1261,7 @@ class ARMMane{
             const id = parseInt(instruction[1]);
             const mode = parseInt(instruction[3]);
             const speed = parseInt(instruction.substring(5));
-            return `setConV(${id},${mode},${speed});`;
+            return `setConv(${id},${mode},${speed});`;
         } else {
             // Handle unsupported instruction type
             return `Unsupported instruction type: ${type}`;
