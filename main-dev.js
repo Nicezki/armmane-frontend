@@ -223,7 +223,7 @@ class ARMMane{
 
         this.setupElementTrigger();
 
-        this.createDraggableList(this.elements["ui"]["function_box"][0].querySelector("div"));
+        this.createDraggableList();
 
         this.initializeSortable();
 
