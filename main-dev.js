@@ -1300,6 +1300,7 @@ class ARMMane{
     }
 
     runInstruction() {
+        var element = document.getElementById(this.appStatus["currentEditCodeBlock"]);
         let type = element.getAttribute("data-type");
         if(type == "servo"){
             this.controlServo(element.getAttribute("data-device"), element.getAttribute("data-value"));
