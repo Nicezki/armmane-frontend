@@ -1300,14 +1300,12 @@ class ARMMane{
     }
 
     runInstruction(instruction) {
-        const extdata = this.extractInstruction(instruction);
-        if (extdata.type === "servo") {
-            this.controlServo(extdata.id, extdata.degree);
-        } else if (extdata.type === "conv") {
-            this.controlConv(extdata.id, extdata.mode, extdata.speed);
-        } else {
-            // Handle unsupported instruction type
-            return `Unsupported instruction: ${instruction}`;
+        let type = elements.getAttribute("data-type");
+        if(type == "servo"){
+            this.controlServo(elements.getAttribute("data-device"), elements.getAttribute("data-value"));
+        }
+        else if(type == "conv"){
+            this.controlConv(elements.getAttribute("data-device"), elements.getAttribute("data-value"), elements.getAttribute("data-speed"));
         }
     }
 
