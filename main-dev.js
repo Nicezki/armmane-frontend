@@ -1299,13 +1299,13 @@ class ARMMane{
         }
     }
 
-    runInstruction(instruction) {
-        let type = elements.getAttribute("data-type");
+    runInstruction() {
+        let type = element.getAttribute("data-type");
         if(type == "servo"){
-            this.controlServo(elements.getAttribute("data-device"), elements.getAttribute("data-value"));
+            this.controlServo(element.getAttribute("data-device"), element.getAttribute("data-value"));
         }
         else if(type == "conv"){
-            this.controlConv(elements.getAttribute("data-device"), elements.getAttribute("data-value"), elements.getAttribute("data-speed"));
+            this.controlConv(element.getAttribute("data-device"), element.getAttribute("data-value"), element.getAttribute("data-speed"));
         }
     }
 
