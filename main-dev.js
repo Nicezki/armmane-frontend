@@ -315,7 +315,7 @@ class ARMMane{
                 //     this.hideElement("ui", "cconfbox");
                 //     this.elements["btn"]["cconf_btn_cancel"].removeEventListener("click", cancelButtonHandler);
                 // };
-        this.setTriggerEvent(form, "cconf_01", "change", () => {
+        this.setTriggerEvent("form", "cconf_01", "change", () => {
             let commandType = this.elements["form"]["cconf_01"].value;
             if(commandType == "servo"){
                 this.changeText("cconf_title_1", "คำสั่ง");
