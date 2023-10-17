@@ -1258,8 +1258,13 @@ class ARMMane{
     
         preset.steps.forEach(step => {
             const newDiv = this.cloneCodeBlockElement(newPresetElement); // Pass newPresetElement as an argument
+            const data = this.translateInstruction(step);
             this.attachCodeBlockEventListeners(newDiv, newPresetElement); // Pass newPresetElement as well
             newDiv.querySelector(".cmd-text > div > h2").textContent = this.translateInstruction(step);
+            newDiv.setAttribute("data-type", data.type);
+            newDiv.setAttribute("data-device", data.id);
+            newDiv.setAttribute("data-value", data.degree);
+            newDiv.setAttribute("data-speed", data.speed);
             swimLane.appendChild(newDiv);
         });
     }
