@@ -1331,7 +1331,6 @@ class ARMMane{
     
         preset.steps.forEach(step => {
             const newDiv = this.cloneCodeBlockElement(newPresetElement); // Pass newPresetElement as an argument
-            const data = this.translateInstruction(step);
             this.attachCodeBlockEventListeners(newDiv, newPresetElement); // Pass newPresetElement as well
             let instructionText = this.translateInstruction(step);
             newDiv.querySelector(".cmd-text > div > h2").textContent = instructionText;
