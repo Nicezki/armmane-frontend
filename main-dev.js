@@ -845,6 +845,7 @@ class ARMMane{
         this.handleConvStatus(0, armStatus["conv"]["mode"][0]);
         this.handleConvStatus(1, armStatus["conv"]["mode"][1]);
         this.handleInfStatus(armStatus["sensor"]);
+        this.logSet(armStatus["status"], armStatus["message"], armStatus["progress"] || "");
     }
 
 
