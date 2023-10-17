@@ -1113,6 +1113,7 @@ class ARMMane{
         });
         clonedCodeBlock.querySelector(".cmd-play").addEventListener("click", () => {
             this.consoleLog("「ARMMANE」 Run command");
+            this.appStatus["currentEditCodeBlock"] = clonedCodeBlock.id;
             this.runInstruction();
         });
 
