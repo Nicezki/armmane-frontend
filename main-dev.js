@@ -50,7 +50,7 @@ class ARMMane{
         }
 
         this.elements = {
-            "mode" : ["btn", "form", "ui", "screen", "template","text"],
+            "mode" : ["btn", "form", "ui", "screen", "template","text","icon"],
             "screen" : {
                 "errorloading" : this.querySel(".scr-errload"),
                 "loading" : this.querySel(".scr-loading"),
@@ -84,6 +84,7 @@ class ARMMane{
                 "settingbox2" : this.querySel(".settingbox-2"),
                 "settingbox3" : this.querySel(".settingbox-3"),
                 "settingbox4" : this.querySel(".settingbox-4"),
+                "log_progress" : this.querySel(".log-progress"),
             },
             "btn" : {
                 "conn_connectsrv" : this.querySel(".btn-connectsrv"),
@@ -125,6 +126,12 @@ class ARMMane{
                 "cconf_title_3" : this.querySel(".cconf-title-3").querySelector("div > h2"),
                 "cconf_title_4" : this.querySel(".cconf-title-4").querySelector("div > h2"),
                 "prediction_class" : this.querySel(".prediction-class").querySelector("div > h2"),
+                "log_title" : this.querySel(".log-title").querySelector("div > h2"),
+                "log_subtitle" : this.querySel(".log-subtitle").querySelector("div > h5"),
+                "log-number" : this.querySel(".log-number").querySelector("div > h1"),
+            },
+            "icon" : {
+                "log_icon" : this.querySel(".log-icon").querySelector("div > i"),
             }
         }
 
@@ -442,6 +449,36 @@ class ARMMane{
     }
 
 
+    
+    /**
+     * The logSet function is used to set the log title, subtitle and number.
+     * 
+     *
+     * @param title Change the title text of the log
+     * @param subtitle Change the text of the subtitle of the log
+     * @param number Change the number of progress bar and text of the log
+     */
+    logSet(title="", subtitle="", number=""){
+        if(title != ""){
+            this.changeText("log_title", title);
+        }
+        if(subtitle != ""){
+            this.changeText("log_subtitle", subtitle);
+        }
+        if(number != ""){
+            this.changeText("log-number", number);
+            this.changeProgress(number);
+        }
+        // Icon will change based on the title text
+        //If title contain "ERROR" then change icon to exclamation-triangle
+        if(title.includes("ERROR")){
+            this.changeIcon("log_icon", "exclamation-triangle");
+            this.changeColor("log_icon", "#B11D1D");
+        }
+    }
+
+
+
 
     
     /**
@@ -727,6 +764,7 @@ class ARMMane{
         }
     
     }
+    
 
     
     /**
@@ -824,7 +862,7 @@ class ARMMane{
             this.elements["ui"]["livepreview"].querySelector("img").addEventListener("error", () => {
                 // Try to reconnect
                 this.elements["ui"]["livepreview"].querySelector("img").src = this.appStatus["server"]["fullURL"] + "/stream/video2";
-                retryCount++;
+                retryVideoStreamCount++;
             });
         }else{
             this.consoleLog("「ARMMANE」 Cannot connect to video stream", "ERROR");
