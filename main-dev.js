@@ -315,6 +315,25 @@ class ARMMane{
                 //     this.hideElement("ui", "cconfbox");
                 //     this.elements["btn"]["cconf_btn_cancel"].removeEventListener("click", cancelButtonHandler);
                 // };
+        this.setTriggerEvent(form, "cconf_01", "change", () => {
+            let commandType = this.elements["form"]["cconf_01"].value;
+            if(commandType == "servo"){
+                this.changeText("cconf_title_1", "คำสั่ง");
+                this.changeText("cconf_title_2", "อุปกรณ์ที่ต้องการ");
+                this.changeText("cconf_title_3", "องศา");
+                this.hideElement("ui", "settingbox4");
+                // Set min and max value [TODO]
+                // this.elements["form"]["cconf_03"].setAttribute("min", element.getAttribute("data-min"));
+                // this.elements["form"]["cconf_03"].setAttribute("max", element.getAttribute("data-max"));
+            }else if(commandType == "conv"){
+                this.changeText("cconf_title_1", "คำสั่ง");
+                this.changeText("cconf_title_2", "อุปกรณ์ที่ต้องการ");
+                this.changeText("cconf_title_3", "โหมด");
+                this.changeText("cconf_title_4", "ความเร็ว");
+                this.showElement("ui", "settingbox4");
+            }
+        });
+
 
         this.setTriggerEvent("btn", "cconf_btn_save", "click", () => {
             let selectedElement = document.getElementById(this.appStatus["currentEditCodeBlock"]);
@@ -1588,7 +1607,6 @@ class ARMMane{
      * an appropriate background color. You can also specify your own custom color if you want to
      * use this function for something other than displaying messages from ArmMane. The Bold and Italic
      * parameters allow you to apply those styles as well if desired. 
-     
      *
      * @param Text Display the text in the console (required)
      * @param Type Specify the type of log message (INFO, SUCCESS, WARN, ERROR) (optional)
