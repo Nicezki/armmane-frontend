@@ -223,8 +223,6 @@ class ARMMane{
 
         this.setupElementTrigger();
 
-        this.createDraggableList(this.elements["ui"]["function_box"][0].querySelector("div"));
-
         this.initializeSortable();
 
     }
@@ -1381,8 +1379,15 @@ class ARMMane{
         // Fetch the presets and steps
         this.getPreset()
             .then(presetsWithSteps => {
+
+            	// Remove the draggable list before creating new ones
+                this.elements["ui"]["function_box"][0].querySelector("div").innerHTML = "";
+                
                 // Create the draggable list of elements
                 this.createDraggableList();
+                
+                // Remove the preset list before creating new ones
+                this.elements["ui"]["preset_box"][0].querySelector("div").innerHTML = "";
     
                 // Create the preset list in the preset_box
                 this.createPresetList(presetsWithSteps);
