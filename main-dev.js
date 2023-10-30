@@ -86,6 +86,7 @@ class ARMMane{
                 "settingbox3" : this.querySel(".settingbox-3"),
                 "settingbox4" : this.querySel(".settingbox-4"),
                 "log_progress" : this.querySel(".log-progress"),
+                "empty_step" : document.querySelector(".empty-step"),
             },
             "btn" : {
                 "conn_connectsrv" : this.querySel(".btn-connectsrv"),
@@ -1392,11 +1393,21 @@ class ARMMane{
                 // Create the preset list in the preset_box
                 this.createPresetList(presetsWithSteps);
     
-                // You can add other initialization code here.
+                this.checkDragAreaEmpty();
             })
             .catch(error => {
                 console.error("Error:", error);
             });
+    }
+
+    // if dragArea is Empty then show the empty box
+    checkDragAreaEmpty() {
+        const dragArea = this.elements["ui"]["command_area"];
+        if (dragArea.innerHTML == "") {
+            this.showElement("ui", "empty_step");
+        } else {
+            this.hideElement("ui", "empty_step");
+        }
     }
 
 
