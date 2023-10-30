@@ -86,6 +86,8 @@ class ARMMane{
                 "settingbox3" : this.querySel(".settingbox-3"),
                 "settingbox4" : this.querySel(".settingbox-4"),
                 "log_progress" : this.querySel(".log-progress"),
+                "empty_step" : this.querySel(".empty-step"),
+                "pred_box" : this.querySel(".pred-box"),
             },
             "btn" : {
                 "conn_connectsrv" : this.querySel(".btn-connectsrv"),
@@ -127,13 +129,15 @@ class ARMMane{
                 "cconf_title_2" : this.querySel(".cconf-title-2").querySelector("div > h2"),
                 "cconf_title_3" : this.querySel(".cconf-title-3").querySelector("div > h2"),
                 "cconf_title_4" : this.querySel(".cconf-title-4").querySelector("div > h2"),
-                "prediction_class" : this.querySel(".prediction-class").querySelector("div > h2"),
+                "prediction_class" : this.querySel(".pred-class").querySelector("div > h2"),
+                "prediction_confident" : this.querySel(".pred-confident").querySelector("div > h2"),
                 "log_title" : this.querySel(".log-title").querySelector("div > h2"),
                 "log_subtitle" : this.querySel(".log-subtitle").querySelector("div > h5"),
                 "log-number" : this.querySel(".log-number").querySelector("div > h1"),
             },
             "icon" : {
                 "log_icon" : this.querySel(".log-icon").querySelector("div > i"),
+                "pred_icon" : this.querySel(".pred-icon").querySelector("div > i"),
             }
         }
 
@@ -712,9 +716,9 @@ class ARMMane{
             this.handleMessage(event.data);
         };
 
-        this.eventSource.addEventListener("arm_status", (event) => {
+        this.eventSource.addEventListener("seri_status", (event) => {
             this.consoleLog("[INFO] SSE arm_status: " + event.data);
-            this.handleArmStatus(event.data);
+            this.handleSeriStatus(event.data);
         });
 
         this.videoStream.addEventListener("prediction", (event) => {
@@ -845,10 +849,10 @@ class ARMMane{
 
     
     /**
-     * The handleArmStatus function is used to update the arm status in the UI.
+     * The handleSeriStatus function is used to update the arm status in the UI.
      * @param data Store the data received from the server
      */
-    handleArmStatus(data) {
+    handleSeriStatus(data) {
         let armStatus = JSON.parse(data);
         if ((!this.appStatus["commandMode"]) || (!this.appStatus["manualControl"])) {
             for (let servo = 0; servo < 6; servo++) {
@@ -868,7 +872,34 @@ class ARMMane{
 
     handlePrediction(data) {
         let prediction = JSON.parse(data);
-        this.changeText("prediction_class", "Class: " + prediction["current_classes"] + " (" + prediction["confident_score"] + "%) <br> " + prediction["fps"] + " FPS <br> Detected:" + prediction["detect_flag"] + " ");
+        this.changeText("prediction_class", prediction["current_classes"]);
+        this.changeText("prediction_confident",  "ความมั่นใจ: " + prediction["confident_score"] + "%");
+        if(prediction["current_classes"].includes("Triangle")){
+            this.changeIcon("pred_icon", "eject");
+        } else if(prediction["current_classes"].includes("Square")){
+            this.changeIcon("pred_icon", "square");
+        } else if(prediction["current_classes"].includes("Cylinder")){
+            this.changeIcon("pred_icon", "database");
+        }
+        else{
+            this.changeIcon("pred_icon", "question");
+        }
+        if(prediction["current_classes"].includes("White")){
+            this.elements["ui"]["pred_box"].style.backgroundColor = "#FFFFFF";
+            this.elements["text"]["prediction_confident"].style.color = "#F7496A";
+            this.elements["text"]["prediction_class"].style.color = "#F7496A";
+            this.elements["icon"]["pred_icon"].style.color = "#F7496A";
+        } else if(prediction["current_classes"].includes("Red")){
+            this.elements["ui"]["pred_box"].style.backgroundColor = "#F7496A";
+            this.elements["text"]["prediction_confident"].style.color = "#FFFFFF";
+            this.elements["text"]["prediction_class"].style.color = "#FFFFFF";
+            this.elements["icon"]["pred_icon"].style.color = "#FFFFFF";
+        } else if(prediction["current_classes"].includes("Blue")){
+            this.elements["ui"]["pred_box"].style.backgroundColor = "#006EFF";
+            this.elements["text"]["prediction_confident"].style.color = "#FFFFFF";
+            this.elements["text"]["prediction_class"].style.color = "#FFFFFF";
+            this.elements["icon"]["pred_icon"].style.color = "#FFFFFF";
+        }
     }
 
 
@@ -1114,6 +1145,7 @@ class ARMMane{
         const codeBlockUniqueId = `code_block_${Date.now()}${Math.floor(Math.random() * 1000000)}`;
         clonedCodeBlock.id = codeBlockUniqueId;
         clonedCodeBlock.style.display = "flex";
+        this.checkDragAreaEmpty();
 
         return clonedCodeBlock;
     }
@@ -1122,6 +1154,7 @@ class ARMMane{
     attachCodeBlockEventListeners(clonedCodeBlock, newDiv) {
         clonedCodeBlock.querySelector(".cmd-del").addEventListener("click", () => {
             clonedCodeBlock.remove();
+            this.checkDragAreaEmpty();
         });
         clonedCodeBlock.querySelector(".cmd-edit").addEventListener("click", () => {
             this.consoleLog("「ARMMANE」 Edit command");
@@ -1392,11 +1425,22 @@ class ARMMane{
                 // Create the preset list in the preset_box
                 this.createPresetList(presetsWithSteps);
     
-                // You can add other initialization code here.
+                this.checkDragAreaEmpty();
             })
             .catch(error => {
                 console.error("Error:", error);
             });
+    }
+
+    // if dragArea is Empty then show the empty box
+    checkDragAreaEmpty() {
+        const dragArea = this.elements["ui"]["command_area"][0];
+        const codeBlocks = Array.from(dragArea.querySelectorAll(".tp-ins-code-block"));
+        if (codeBlocks.length == 0) {
+            this.showElement("ui", "empty_step");
+        } else {
+            this.hideElement("ui", "empty_step");
+        }
     }
 
 
