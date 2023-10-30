@@ -88,6 +88,11 @@ class ARMMane{
                 "log_progress" : this.querySel(".log-progress"),
                 "empty_step" : this.querySel(".empty-step"),
                 "pred_box" : this.querySel(".pred-box"),
+                "box_step_1" : this.querySel(".box-step-1"),
+                "box_step_2" : this.querySel(".box-step-2"),
+                "box_step_3" : this.querySel(".box-step-3"),
+                "box_step_4" : this.querySel(".box-step-4"),
+                "box_step_5" : this.querySel(".box-step-5"),
             },
             "btn" : {
                 "conn_connectsrv" : this.querySel(".btn-connectsrv"),
@@ -717,8 +722,13 @@ class ARMMane{
         };
 
         this.eventSource.addEventListener("seri_status", (event) => {
-            this.consoleLog("[INFO] SSE arm_status: " + event.data);
+            this.consoleLog("[INFO] SSE seri_status: " + event.data);
             this.handleSeriStatus(event.data);
+        });
+
+        this.eventSource.addEventListener("arm_status", (event) => {
+            this.consoleLog("[INFO] SSE arm_status: " + event.data);
+            this.handleArmStatus(event.data);
         });
 
         this.videoStream.addEventListener("prediction", (event) => {
@@ -901,6 +911,28 @@ class ARMMane{
             this.elements["icon"]["pred_icon"].style.color = "#FFFFFF";
         }
     }
+
+    //data {"step": 2, "idle": true, "start": 0, "mode": 1, "drop": null, "shape": false, "error": 0, "pickup_count": [2, 2, 2], "items": [1, 2, 2]}
+    handleArmStatus(data) {
+        let armStatus = JSON.parse(data);
+        this.elements["ui"]["box_step_1"].style.backgroundColor = "";
+        this.elements["ui"]["box_step_2"].style.backgroundColor = "";
+        this.elements["ui"]["box_step_3"].style.backgroundColor = "";
+        this.elements["ui"]["box_step_4"].style.backgroundColor = "";
+        this.elements["ui"]["box_step_5"].style.backgroundColor = "";
+        if(armStatus["step"] == 1){
+            this.elements["ui"]["box_step_1"].style.backgroundColor = "#FCA5B6";
+        }else if(armStatus["step"] == 2){
+            this.elements["ui"]["box_step_2"].style.backgroundColor = "#FCA5B6";
+        }else if(armStatus["step"] == 3){
+            this.elements["ui"]["box_step_3"].style.backgroundColor = "#FCA5B6";
+        }else if(armStatus["step"] == 4){
+            this.elements["ui"]["box_step_4"].style.backgroundColor = "#FCA5B6";
+        }else if(armStatus["step"] == 5){
+            this.elements["ui"]["box_step_5"].style.backgroundColor = "#FCA5B6";
+        }
+    }
+
 
 
     handleVideoStream() {
