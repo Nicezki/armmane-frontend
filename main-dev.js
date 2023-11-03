@@ -29,6 +29,13 @@ class ARMMane{
                 ];
         }
 
+        this.armStatus = {
+
+        }
+
+        this.seriStatus = {
+
+        }
 
         this.appStatus = {
             "connected" : false,
@@ -104,6 +111,7 @@ class ARMMane{
                 "error_btn_retry" : this.querySel(".err-btn2"),
                 "cconf_btn_save" : this.querySel(".cconf-btn-save"),
                 "cconf_btn_cancel" : this.querySel(".cconf-btn-cancel"),
+                "main_auto" : this.querySel(".btn-main-auto"),
             },
             "form" : {
                 "conn_address_field" : this.querySel("#form-field-srvaddress"),
@@ -139,6 +147,7 @@ class ARMMane{
                 "log_title" : this.querySel(".log-title").querySelector("div > h2"),
                 "log_subtitle" : this.querySel(".log-subtitle").querySelector("div > h5"),
                 "log-number" : this.querySel(".log-number").querySelector("div > h1"),
+                "main_auto_title" : this.querySel(".btn-main-auto").querySelector("span")
             },
             "icon" : {
                 "log_icon" : this.querySel(".log-icon").querySelector("div > i"),
@@ -425,7 +434,10 @@ class ARMMane{
         }
         );
 
-
+        this.setTriggerEvent("btn", "main_auto", "click", () => {
+            this.setMode();
+        }
+        );
     }
 
     
@@ -688,11 +700,6 @@ class ARMMane{
         }, time);
     }
 
-
-
-
-
-    
     /**
      * The connect function connects to the server via SSE and sets up event listeners for Server Sent Events.
      */
@@ -722,11 +729,13 @@ class ARMMane{
         };
 
         this.eventSource.addEventListener("seri_status", (event) => {
+            this.seriStatus = event.data;
             this.consoleLog("[INFO] SSE seri_status: " + event.data);
             this.handleSeriStatus(event.data);
         });
 
         this.eventSource.addEventListener("arm_status", (event) => {
+            this.armStatus = event.data;
             this.consoleLog("[INFO] SSE arm_status: " + event.data);
             this.handleArmStatus(event.data);
         });
@@ -920,6 +929,7 @@ class ARMMane{
         this.elements["ui"]["box_step_3"].style.backgroundColor = "";
         this.elements["ui"]["box_step_4"].style.backgroundColor = "";
         this.elements["ui"]["box_step_5"].style.backgroundColor = "";
+        
         if(armStatus["step"] == 1){
             this.elements["ui"]["box_step_1"].style.backgroundColor = "#FCA5B6";
         }else if(armStatus["step"] == 2){
@@ -930,6 +940,13 @@ class ARMMane{
             this.elements["ui"]["box_step_4"].style.backgroundColor = "#FCA5B6";
         }else if(armStatus["step"] == 5){
             this.elements["ui"]["box_step_5"].style.backgroundColor = "#FCA5B6";
+        }
+
+        if(armStatus["mode"] == 1){
+            this.elements["text"]["main_auto_title"].textContent = "อัตโนมัติ";
+            
+        }else{
+            this.elements["text"]["main_auto_title"].textContent = "ควบคุมด้วยตนเอง";
         }
     }
 
@@ -1547,8 +1564,6 @@ class ARMMane{
         });
     }
 
-        
-
 
     async getDataFromAPI(path, value = "") {
         if(value != "") {
@@ -1655,6 +1670,36 @@ class ARMMane{
         }, time);
     }
 
+    setMode(){
+        this.consoleLog("Test: " + this.armStatus["mode"]);
+        if(this.armStatus["mode"] == 1){
+            fetch(this.appStatus["server"]["fullURL"] + "/mode/manual", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }).then(response => response.json())
+            .then(data => {
+                this.consoleLog("「ARMMANE」 Mode changed to manual");
+            })
+            .catch(err => {
+                console.log(err);
+            });
+        } else{
+            fetch(this.appStatus["server"]["fullURL"] + "/mode/auto", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }).then(response => response.json())
+            .then(data => {
+                this.consoleLog("「ARMMANE」 Mode changed to auto");
+            })
+            .catch(err => {
+                console.log(err);
+            });
+        }
+    }
 
     changeText(element_name, text) {
         this.elements["text"][element_name].textContent = text;
