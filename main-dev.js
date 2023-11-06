@@ -1,3 +1,4 @@
+
 class ARMMane{
     constructor(address = "localhost", port = "8000", protocol = "http", serverList = []) {
         // If url have ?elementor-preview
@@ -30,11 +31,11 @@ class ARMMane{
         }
 
         this.armStatus = {
-
+            "status" : "none",
         }
 
         this.seriStatus = {
-
+            "status" : "none",
         }
 
         this.appStatus = {
@@ -86,7 +87,8 @@ class ARMMane{
                 "status_conv01_backward" : this.querySel(".status-conv01-bw"),
                 "command_area" : document.querySelectorAll(".ins-command-area"),
                 "function_box" : document.querySelectorAll(".ins-func-box"),
-                "preset_box" : document.querySelectorAll(".ins-preset-box"),
+                "preset_box1" : document.querySelectorAll(".ins-preset-box-1"),
+                "preset_box2" : document.querySelectorAll(".ins-preset-box-2"),
                 "livepreview" : this.querySel(".livepreview"),
                 "settingbox1" : this.querySel(".settingbox-1"),
                 "settingbox2" : this.querySel(".settingbox-2"),
@@ -133,7 +135,8 @@ class ARMMane{
                 "log_alert" : this.querySel(".tp-log-alert"),
                 "ins_function" : document.querySelectorAll(".tp-ins-func"),
                 "code_block" : this.querySel(".tp-ins-code-block"),
-                "ins_preset" : document.querySelectorAll(".tp-ins-preset"),
+                "ins_preset1" : document.querySelectorAll(".tp-ins-preset-1"),
+                "ins_preset2" : document.querySelectorAll(".tp-ins-preset-2"),
             },
             "text" : {
                 "connect_url" : this.querySel(".connecting-url").querySelector("div > h2"),
@@ -729,19 +732,19 @@ class ARMMane{
         };
 
         this.eventSource.addEventListener("seri_status", (event) => {
-            this.seriStatus = event.data;
-            this.consoleLog("[INFO] SSE seri_status: " + event.data);
+            this.seriStatus = JSON.parse(event.data);
+            // this.consoleLog("[INFO] SSE seri_status: " + event.data);
             this.handleSeriStatus(event.data);
         });
 
         this.eventSource.addEventListener("arm_status", (event) => {
-            this.armStatus = event.data;
-            this.consoleLog("[INFO] SSE arm_status: " + event.data);
+            this.armStatus = JSON.parse(event.data);
+            // this.consoleLog("[INFO] SSE arm_status: " + event.data);
             this.handleArmStatus(event.data);
         });
 
         this.videoStream.addEventListener("prediction", (event) => {
-            this.consoleLog("[INFO] SSE received prediction data");
+            // this.consoleLog("[INFO] SSE received prediction data");
             this.handlePrediction(event.data);
         });
 
@@ -1414,49 +1417,85 @@ class ARMMane{
 
 
     createPresetList(presetsWithSteps) {
-        const spawnArea = this.elements["ui"]["preset_box"][0].querySelector("div");
+        const spawnArea1 = this.elements["ui"]["preset_box1"][0].querySelector("div");
+        const spawnArea2 = this.elements["ui"]["preset_box2"][0].querySelector("div");
         
         presetsWithSteps.forEach(preset => {
-            const newPresetElement = this.createPresetElement(preset.presetName);
-            newPresetElement.addEventListener("click", () => {
-                this.handlePresetElementClick(preset, newPresetElement);
+            const newPresetElement1 = this.createPresetElement(preset.presetName);
+            newPresetElement1.addEventListener("click", () => {
+                this.handlePresetElementClick(preset, newPresetElement1);
             });
-    
-            spawnArea.appendChild(newPresetElement);
+
+            const newPresetElement2 = this.createPresetElement(preset.presetName);
+            newPresetElement2.addEventListener("click", () => {
+                this.handlePresetElementClick(preset, newPresetElement2);
+            });
+
+            spawnArea2.appendChild(newPresetElement2);
+            spawnArea1.appendChild(newPresetElement1);
+            
         });
+
     }
     
     createPresetElement(presetName) {
-        const newPresetElement = this.elements["template"]["ins_preset"][0].cloneNode(true);
+        const newPresetElement1 = this.elements["template"]["ins_preset1"][0].cloneNode(true);
+        const newPresetElement2 = this.elements["template"]["ins_preset2"][0].cloneNode(true);
         const uniqueId = `preset_${presetName}`;
-        newPresetElement.id = uniqueId;
+        newPresetElement1.id = uniqueId;
+        newPresetElement2.id = uniqueId;
 
-        newPresetElement.classList.add("ins-preset", presetName);
-        newPresetElement.querySelector(".tp-ins-preset > div > h4").textContent = presetName;
-        newPresetElement.style.display = "flex";
-        newPresetElement.setAttribute("data-preset-name", presetName);
+        newPresetElement1.classList.add("ins-preset", presetName);
+        newPresetElement1.querySelector(".tp-ins-preset-1 > div > h4").textContent = presetName;
+        newPresetElement1.style.display = "flex";
+        newPresetElement1.setAttribute("data-preset-name", presetName);
 
-        return newPresetElement;
+        newPresetElement2.classList.add("ins-preset", presetName);
+        newPresetElement2.querySelector(".tp-ins-preset-2 > div > h4").textContent = presetName;
+        newPresetElement2.style.display = "flex";
+        newPresetElement2.setAttribute("data-preset-name", presetName);
+
+        return newPresetElement1, newPresetElement2;
     }
     
-    handlePresetElementClick(preset, newPresetElement) {
+    handlePresetElementClick(preset, newPresetElement1, newPresetElement2) {
         const swimLane = this.elements["ui"]["command_area"][0];
         swimLane.innerHTML = "";
     
         preset.steps.forEach(step => {
-            const newDiv = this.cloneCodeBlockElement(newPresetElement); // Pass newPresetElement as an argument
-            this.attachCodeBlockEventListeners(newDiv, newPresetElement); // Pass newPresetElement as well
-            let instructionText = this.translateInstruction(step);
-            newDiv.querySelector(".cmd-text > div > h2").textContent = instructionText;
+            const newDiv = this.cloneCodeBlockElement(newPresetElement1); // Pass newPresetElement as an argument
+            this.runPreset(preset.presetName);
+
+            const newDiv2 = this.cloneCodeBlockElement(newPresetElement2); // Pass newPresetElement as an argument
+            this.attachCodeBlockEventListeners(newDiv2, newPresetElement2); // Pass newPresetElement as well
+            let instructionText2 = this.translateInstruction(step);
+            newDiv2.querySelector(".cmd-text > div > h2").textContent = instructionText2;
             // Translate the instruction to data
-            let extdata = this.extractInstruction(instructionText);
-            newDiv.setAttribute("data-type", extdata.type || "servo");
-            newDiv.setAttribute("data-device", extdata.id || 0);
-            newDiv.setAttribute("data-value", extdata.degree || 0);
-            newDiv.setAttribute("data-speed", extdata.speed || 0);
-            swimLane.appendChild(newDiv);
+            let extdata2 = this.extractInstruction(instructionText2);
+            newDiv2.setAttribute("data-type", extdata2.type || "servo");
+            newDiv2.setAttribute("data-device", extdata2.id || 0);
+            newDiv2.setAttribute("data-value", extdata2.degree || 0);
+            newDiv2.setAttribute("data-speed", extdata2.speed || 0);
+            swimLane.appendChild(newDiv2);
         });
     }
+
+    runPreset(presetName){
+
+        fetch(this.appStatus["server"]["fullURL"] + "/command/preset/" + presetName, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }).then(response => response.json())
+        .then(data => {
+            this.consoleLog("「ARMMANE」 Run preset : " + presetName);
+        })
+        .catch(err => {
+            console.log(err);
+        });
+    }
+    
     initializePreset() {
         // Fetch the presets and steps
         this.getPreset()
@@ -1469,7 +1508,8 @@ class ARMMane{
                 this.createDraggableList();
                 
                 // Remove the preset list before creating new ones
-                this.elements["ui"]["preset_box"][0].querySelector("div").innerHTML = "";
+                this.elements["ui"]["preset_box1"][0].querySelector("div").innerHTML = "";
+                this.elements["ui"]["preset_box2"][0].querySelector("div").innerHTML = "";
     
                 // Create the preset list in the preset_box
                 this.createPresetList(presetsWithSteps);
@@ -1695,7 +1735,7 @@ class ARMMane{
             .then(data => {
                 this.consoleLog("「ARMMANE」 Mode changed to auto");
             })
-            .catch(err => { 
+            .catch(err => {
                 console.log(err);
             });
         }
