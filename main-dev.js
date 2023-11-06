@@ -114,6 +114,7 @@ class ARMMane{
                 "cconf_btn_save" : this.querySel(".cconf-btn-save"),
                 "cconf_btn_cancel" : this.querySel(".cconf-btn-cancel"),
                 "main_auto" : this.querySel(".btn-main-auto"),
+                "main_mode" : this.querySel(".btn-main-mode"),
             },
             "form" : {
                 "conn_address_field" : this.querySel("#form-field-srvaddress"),
@@ -150,7 +151,8 @@ class ARMMane{
                 "log_title" : this.querySel(".log-title").querySelector("div > h2"),
                 "log_subtitle" : this.querySel(".log-subtitle").querySelector("div > h5"),
                 "log-number" : this.querySel(".log-number").querySelector("div > h1"),
-                "main_auto_title" : this.querySel(".btn-main-auto").querySelector("span")
+                "main_auto_title" : this.querySel(".btn-main-auto").querySelector("span"),
+                "main_mode_title" : this.querySel(".btn-main-mode").querySelector("span")
             },
             "icon" : {
                 "log_icon" : this.querySel(".log-icon").querySelector("div > i"),
@@ -438,6 +440,10 @@ class ARMMane{
         );
 
         this.setTriggerEvent("btn", "main_auto", "click", () => {
+            this.setAuto();
+        }
+        );
+        this.setTriggerEvent("btn", "main_mode", "click", () => {
             this.setMode();
         }
         );
@@ -951,6 +957,11 @@ class ARMMane{
         }else{
             this.elements["text"]["main_auto_title"].textContent = "ควบคุมด้วยตนเอง";
         }
+        if(armStatus["Detect"] == 1){
+            this.elements["text"]["main_mode_title"].textContent = "ตรวจจับวัตถุด้วยสี";
+        }else{
+            this.elements["text"]["main_mode_title"].textContent = "ตรวจจับวัตถุด้วยรูปร่าง";
+        }
     }
 
 
@@ -1414,74 +1425,78 @@ class ARMMane{
         }
     }
 
-
+    createPresetPlayList(presetsWithSteps) {
+        let spawnArea = this.elements["ui"]["preset_box1"][0].querySelector("div");
+        presetsWithSteps.forEach(preset => {
+            let newPreset = this.createPresetPlayElement(preset.presetName);
+            newPreset.addEventListener("click", () => {
+                this.handlePresetElementPlay(preset, newPreset);
+            });
+            spawnArea.appendChild(newPreset);
+        });
+    }
 
     createPresetList(presetsWithSteps) {
-        const spawnArea1 = this.elements["ui"]["preset_box1"][0].querySelector("div");
-        const spawnArea2 = this.elements["ui"]["preset_box2"][0].querySelector("div");
-        
+        const spawnArea = this.elements["ui"]["preset_box2"][0].querySelector("div");
         presetsWithSteps.forEach(preset => {
-            const newPresetElement1 = this.createPresetElement(preset.presetName);
-            newPresetElement1.addEventListener("click", () => {
-                this.handlePresetElementClick(preset, newPresetElement1);
+            const newPresetElement = this.createPresetElement(preset.presetName);
+            newPresetElement.addEventListener("click", () => {
+                this.handleRunPreset(preset, newPresetElement);
             });
-
-            const newPresetElement2 = this.createPresetElement(preset.presetName);
-            newPresetElement2.addEventListener("click", () => {
-                this.handlePresetElementClick(preset, newPresetElement2);
-            });
-
-            spawnArea2.appendChild(newPresetElement2);
-            spawnArea1.appendChild(newPresetElement1);
-            
+            spawnArea.appendChild(newPresetElement);
         });
+    }
 
+    createPresetPlayElement(presetName){
+        const newPresetPlayElement = this.elements["template"]["ins_preset1"][0].cloneNode(true);
+        const uniqueId = `preset_${presetName}`;
+        newPresetElement.id = uniqueId;
+
+        newPresetElement.classList.add("ins-preset", presetName);
+        newPresetElement.querySelector(".tp-ins-preset-1 > div > h4").textContent = presetName;
+        newPresetElement.style.display = "flex";
+        newPresetElement.setAttribute("data-preset-name", presetName);
+
+        return newPresetPlayElement;
     }
     
     createPresetElement(presetName) {
-        const newPresetElement1 = this.elements["template"]["ins_preset1"][0].cloneNode(true);
-        const newPresetElement2 = this.elements["template"]["ins_preset2"][0].cloneNode(true);
+        const newPresetElement = this.elements["template"]["ins_preset2"][0].cloneNode(true);
         const uniqueId = `preset_${presetName}`;
-        newPresetElement1.id = uniqueId;
-        newPresetElement2.id = uniqueId;
+        newPresetElement.id = uniqueId;
 
-        newPresetElement1.classList.add("ins-preset", presetName);
-        newPresetElement1.querySelector(".tp-ins-preset-1 > div > h4").textContent = presetName;
-        newPresetElement1.style.display = "flex";
-        newPresetElement1.setAttribute("data-preset-name", presetName);
+        newPresetElement.classList.add("ins-preset", presetName);
+        newPresetElement.querySelector(".tp-ins-preset-2 > div > h4").textContent = presetName;
+        newPresetElement.style.display = "flex";
+        newPresetElement.setAttribute("data-preset-name", presetName);
 
-        newPresetElement2.classList.add("ins-preset", presetName);
-        newPresetElement2.querySelector(".tp-ins-preset-2 > div > h4").textContent = presetName;
-        newPresetElement2.style.display = "flex";
-        newPresetElement2.setAttribute("data-preset-name", presetName);
-
-        return newPresetElement1, newPresetElement2;
+        return newPresetElement;
     }
-    
-    handlePresetElementClick(preset, newPresetElement1, newPresetElement2) {
+
+    handlePresetElementPlay(presetName) {
+        this.runPreset(presetName);
+    };
+
+    handlePresetElementClick(preset, newPresetElement) {
         const swimLane = this.elements["ui"]["command_area"][0];
         swimLane.innerHTML = "";
     
         preset.steps.forEach(step => {
-            const newDiv = this.cloneCodeBlockElement(newPresetElement1); // Pass newPresetElement as an argument
-            this.runPreset(preset.presetName);
-
-            const newDiv2 = this.cloneCodeBlockElement(newPresetElement2); // Pass newPresetElement as an argument
-            this.attachCodeBlockEventListeners(newDiv2, newPresetElement2); // Pass newPresetElement as well
-            let instructionText2 = this.translateInstruction(step);
-            newDiv2.querySelector(".cmd-text > div > h2").textContent = instructionText2;
+            const newDiv = this.cloneCodeBlockElement(newPresetElement); // Pass newPresetElement as an argument
+            this.attachCodeBlockEventListeners(newDiv, newPresetElement); // Pass newPresetElement as well
+            let instructionText = this.translateInstruction(step);
+            newDiv.querySelector(".cmd-text > div > h2").textContent = instructionText;
             // Translate the instruction to data
-            let extdata2 = this.extractInstruction(instructionText2);
-            newDiv2.setAttribute("data-type", extdata2.type || "servo");
-            newDiv2.setAttribute("data-device", extdata2.id || 0);
-            newDiv2.setAttribute("data-value", extdata2.degree || 0);
-            newDiv2.setAttribute("data-speed", extdata2.speed || 0);
-            swimLane.appendChild(newDiv2);
+            let extdata = this.extractInstruction(instructionText);
+            newDiv.setAttribute("data-type", extdata.type || "servo");
+            newDiv.setAttribute("data-device", extdata.id || 0);
+            newDiv.setAttribute("data-value", extdata.degree || 0);
+            newDiv.setAttribute("data-speed", extdata.speed || 0);
+            swimLane.appendChild(newDiv);
         });
     }
 
     runPreset(presetName){
-
         fetch(this.appStatus["server"]["fullURL"] + "/command/preset/" + presetName, {
             method: "POST",
             headers: {
@@ -1710,7 +1725,7 @@ class ARMMane{
         }, time);
     }
 
-    setMode(){
+    setAuto(){
         this.consoleLog("Test: " + this.armStatus["mode"]);
         if(this.armStatus["mode"] == 1){
             fetch(this.appStatus["server"]["fullURL"] + "/mode/manual", {
@@ -1734,6 +1749,37 @@ class ARMMane{
             }).then(response => response.json())
             .then(data => {
                 this.consoleLog("「ARMMANE」 Mode changed to auto");
+            })
+            .catch(err => {
+                console.log(err);
+            });
+        }
+    }
+
+    setMode(){
+        this.consoleLog("Test: " + this.armStatus["Detect"]);
+        if(this.armStatus["Detect"] == 1){
+            fetch(this.appStatus["server"]["fullURL"] + "/detect/color", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }).then(response => response.json())
+            .then(data => {
+                this.consoleLog("「ARMMANE」 Mode changed to color");
+            })
+            .catch(err => {
+                console.log(err);
+            });
+        } else{
+            fetch(this.appStatus["server"]["fullURL"] + "/detect/shape", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }).then(response => response.json())
+            .then(data => {
+                this.consoleLog("「ARMMANE」 Mode changed to shape");
             })
             .catch(err => {
                 console.log(err);
