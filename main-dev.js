@@ -1695,7 +1695,7 @@ class ARMMane{
             .then(data => {
                 this.consoleLog("「ARMMANE」 Mode changed to auto");
             })
-            .catch(err => {
+            .catch(err => { 
                 console.log(err);
             });
         }
