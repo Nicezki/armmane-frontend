@@ -1,4 +1,4 @@
-
+<script src="http://SortableJS.github.io/Sortable/Sortable.js"></script>
 class ARMMane{
     constructor(address = "localhost", port = "8000", protocol = "http", serverList = []) {
         // If url have ?elementor-preview
@@ -1428,11 +1428,11 @@ class ARMMane{
     createPresetPlayList(presetsWithSteps) {
         let spawnArea = this.elements["ui"]["preset_box1"][0].querySelector("div");
         presetsWithSteps.forEach(preset => {
-            let newPreset = this.createPresetPlayElement(preset.presetName);
-            newPreset.addEventListener("click", () => {
-                this.handlePresetElementPlay(preset, newPreset);
+            let newPresetPlayElement = this.createPresetPlayElement(preset.presetName);
+            newPresetPlayElement.addEventListener("click", () => {
+                this.handlePresetElementPlay(preset.presetName);
             });
-            spawnArea.appendChild(newPreset);
+            spawnArea.appendChild(newPresetPlayElement);
         });
     }
 
@@ -1441,7 +1441,7 @@ class ARMMane{
         presetsWithSteps.forEach(preset => {
             const newPresetElement = this.createPresetElement(preset.presetName);
             newPresetElement.addEventListener("click", () => {
-                this.handleRunPreset(preset, newPresetElement);
+                this.handlePresetElementClick(preset, newPresetElement);
             });
             spawnArea.appendChild(newPresetElement);
         });
@@ -1450,12 +1450,12 @@ class ARMMane{
     createPresetPlayElement(presetName){
         const newPresetPlayElement = this.elements["template"]["ins_preset1"][0].cloneNode(true);
         const uniqueId = `preset_${presetName}`;
-        newPresetElement.id = uniqueId;
+        newPresetPlayElement.id = uniqueId;
 
-        newPresetElement.classList.add("ins-preset", presetName);
-        newPresetElement.querySelector(".tp-ins-preset-1 > div > h4").textContent = presetName;
-        newPresetElement.style.display = "flex";
-        newPresetElement.setAttribute("data-preset-name", presetName);
+        newPresetPlayElement.classList.add("ins-preset", presetName);
+        newPresetPlayElement.querySelector(".tp-ins-preset-1 > div > h4").textContent = presetName;
+        newPresetPlayElement.style.display = "flex";
+        newPresetPlayElement.setAttribute("data-preset-name", presetName);
 
         return newPresetPlayElement;
     }
@@ -1528,6 +1528,7 @@ class ARMMane{
     
                 // Create the preset list in the preset_box
                 this.createPresetList(presetsWithSteps);
+                this.createPresetPlayList(presetsWithSteps);
     
                 this.checkDragAreaEmpty();
             })
