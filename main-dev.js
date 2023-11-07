@@ -115,6 +115,7 @@ class ARMMane{
                 "cconf_btn_cancel" : this.querySel(".cconf-btn-cancel"),
                 "main_auto" : this.querySel(".btn-main-auto"),
                 "main_mode" : this.querySel(".btn-main-mode"),
+                "emergency" : this.querySel(".btn-emergency-toggle"),
             },
             "form" : {
                 "conn_address_field" : this.querySel("#form-field-srvaddress"),
@@ -152,7 +153,8 @@ class ARMMane{
                 "log_subtitle" : this.querySel(".log-subtitle").querySelector("div > h5"),
                 "log-number" : this.querySel(".log-number").querySelector("div > h1"),
                 "main_auto_title" : this.querySel(".btn-main-auto").querySelector("span"),
-                "main_mode_title" : this.querySel(".btn-main-mode").querySelector("span")
+                "main_mode_title" : this.querySel(".btn-main-mode").querySelector("span"),
+                "emergency_title" : this.querySel(".btn-emergency-toggle").querySelectorAll("span")[2],
             },
             "icon" : {
                 "log_icon" : this.querySel(".log-icon").querySelector("div > i"),
@@ -445,6 +447,10 @@ class ARMMane{
         );
         this.setTriggerEvent("btn", "main_mode", "click", () => {
             this.setMode();
+        }
+        );
+        this.setTriggerEvent("btn", "emergency", "click", () => {
+            this.emergency();
         }
         );
     }
@@ -891,6 +897,13 @@ class ARMMane{
             }
         }else{
         }
+        if (!armStatus["emergency"]){
+            document.querySelector(".btn-emergency-toggle").querySelector("a").style.backgroundColor = "#FF0000";
+            this.changeText("emergency_title", "หยุดฉุกเฉิน");
+        }else{
+            document.querySelector(".btn-emergency-toggle").querySelector("a").style.backgroundColor = "#FF7B00";
+            this.changeText("emergency_title", "ทำงานต่อ");
+        }
         this.handleConvStatus(0, armStatus["conv"]["mode"][0]);
         this.handleConvStatus(1, armStatus["conv"]["mode"][1]);
         this.handleInfStatus(armStatus["sensor"]);
@@ -957,10 +970,12 @@ class ARMMane{
         }else{
             this.elements["text"]["main_auto_title"].textContent = "ควบคุมด้วยตนเอง";
         }
-        if(armStatus["Detect"] == 1){
+        if(armStatus["sorting"] == 1){
             this.elements["text"]["main_mode_title"].textContent = "ตรวจจับวัตถุด้วยสี";
-        }else{
+        }else if(armStatus["sorting"] == 0) {
             this.elements["text"]["main_mode_title"].textContent = "ตรวจจับวัตถุด้วยรูปร่าง";
+        }else{
+            this.elements["text"]["main_mode_title"].textContent = "ไม่มีโหมด";
         }
     }
 
@@ -1727,7 +1742,7 @@ class ARMMane{
     }
 
     setAuto(){
-        this.consoleLog("Test: " + this.armStatus["mode"]);
+        this.consoleLog("Test Mode: " + this.armStatus["mode"]);
         if(this.armStatus["mode"] == 1){
             fetch(this.appStatus["server"]["fullURL"] + "/mode/manual", {
                 method: "POST",
@@ -1758,29 +1773,72 @@ class ARMMane{
     }
 
     setMode(){
-        this.consoleLog("Test: " + this.armStatus["Detect"]);
-        if(this.armStatus["Detect"] == 1){
-            fetch(this.appStatus["server"]["fullURL"] + "/detect/color", {
+        this.consoleLog("Test Detect: " + this.armStatus["sorting"]);
+        if(this.armStatus["sorting"] == 1){
+            fetch(this.appStatus["server"]["fullURL"] + "/command/sorting/0", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 }
             }).then(response => response.json())
             .then(data => {
-                this.consoleLog("「ARMMANE」 Mode changed to color");
+                this.consoleLog("「ARMMANE」 Mode changed to detect color");
             })
             .catch(err => {
                 console.log(err);
             });
-        } else{
-            fetch(this.appStatus["server"]["fullURL"] + "/detect/shape", {
+        } else if(this.armStatus["sorting"] == 0) {
+            fetch(this.appStatus["server"]["fullURL"] + "/command/sorting/1", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 }
             }).then(response => response.json())
             .then(data => {
-                this.consoleLog("「ARMMANE」 Mode changed to shape");
+                this.consoleLog("「ARMMANE」 Mode changed to detect shape");
+            })
+            .catch(err => {
+                console.log(err);
+            });
+        } else if(this.armStatus["sorting"] == 2) {
+            fetch(this.appStatus["server"]["fullURL"] + "/command/sorting/0", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }).then(response => response.json())
+            .then(data => {
+                this.consoleLog("「ARMMANE」 Mode changed to no mode");
+            })
+            .catch(err => {
+                console.log(err);
+            });
+        }
+    }
+
+    emergency() {
+        if(!this.seriStatus["emergency"]){
+            fetch(this.appStatus["server"]["fullURL"] + "/command/emergency", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }).then(response => response.json())
+            .then(data => {
+                this.consoleLog("「ARMMANE」 Emergency stop");
+            })
+            .catch(err => {
+                console.log(err);
+            });
+        }else{
+            fetch(this.appStatus["server"]["fullURL"] + "/command/unlock", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }).then(response => response.json())
+            .then(data => {
+                this.consoleLog("「ARMMANE」 Unlock");
             })
             .catch(err => {
                 console.log(err);
