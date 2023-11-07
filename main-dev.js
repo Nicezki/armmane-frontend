@@ -102,6 +102,23 @@ class ARMMane{
                 "box_step_3" : this.querySel(".box-step-3"),
                 "box_step_4" : this.querySel(".box-step-4"),
                 "box_step_5" : this.querySel(".box-step-5"),
+                "alert_shuffle" : this.querySel(".alert-shuffle"),
+                "alert_missgrip" : this.querySel(".alert-missgrip"),
+                "alert_missingobj" : this.querySel(".alert-missingobj"),
+                "alert_norecobj" : this.querySel(".alert-norecobj"),
+                "alert_norecobjlim" : this.querySel(".alert-norecobjlim"),
+                "alert-nogripcheck" : this.querySel(".alert-nogripcheck"),
+                "alert-gripfaillim" : this.querySel(".alert-gripfaillim"),
+                "alert_noard" : this.querySel(".alert-noard"),
+                "alert_wintec" : this.querySel(".alert-wintec"),
+                "alert_nosen" : this.querySel(".alert-nosen"),
+                "alert_emergencyactivated" : this.querySel(".alert-emergencyactivated"),
+                "alert_sendmessagefail" : this.querySel(".alert-sendmessagefail"),
+                "alert_highcpuuse" : this.querySel(".alert-highcpuuse"),
+                "alert_highmemuse" : this.querySel(".alert-highmemuse"),
+                "alert_highdiskuse" : this.querySel(".alert-highdiskuse"),
+                "alert_nocam" : this.querySel(".alert-nocam"),
+                "alert_nomodel" : this.querySel(".alert-nomodel"),
             },
             "btn" : {
                 "conn_connectsrv" : this.querySel(".btn-connectsrv"),
@@ -245,6 +262,7 @@ class ARMMane{
 
         // Show loading screen
         this.showScreen("connect", true);
+        this.hideElement("btn", "emergency");
 
         this.setupElementTrigger();
 
@@ -311,6 +329,7 @@ class ARMMane{
         // error_btn_selectserver
         this.setTriggerEvent("btn", "error_btn_selectserver", "click", () => {
             this.showScreen("connect", true);
+            this.hideElement("btn", "emergency");
         });
 
         // error_btn_retry
@@ -590,6 +609,7 @@ class ARMMane{
         this.changeText("connect_url", this.appStatus["server"]["fullURL"]);
         this.changeText("connect_status", "กำลังเตรียมเชื่อมต่อ");
         this.showScreen("loading", true);
+        this.hideElement("btn", "emergency");
         this.connect();
         // Wait for 3 seconds If connected show main screen
         setTimeout(() => {
@@ -604,6 +624,7 @@ class ARMMane{
         setTimeout(() => {
             if (!this.appStatus["connected"]) {
                 this.showScreen("connect", true);
+                this.hideElement("btn", "emergency");
                 this.hideElement("ui", "log_disconnect");
                 this.consoleLog("「ARMMANE」 Connection to server at " + this.appStatus["server"]["fullURL"] + " failed", "ERROR");
                 this.alertLog("ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้", "กรุณาตรวจสอบการเชื่อมต่อ", "exclamation-triangle", "#B11D1D",5000);
@@ -760,6 +781,11 @@ class ARMMane{
             this.handlePrediction(event.data);
         });
 
+        this.videoStream.addEventListener("alert_status", (event) => {
+            // this.consoleLog("[INFO] SSE received prediction data");
+            this.handleAlertStatus(event.data);
+        });
+
 
         this.initializePreset();
         this.handleVideoStream();
@@ -821,7 +847,45 @@ class ARMMane{
         }
     
     }
-    
+
+    handleAlertStatus(data) {
+        this.consoleLog("[INFO] SSE received alert_status: " + data);
+        let alertStatus = JSON.parse(data);
+
+        alertStatus["arm"]["shuffle_currently"] ?  this.showElement("ui", "alert_shuffle") : this.hideElement("ui", "alert_shuffle");
+
+        alertStatus["arm"]["grip_failed"] ?  this.showElement("ui", "alert_missgrip") : this.hideElement("ui", "alert_missgrip");
+
+        alertStatus["arm"]["not_find_object"] ?  this.showElement("ui", "alert_missingobj") : this.hideElement("ui", "alert_missingobj");
+
+        alertStatus["arm"]["not_recognize_object"] ?  this.showElement("ui", "alert_norecobj") : this.hideElement("ui", "alert_norecgobj");
+
+        alertStatus["arm"]["not_recognize_object_limit"] ?  this.showElement("ui", "alert_norecobjlim") : this.hideElement("ui", "alert_norecobjlim");
+
+        alertStatus["arm"]["gripcheck_not_working"] ?  this.showElement("ui", "alert-nogripcheck") : this.hideElement("ui", "alert-nogripcheck");
+
+        alertStatus["arm"]["grip_failed_limit"] ?  this.showElement("ui", "alert-gripfaillim") : this.hideElement("ui", "alert-gripfaillim");
+
+        alertStatus["seri"]["arduino_not_found"] ?  this.showElement("ui", "alert_noard") : this.hideElement("ui", "alert_noard");
+
+        alertStatus["seri"]["windows_detected"] ?  this.showElement("ui", "alert_wintec") : this.hideElement("ui", "alert_wintec");
+
+        alertStatus["seri"]["sensor_not_working"] ?  this.showElement("ui", "alert_nosen") : this.hideElement("ui", "alert_nosen");
+
+        alertStatus["seri"]["emergency_mode_activated"] ?  this.showElement("ui", "alert_emergencyactivated") : this.hideElement("ui", "alert_emergencyactivated");
+
+        alertStatus["seri"]["sending_message_failed"] ?  this.showElement("ui", "alert_sendmessagefail") : this.hideElement("ui", "alert_sendmessagefail");
+
+        alertStatus["seri"]["high_cpu_usage"] ?  this.showElement("ui", "alert_highcpuuse") : this.hideElement("ui", "alert_highcpuuse");
+
+        alertStatus["seri"]["high_memory_usage"] ?  this.showElement("ui", "alert_highmemuse") : this.hideElement("ui", "alert_highmemuse");
+
+        alertStatus["seri"]["high_disk_usage"] ?  this.showElement("ui", "alert_highdiskuse") : this.hideElement("ui", "alert_highdiskuse");
+
+        alertStatus["tf"]["camera_not_working"] ?  this.showElement("ui", "alert_nocam") : this.hideElement("ui", "alert_nocam");
+
+        alertStatus["tf"]["model_not_working"] ?  this.showElement("ui", "alert_nomodel") : this.hideElement("ui", "alert_nomodel");
+    }
 
     
     /**
@@ -841,6 +905,7 @@ class ARMMane{
      */
     mainScreen() {
         this.showScreen("main", true);
+        this.showElement("btn", "emergency");
     }
 
     mainArea(area){
