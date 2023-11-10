@@ -1,4 +1,3 @@
-<script src="http://SortableJS.github.io/Sortable/Sortable.js"></script>
 class ARMMane{
     constructor(address = "localhost", port = "8000", protocol = "http", serverList = []) {
         // If url have ?elementor-preview
@@ -30,11 +29,17 @@ class ARMMane{
                 ];
         }
 
+        this.audio = null;
+
         this.armStatus = {
             "status" : "none",
         }
 
         this.seriStatus = {
+            "status" : "none",
+        }
+
+        this.statusAlert = {
             "status" : "none",
         }
 
@@ -48,6 +53,13 @@ class ARMMane{
                 "port" : port,
                 "protocol" : protocol,
             },
+            "soundDomain" : "https://design.nicezki.com/dev/sound/",
+            "soundState" : true,
+            "lastSoundPlay" : "",
+            "lastArmStatusMode" : -1,
+            "lastArmStatusSortingMode" : -1,
+            "lastDropBoxPosition" : -1,
+            "lastArmStep" : -1,
             "currentEditCodeBlock" : null,
             "currentScreen" : "screen_connect",
             "commandMode" : false,
@@ -107,8 +119,8 @@ class ARMMane{
                 "alert_missingobj" : this.querySel(".alert-missingobj"),
                 "alert_norecobj" : this.querySel(".alert-norecobj"),
                 "alert_norecobjlim" : this.querySel(".alert-norecobjlim"),
-                "alert-nogripcheck" : this.querySel(".alert-nogripcheck"),
-                "alert-gripfaillim" : this.querySel(".alert-gripfaillim"),
+                "alert_nogripcheck" : this.querySel(".alert-nogripcheck"),
+                "alert_gripfaillim" : this.querySel(".alert-gripfaillim"),
                 "alert_noard" : this.querySel(".alert-noard"),
                 "alert_wintec" : this.querySel(".alert-wintec"),
                 "alert_nosen" : this.querySel(".alert-nosen"),
@@ -119,6 +131,18 @@ class ARMMane{
                 "alert_highdiskuse" : this.querySel(".alert-highdiskuse"),
                 "alert_nocam" : this.querySel(".alert-nocam"),
                 "alert_nomodel" : this.querySel(".alert-nomodel"),
+                "info_os" : this.querySel(".info-os"),
+                "info_version" : this.querySel(".info-version"),
+                "info_release" : this.querySel(".info-release"),
+                "info_machine" : this.querySel(".info-machine"),
+                "info_processor" : this.querySel(".info-processor"),
+                "info_python_version" : this.querySel(".info-python-version"),
+                "info_cpu_usage" : this.querySel(".info-cpu-usage"),
+                "info_memory_usage" : this.querySel(".info-memory-usage"),
+                "info_disk_usage" : this.querySel(".info-disk-usage"),
+                "box_status_a" : this.querySel(".box-status-a"),
+                "box_status_b" : this.querySel(".box-status-b"),
+                "box_status_c" : this.querySel(".box-status-c"),
             },
             "btn" : {
                 "conn_connectsrv" : this.querySel(".btn-connectsrv"),
@@ -148,6 +172,9 @@ class ARMMane{
                 "cconf_02" : this.querySel("#form-field-cconf-s2"),
                 "cconf_03" : this.querySel("#form-field-cconf-s3"),
                 "cconf_04" : this.querySel("#form-field-cconf-s4"),
+                "box_a" : this.querySel("#form-field-box-a"),
+                "box_b" : this.querySel("#form-field-box-b"),
+                "box_c" : this.querySel("#form-field-box-c"),
             },
             "template" : {
                 "btn_serverlist" : this.querySel(".tp-btn-server"),
@@ -172,6 +199,15 @@ class ARMMane{
                 "main_auto_title" : this.querySel(".btn-main-auto").querySelector("span"),
                 "main_mode_title" : this.querySel(".btn-main-mode").querySelector("span"),
                 "emergency_title" : this.querySel(".btn-emergency-toggle").querySelectorAll("span")[2],
+                "info_os_title" : this.querySel(".info-os").querySelector("h4"),
+                "info_version_title" : this.querySel(".info-version").querySelector("h4"),
+                "info_release_title" : this.querySel(".info-release").querySelector("h4"),
+                "info_machine_title" : this.querySel(".info-machine").querySelector("h4"),
+                "info_processor_title" : this.querySel(".info-processor").querySelector("h4"),
+                "info_python_version_title" : this.querySel(".info-python-version").querySelector("h4"),
+                "info_cpu_usage_title" : this.querySel(".info-cpu-usage").querySelectorAll("span")[2],
+                "info_memory_usage_title" : this.querySel(".info-memory-usage").querySelectorAll("span")[2],
+                "info_disk_usage_title" : this.querySel(".info-disk-usage").querySelectorAll("span")[2],
             },
             "icon" : {
                 "log_icon" : this.querySel(".log-icon").querySelector("div > i"),
@@ -262,6 +298,7 @@ class ARMMane{
 
         // Show loading screen
         this.showScreen("connect", true);
+        this.playSoundOnce("welcome.mp3");
         this.hideElement("btn", "emergency");
 
         this.setupElementTrigger();
@@ -628,6 +665,7 @@ class ARMMane{
                 this.hideElement("ui", "log_disconnect");
                 this.consoleLog("「ARMMANE」 Connection to server at " + this.appStatus["server"]["fullURL"] + " failed", "ERROR");
                 this.alertLog("ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้", "กรุณาตรวจสอบการเชื่อมต่อ", "exclamation-triangle", "#B11D1D",5000);
+                this.playSoundOnce("notconnect.mp3");
                 this.disconnect();
             }else{
                 this.hideElement("ui", "log_disconnect");
@@ -753,6 +791,7 @@ class ARMMane{
     
         this.eventSource.onopen = () => {
             this.updateConnectionStatus("กำลังเชื่อมต่อกับเซิร์ฟเวอร์");
+            this.playSoundOnce("connecting.mp3");
             this.consoleLog("[INFO] SSE connecting to " + this.appStatus["server"]["fullURL"]);
         };
     
@@ -781,8 +820,9 @@ class ARMMane{
             this.handlePrediction(event.data);
         });
 
-        this.videoStream.addEventListener("alert_status", (event) => {
-            // this.consoleLog("[INFO] SSE received prediction data");
+        this.eventSource.addEventListener("alert_status", (event) => {
+            this.statusAlert = JSON.parse(event.data);
+            this.consoleLog("[INFO] SSE received status : " + event.data);
             this.handleAlertStatus(event.data);
         });
 
@@ -827,7 +867,7 @@ class ARMMane{
      */
     handleMessage(data) {
         console.log(data);
-    
+        this.playSoundOnce("connected.mp3");
         if (this.appStatus["currentScreen"] === "main") {
             if (this.appStatus["isDisconnecting"] || !this.appStatus["connected"]) {
                 this.consoleLog("[INFO] SSE connected to " + this.appStatus["server"]["fullURL"]);
@@ -849,8 +889,8 @@ class ARMMane{
     }
 
     handleAlertStatus(data) {
-        this.consoleLog("[INFO] SSE received alert_status: " + data);
         let alertStatus = JSON.parse(data);
+        this.consoleLog("[INFO] SSE received alert_status: " + data);
 
         alertStatus["arm"]["shuffle_currently"] ?  this.showElement("ui", "alert_shuffle") : this.hideElement("ui", "alert_shuffle");
 
@@ -858,13 +898,13 @@ class ARMMane{
 
         alertStatus["arm"]["not_find_object"] ?  this.showElement("ui", "alert_missingobj") : this.hideElement("ui", "alert_missingobj");
 
-        alertStatus["arm"]["not_recognize_object"] ?  this.showElement("ui", "alert_norecobj") : this.hideElement("ui", "alert_norecgobj");
+        alertStatus["arm"]["not_recognize_object"] ?  this.showElement("ui", "alert_norecobj") : this.hideElement("ui", "alert_norecobj");
 
         alertStatus["arm"]["not_recognize_object_limit"] ?  this.showElement("ui", "alert_norecobjlim") : this.hideElement("ui", "alert_norecobjlim");
 
-        alertStatus["arm"]["gripcheck_not_working"] ?  this.showElement("ui", "alert-nogripcheck") : this.hideElement("ui", "alert-nogripcheck");
+        alertStatus["arm"]["gripcheck_not_working"] ?  this.showElement("ui", "alert_nogripcheck") : this.hideElement("ui", "alert_nogripcheck");
 
-        alertStatus["arm"]["grip_failed_limit"] ?  this.showElement("ui", "alert-gripfaillim") : this.hideElement("ui", "alert-gripfaillim");
+        alertStatus["arm"]["grip_failed_limit"] ?  this.showElement("ui", "alert_gripfaillim") : this.hideElement("ui", "alert_gripfaillim");
 
         alertStatus["seri"]["arduino_not_found"] ?  this.showElement("ui", "alert_noard") : this.hideElement("ui", "alert_noard");
 
@@ -973,6 +1013,30 @@ class ARMMane{
         this.handleConvStatus(1, armStatus["conv"]["mode"][1]);
         this.handleInfStatus(armStatus["sensor"]);
         this.logSet(armStatus["status"], armStatus["message"], armStatus["progress"] || "");
+        // "info_os_title" : this.querySel(".info-os").querySelector("h4"),
+        // "info_version_title" : this.querySel(".info-version").querySelector("h4"),
+        // "info_release_title" : this.querySel(".info-release").querySelector("h4"),
+        // "info_machine_title" : this.querySel(".info-machine").querySelector("h4"),
+        // "info_processor_title" : this.querySel(".info-processor").querySelector("h4"),
+        // "info_python_version_title" : this.querySel(".info-python-version").querySelector("h4"),
+        // "info_cpu_usage_title" : this.querySel(".info-cpu-usage").querySelectorAll("span")[2],
+        // "info_memory_usage_title" : this.querySel(".info-memory-usage").querySelectorAll("span")[2],
+        // "info_disk_usage_title" : this.querySel(".info-disk-usage").querySelectorAll("span")[2],
+        this.elements["text"]["info_os_title"].textContent = armStatus["system"]["os"] == "" || armStatus["system"]["os"] == null ? "ไม่ระบุ" : String(armStatus["system"]["os"]);
+        this.elements["text"]["info_version_title"].textContent = armStatus["system"]["version"] == "" || armStatus["system"]["version"] == null ? "ไม่ระบุ" : String(armStatus["system"]["version"]);
+        this.elements["text"]["info_release_title"].textContent = armStatus["system"]["release"] == "" || armStatus["system"]["release"] == null ? "ไม่ระบุ" : String(armStatus["system"]["release"]);
+        this.elements["text"]["info_machine_title"].textContent = armStatus["system"]["machine"] == "" || armStatus["system"]["machine"] == null ? "ไม่ระบุ" : String(armStatus["system"]["machine"]);
+        this.elements["text"]["info_processor_title"].textContent = armStatus["system"]["processor"] == "" || armStatus["system"]["processor"] == null ? "ไม่ระบุ" : String(armStatus["system"]["processor"]);
+        this.elements["text"]["info_python_version_title"].textContent = armStatus["system"]["python_version"] == "" || armStatus["system"]["python_version"] == null ? "ไม่ระบุ" : String(armStatus["system"]["python_version"]);
+        this.elements["text"]["info_cpu_usage_title"].textContent = armStatus["system"]["cpu_usage"] == "" || armStatus["system"]["cpu_usage"] == null ? "ไม่ระบุ" : String(armStatus["system"]["cpu_usage"]);
+        this.elements["ui"]["info_cpu_usage"].querySelectorAll("div")[2].style.width = armStatus["system"]["cpu_usage"] == "" || armStatus["system"]["cpu_usage"] == null ? "0%" : String(armStatus["system"]["cpu_usage"] + "%");
+        this.elements["ui"]["info_cpu_usage"].querySelectorAll("span")[2].textContent = armStatus["system"]["cpu_usage"] == "" || armStatus["system"]["cpu_usage"] == null ? "ไม่ระบุ" : String(armStatus["system"]["cpu_usage"] + "%");
+        this.elements["text"]["info_memory_usage_title"].textContent = armStatus["system"]["memory_usage"] == "" || armStatus["system"]["memory_usage"] == null ? "ไม่ระบุ" : String(armStatus["system"]["memory_usage"]);
+        this.elements["ui"]["info_memory_usage"].querySelectorAll("div")[2].style.width = armStatus["system"]["memory_usage"] == "" || armStatus["system"]["memory_usage"] == null ? "0%" : String(armStatus["system"]["memory_usage"] + "%");
+        this.elements["ui"]["info_memory_usage"].querySelectorAll("span")[2].textContent = armStatus["system"]["memory_usage"] == "" || armStatus["system"]["memory_usage"] == null ? "ไม่ระบุ" : String(armStatus["system"]["memory_usage"] + "%");
+        this.elements["text"]["info_disk_usage_title"].textContent = armStatus["system"]["disk_usage"] == "" || armStatus["system"]["disk_usage"] == null ? "ไม่ระบุ" : String(armStatus["system"]["disk_usage"]);
+        this.elements["ui"]["info_disk_usage"].querySelectorAll("div")[2].style.width = armStatus["system"]["disk_usage"] == "" || armStatus["system"]["disk_usage"] == null ? "0%" : String(armStatus["system"]["disk_usage"] + "%");
+        this.elements["ui"]["info_disk_usage"].querySelectorAll("span")[2].textContent = armStatus["system"]["disk_usage"] == "" || armStatus["system"]["disk_usage"] == null ? "ไม่ระบุ" : String(armStatus["system"]["disk_usage"] + "%");
     }
 
 
@@ -1017,30 +1081,72 @@ class ARMMane{
         this.elements["ui"]["box_step_4"].style.backgroundColor = "";
         this.elements["ui"]["box_step_5"].style.backgroundColor = "";
         
-        if(armStatus["step"] == 1){
+        if(armStatus["step"] == 1 && this.appStatus["lastArmStep"] != 1){
             this.elements["ui"]["box_step_1"].style.backgroundColor = "#FCA5B6";
-        }else if(armStatus["step"] == 2){
+            this.playSoundOnce("object_grip.mp3");
+            this.appStatus["lastArmStep"] = 1; 
+        }else if(armStatus["step"] == 2 && this.appStatus["lastArmStep"] != 2){
             this.elements["ui"]["box_step_2"].style.backgroundColor = "#FCA5B6";
-        }else if(armStatus["step"] == 3){
+            this.playSoundOnce("object_dropbelt.mp3");
+            this.appStatus["lastArmStep"] = 2;
+        }else if(armStatus["step"] == 3 && this.appStatus["lastArmStep"] != 3){
             this.elements["ui"]["box_step_3"].style.backgroundColor = "#FCA5B6";
-        }else if(armStatus["step"] == 4){
+            this.playSoundOnce("object_conv.mp3");
+            this.appStatus["lastArmStep"] = 3;
+        }else if(armStatus["step"] == 4 && this.appStatus["lastArmStep"] != 4){
             this.elements["ui"]["box_step_4"].style.backgroundColor = "#FCA5B6";
-        }else if(armStatus["step"] == 5){
+            this.playSoundOnce("object_reg.mp3");
+            this.appStatus["lastArmStep"] = 4;
+        }else if(armStatus["step"] == 5 && this.appStatus["lastArmStep"] != 5){
             this.elements["ui"]["box_step_5"].style.backgroundColor = "#FCA5B6";
+            this.appStatus["lastArmStep"] = 5;
+        }else{
+            this.appStatus["lastArmStep"] = -1;
         }
 
-        if(armStatus["mode"] == 1){
+        if(armStatus["mode"] == 1 ){
             this.elements["text"]["main_auto_title"].textContent = "อัตโนมัติ";
+            this.appStatus["lastArmStatusMode"] = 1;
             
         }else{
             this.elements["text"]["main_auto_title"].textContent = "ควบคุมด้วยตนเอง";
+            this.appStatus["lastArmStatusMode"] = 0;
         }
+
         if(armStatus["sorting"] == 1){
             this.elements["text"]["main_mode_title"].textContent = "ตรวจจับวัตถุด้วยสี";
-        }else if(armStatus["sorting"] == 0) {
+            this.appStatus["lastArmStatusSortingMode"] = 1;
+        }else if(armStatus["sorting"] == 0){
             this.elements["text"]["main_mode_title"].textContent = "ตรวจจับวัตถุด้วยรูปร่าง";
+            this.appStatus["lastArmStatusSortingMode"] = 0;
         }else{
             this.elements["text"]["main_mode_title"].textContent = "ไม่มีโหมด";
+            this.appStatus["lastArmStatusSortingMode"] = 2;
+        }
+
+        if(armStatus["drop"] == 0 && this.appStatus["lastDropBoxPosition"] != 0){
+            this.elements["ui"]["box_status_a"].classList.add("drop-inprogress");
+            this.elements["ui"]["box_status_b"].classList.remove("drop-inprogress");
+            this.elements["ui"]["box_status_c"].classList.remove("drop-inprogress");
+            this.appStatus["lastDropBoxPosition"] = 0;
+            this.playSoundOnce("drop_a.mp3");
+        }else if(armStatus["drop"] == 1 && this.appStatus["lastDropBoxPosition"] != 1){
+            this.elements["ui"]["box_status_a"].classList.remove("drop-inprogress");
+            this.elements["ui"]["box_status_b"].classList.add("drop-inprogress");
+            this.elements["ui"]["box_status_c"].classList.remove("drop-inprogress");
+            this.appStatus["lastDropBoxPosition"] = 1;
+            this.playSoundOnce("drop_b.mp3");
+        }else if(armStatus["drop"] == 2 && this.appStatus["lastDropBoxPosition"] != 2){
+            this.elements["ui"]["box_status_a"].classList.remove("drop-inprogress");
+            this.elements["ui"]["box_status_b"].classList.remove("drop-inprogress");
+            this.elements["ui"]["box_status_c"].classList.add("drop-inprogress");
+            this.appStatus["lastDropBoxPosition"] = 2;
+            this.playSoundOnce("drop_c.mp3");
+        }else{
+            this.elements["ui"]["box_status_a"].classList.remove("drop-inprogress");
+            this.elements["ui"]["box_status_b"].classList.remove("drop-inprogress");
+            this.elements["ui"]["box_status_c"].classList.remove("drop-inprogress");
+            this.appStatus["lastDropBoxPosition"] = -1;
         }
     }
 
@@ -1124,7 +1230,6 @@ class ARMMane{
         if (available == 0 || available == false) {
             if (this.appStatus["sensorWarningTrigger"] == null) {
                 this.appStatus["sensorWarningTrigger"] = setInterval(() => {
-                    // this.playSound("https://design.nicezki.com/dev/sound/red-beep.mp3");
                     element_trigger.style.backgroundColor = warning;
                     element_idle.style.backgroundColor = warning;
                     setTimeout(() => {
@@ -1150,7 +1255,6 @@ class ARMMane{
                 clearInterval(this.appStatus["sensorWarningTrigger"]);
                 this.appStatus["sensorWarningTrigger"] = null;
             }
-            // this.playSound("https://design.nicezki.com/dev/sound/beep-2.mp3");
             element_trigger.style.backgroundColor = active;
             element_idle.style.backgroundColor = inactive;
         }else{
@@ -1164,8 +1268,27 @@ class ARMMane{
      * @param sound Pass in the sound file that is to be played
      */
     playSound(sound) {
-        let audio = new Audio(sound);
-        audio.play();
+        if(this.appStatus["soundState"]){
+            let soundDomain = this.appStatus["soundDomain"]
+            this.audio = new Audio(soundDomain + sound);
+            this.audio.play();
+            this.appStatus["lastSoundPlay"] = sound;
+        }else{
+            this.consoleLog("「ARMMANE」 Can't play sound " + sound + " because the sound is muted", "WARN");
+        }
+    }
+
+    playSoundOnce(sound) {
+        if(this.appStatus["soundState"]){
+            if(this.appStatus["lastSoundPlay"] == sound){
+                this.consoleLog("「ARMMANE」 Can't play sound " + sound + " because the sound is already played", "WARN");
+            }else{
+                this.playSound(sound);
+            }
+
+        }else{
+            this.consoleLog("「ARMMANE」 Can't play sound " + sound + " because the sound is muted", "WARN");
+        }
     }
 
 
@@ -1847,7 +1970,7 @@ class ARMMane{
                 }
             }).then(response => response.json())
             .then(data => {
-                this.consoleLog("「ARMMANE」 Mode changed to detect color");
+                this.consoleLog("「ARMMANE」 Mode changed to detect shape");
             })
             .catch(err => {
                 console.log(err);
@@ -1860,7 +1983,7 @@ class ARMMane{
                 }
             }).then(response => response.json())
             .then(data => {
-                this.consoleLog("「ARMMANE」 Mode changed to detect shape");
+                this.consoleLog("「ARMMANE」 Mode changed to detect color");
             })
             .catch(err => {
                 console.log(err);
