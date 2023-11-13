@@ -1001,6 +1001,10 @@ class ARMMane{
     mainScreen() {
         this.showScreen("main", true);
         this.showElement("btn", "emergency");
+        this.showElement("ui", "statusbox");
+        this.hideElement("ui", "controlbox");
+        this.showElement("ui", "statusarea");
+        this.hideElement("ui", "settingarea");
     }
 
     mainArea(area){
