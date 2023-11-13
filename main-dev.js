@@ -29,6 +29,19 @@ class ARMMane{
                 ];
         }
 
+        this.audio = null;
+
+        this.armStatus = {
+            "status" : "none",
+        }
+
+        this.seriStatus = {
+            "status" : "none",
+        }
+
+        this.statusAlert = {
+            "status" : "none",
+        }
 
         this.appStatus = {
             "connected" : false,
@@ -40,12 +53,21 @@ class ARMMane{
                 "port" : port,
                 "protocol" : protocol,
             },
+            "soundDomain" : "https://design.nicezki.com/dev/sound/",
+            "soundState" : true,
+            "lastSoundPlay" : "",
+            "lastArmStatusMode" : -1,
+            "lastArmStatusSortingMode" : -1,
+            "lastDropBoxPosition" : -1,
+            "lastArmStep" : -1,
             "currentEditCodeBlock" : null,
             "currentScreen" : "screen_connect",
             "commandMode" : false,
             "manualControl" : false, // Trigger whwn manual control is active in 10 last second
             "manualControlTrigger" : null, // Store the timeout function
             "sensorWarningTrigger" : null, // Store the timeout function
+            "manualBoxControlTrigger" : null, // Store the timeout function
+            "manualBoxControl" : null, // Store the timeout function    
 
         }
 
@@ -79,7 +101,8 @@ class ARMMane{
                 "status_conv01_backward" : this.querySel(".status-conv01-bw"),
                 "command_area" : document.querySelectorAll(".ins-command-area"),
                 "function_box" : document.querySelectorAll(".ins-func-box"),
-                "preset_box" : document.querySelectorAll(".ins-preset-box"),
+                "preset_box1" : document.querySelectorAll(".ins-preset-box-1"),
+                "preset_box2" : document.querySelectorAll(".ins-preset-box-2"),
                 "livepreview" : this.querySel(".livepreview"),
                 "settingbox1" : this.querySel(".settingbox-1"),
                 "settingbox2" : this.querySel(".settingbox-2"),
@@ -88,6 +111,40 @@ class ARMMane{
                 "log_progress" : this.querySel(".log-progress"),
                 "empty_step" : this.querySel(".empty-step"),
                 "pred_box" : this.querySel(".pred-box"),
+                "box_step_1" : this.querySel(".box-step-1"),
+                "box_step_2" : this.querySel(".box-step-2"),
+                "box_step_3" : this.querySel(".box-step-3"),
+                "box_step_4" : this.querySel(".box-step-4"),
+                "box_step_5" : this.querySel(".box-step-5"),
+                "alert_shuffle" : this.querySel(".alert-shuffle"),
+                "alert_missgrip" : this.querySel(".alert-missgrip"),
+                "alert_missingobj" : this.querySel(".alert-missingobj"),
+                "alert_norecobj" : this.querySel(".alert-norecobj"),
+                "alert_norecobjlim" : this.querySel(".alert-norecobjlim"),
+                "alert_nogripcheck" : this.querySel(".alert-nogripcheck"),
+                "alert_gripfaillim" : this.querySel(".alert-gripfaillim"),
+                "alert_noard" : this.querySel(".alert-noard"),
+                "alert_wintec" : this.querySel(".alert-wintec"),
+                "alert_nosen" : this.querySel(".alert-nosen"),
+                "alert_emergencyactivated" : this.querySel(".alert-emergencyactivated"),
+                "alert_sendmessagefail" : this.querySel(".alert-sendmessagefail"),
+                "alert_highcpuuse" : this.querySel(".alert-highcpuuse"),
+                "alert_highmemuse" : this.querySel(".alert-highmemuse"),
+                "alert_highdiskuse" : this.querySel(".alert-highdiskuse"),
+                "alert_nocam" : this.querySel(".alert-nocam"),
+                "alert_nomodel" : this.querySel(".alert-nomodel"),
+                "info_os" : this.querySel(".info-os"),
+                "info_version" : this.querySel(".info-version"),
+                "info_release" : this.querySel(".info-release"),
+                "info_machine" : this.querySel(".info-machine"),
+                "info_processor" : this.querySel(".info-processor"),
+                "info_python_version" : this.querySel(".info-python-version"),
+                "info_cpu_usage" : this.querySel(".info-cpu-usage"),
+                "info_memory_usage" : this.querySel(".info-memory-usage"),
+                "info_disk_usage" : this.querySel(".info-disk-usage"),
+                "box_status_a" : this.querySel(".box-status-a"),
+                "box_status_b" : this.querySel(".box-status-b"),
+                "box_status_c" : this.querySel(".box-status-c"),
             },
             "btn" : {
                 "conn_connectsrv" : this.querySel(".btn-connectsrv"),
@@ -99,6 +156,9 @@ class ARMMane{
                 "error_btn_retry" : this.querySel(".err-btn2"),
                 "cconf_btn_save" : this.querySel(".cconf-btn-save"),
                 "cconf_btn_cancel" : this.querySel(".cconf-btn-cancel"),
+                "main_auto" : this.querySel(".btn-main-auto"),
+                "main_mode" : this.querySel(".btn-main-mode"),
+                "emergency" : this.querySel(".btn-emergency-toggle"),
             },
             "form" : {
                 "conn_address_field" : this.querySel("#form-field-srvaddress"),
@@ -114,13 +174,18 @@ class ARMMane{
                 "cconf_02" : this.querySel("#form-field-cconf-s2"),
                 "cconf_03" : this.querySel("#form-field-cconf-s3"),
                 "cconf_04" : this.querySel("#form-field-cconf-s4"),
+                "box_1" : this.querySel("#form-field-box-a"),
+                "box_2" : this.querySel("#form-field-box-b"),
+                "box_3" : this.querySel("#form-field-box-c"),
+                "cconf_sound" : this.querySel("#form-field-soundstate"),
             },
             "template" : {
                 "btn_serverlist" : this.querySel(".tp-btn-server"),
                 "log_alert" : this.querySel(".tp-log-alert"),
                 "ins_function" : document.querySelectorAll(".tp-ins-func"),
                 "code_block" : this.querySel(".tp-ins-code-block"),
-                "ins_preset" : document.querySelectorAll(".tp-ins-preset"),
+                "ins_preset1" : document.querySelectorAll(".tp-ins-preset-1"),
+                "ins_preset2" : document.querySelectorAll(".tp-ins-preset-2"),
             },
             "text" : {
                 "connect_url" : this.querySel(".connecting-url").querySelector("div > h2"),
@@ -134,6 +199,18 @@ class ARMMane{
                 "log_title" : this.querySel(".log-title").querySelector("div > h2"),
                 "log_subtitle" : this.querySel(".log-subtitle").querySelector("div > h5"),
                 "log-number" : this.querySel(".log-number").querySelector("div > h1"),
+                "main_auto_title" : this.querySel(".btn-main-auto").querySelector("span"),
+                "main_mode_title" : this.querySel(".btn-main-mode").querySelector("span"),
+                "emergency_title" : this.querySel(".btn-emergency-toggle").querySelectorAll("span")[2],
+                "info_os_title" : this.querySel(".info-os").querySelector("h4"),
+                "info_version_title" : this.querySel(".info-version").querySelector("h4"),
+                "info_release_title" : this.querySel(".info-release").querySelector("h4"),
+                "info_machine_title" : this.querySel(".info-machine").querySelector("h4"),
+                "info_processor_title" : this.querySel(".info-processor").querySelector("h4"),
+                "info_python_version_title" : this.querySel(".info-python-version").querySelector("h4"),
+                "info_cpu_usage_title" : this.querySel(".info-cpu-usage").querySelectorAll("span")[2],
+                "info_memory_usage_title" : this.querySel(".info-memory-usage").querySelectorAll("span")[2],
+                "info_disk_usage_title" : this.querySel(".info-disk-usage").querySelectorAll("span")[2],
             },
             "icon" : {
                 "log_icon" : this.querySel(".log-icon").querySelector("div > i"),
@@ -224,11 +301,17 @@ class ARMMane{
 
         // Show loading screen
         this.showScreen("connect", true);
+        
+        this.hideElement("btn", "emergency");
 
         this.setupElementTrigger();
 
         this.initializeSortable();
 
+        this.getCookies("soundState");
+        this.appStatus["soundState"] = this.strToBool(this.getCookies("soundState") == null ? false : this.getCookies("soundState"));
+        this.elements["form"]["cconf_sound"].value = String(this.appStatus["soundState"]);
+        this.playSoundOnce("welcome.mp3");
     }
 
 
@@ -290,6 +373,7 @@ class ARMMane{
         // error_btn_selectserver
         this.setTriggerEvent("btn", "error_btn_selectserver", "click", () => {
             this.showScreen("connect", true);
+            this.hideElement("btn", "emergency");
         });
 
         // error_btn_retry
@@ -336,6 +420,32 @@ class ARMMane{
             }
         });
 
+        this.setTriggerEvent("form", "box_1", "change", () => {
+            this.appStatus["manualBoxControl"] = true;
+            clearTimeout(this.appStatus["manualBoxControlTrigger"]);
+            this.appStatus["manualBoxControlTrigger"] = setTimeout(() => {
+                this.consoleLog("Live update is resumed");
+                this.appStatus["manualControl"] = false;
+            }, 5000);
+        });
+
+        this.setTriggerEvent("form", "box_2", "change", () => {
+            this.appStatus["manualBoxControl"] = true;
+            clearTimeout(this.appStatus["manualBoxControlTrigger"]);
+            this.appStatus["manualBoxControlTrigger"] = setTimeout(() => {
+                this.consoleLog("Live update is resumed");
+                this.appStatus["manualControl"] = false;
+            }, 5000);
+        });
+
+        this.setTriggerEvent("form", "box_3", "change", () => {
+            this.appStatus["manualBoxControl"] = true;
+            clearTimeout(this.appStatus["manualBoxControlTrigger"]);
+            this.appStatus["manualBoxControlTrigger"] = setTimeout(() => {
+                this.consoleLog("Live update is resumed");
+                this.appStatus["manualControl"] = false;
+            }, 5000);
+        });
 
         this.setTriggerEvent("btn", "cconf_btn_save", "click", () => {
             let selectedElement = document.getElementById(this.appStatus["currentEditCodeBlock"]);
@@ -390,6 +500,19 @@ class ARMMane{
             });
         }
 
+        for (let box = 1; box <= 3; box++) {
+            this.setTriggerEvent("form", "box_" + box, "change", () => {
+                this.setBoxItem(box, this.elements["form"]["box_" + box].value);
+                this.consoleLog("Live update is paused");
+                this.appStatus["manualBoxControl"] = true;
+                clearTimeout(this.appStatus["manualBoxControlTrigger"]);
+                this.appStatus["manualBoxControlTrigger"] = setTimeout(() => {
+                    this.consoleLog("Live update is resumed");
+                    this.appStatus["manualBoxControl"] = false;
+                }, 5000);
+            });
+        }
+
         for (let servo = 0; servo < 6; servo++) {
             this.setTriggerEvent("form", "servo_0" + servo, "change", () => {
                 this.consoleLog("Live update is paused");
@@ -420,7 +543,27 @@ class ARMMane{
         }
         );
 
+        this.setTriggerEvent("btn", "main_auto", "click", () => {
+            this.setAuto();
+        }
+        );
 
+        this.setTriggerEvent("btn", "main_mode", "click", () => {
+            this.setMode();
+        }
+        );
+
+        this.setTriggerEvent("btn", "emergency", "click", () => {
+            this.emergency();
+        }
+        );
+
+        this.setTriggerEvent("form", "cconf_sound", "change", () => {
+            this.setSoundState();
+            this.setCookies("soundState", this.appStatus["soundState"])
+        }
+        );
+        
     }
 
     
@@ -558,6 +701,7 @@ class ARMMane{
         this.changeText("connect_url", this.appStatus["server"]["fullURL"]);
         this.changeText("connect_status", "กำลังเตรียมเชื่อมต่อ");
         this.showScreen("loading", true);
+        this.hideElement("btn", "emergency");
         this.connect();
         // Wait for 3 seconds If connected show main screen
         setTimeout(() => {
@@ -572,9 +716,11 @@ class ARMMane{
         setTimeout(() => {
             if (!this.appStatus["connected"]) {
                 this.showScreen("connect", true);
+                this.hideElement("btn", "emergency");
                 this.hideElement("ui", "log_disconnect");
                 this.consoleLog("「ARMMANE」 Connection to server at " + this.appStatus["server"]["fullURL"] + " failed", "ERROR");
                 this.alertLog("ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้", "กรุณาตรวจสอบการเชื่อมต่อ", "exclamation-triangle", "#B11D1D",5000);
+                this.playSoundOnce("notconnect.mp3");
                 this.disconnect();
             }else{
                 this.hideElement("ui", "log_disconnect");
@@ -683,11 +829,6 @@ class ARMMane{
         }, time);
     }
 
-
-
-
-
-    
     /**
      * The connect function connects to the server via SSE and sets up event listeners for Server Sent Events.
      */
@@ -705,6 +846,7 @@ class ARMMane{
     
         this.eventSource.onopen = () => {
             this.updateConnectionStatus("กำลังเชื่อมต่อกับเซิร์ฟเวอร์");
+            this.playSoundOnce("connecting.mp3");
             this.consoleLog("[INFO] SSE connecting to " + this.appStatus["server"]["fullURL"]);
         };
     
@@ -717,13 +859,26 @@ class ARMMane{
         };
 
         this.eventSource.addEventListener("seri_status", (event) => {
-            this.consoleLog("[INFO] SSE arm_status: " + event.data);
+            this.seriStatus = JSON.parse(event.data);
+            // this.consoleLog("[INFO] SSE seri_status: " + event.data);
             this.handleSeriStatus(event.data);
         });
 
+        this.eventSource.addEventListener("arm_status", (event) => {
+            this.armStatus = JSON.parse(event.data);
+            // this.consoleLog("[INFO] SSE arm_status: " + event.data);
+            this.handleArmStatus(event.data);
+        });
+
         this.videoStream.addEventListener("prediction", (event) => {
-            this.consoleLog("[INFO] SSE received prediction data");
+            // this.consoleLog("[INFO] SSE received prediction data");
             this.handlePrediction(event.data);
+        });
+
+        this.eventSource.addEventListener("alert_status", (event) => {
+            this.statusAlert = JSON.parse(event.data);
+            this.consoleLog("[INFO] SSE received status : " + event.data);
+            this.handleAlertStatus(event.data);
         });
 
 
@@ -767,7 +922,7 @@ class ARMMane{
      */
     handleMessage(data) {
         console.log(data);
-    
+        this.playSoundOnce("connected.mp3");
         if (this.appStatus["currentScreen"] === "main") {
             if (this.appStatus["isDisconnecting"] || !this.appStatus["connected"]) {
                 this.consoleLog("[INFO] SSE connected to " + this.appStatus["server"]["fullURL"]);
@@ -787,7 +942,45 @@ class ARMMane{
         }
     
     }
-    
+
+    handleAlertStatus(data) {
+        let alertStatus = JSON.parse(data);
+        this.consoleLog("[INFO] SSE received alert_status: " + data);
+
+        alertStatus["arm"]["shuffle_currently"] ?  this.showElement("ui", "alert_shuffle") : this.hideElement("ui", "alert_shuffle");
+
+        alertStatus["arm"]["grip_failed"] ?  this.showElement("ui", "alert_missgrip") : this.hideElement("ui", "alert_missgrip");
+
+        alertStatus["arm"]["not_find_object"] ?  this.showElement("ui", "alert_missingobj") : this.hideElement("ui", "alert_missingobj");
+
+        alertStatus["arm"]["not_recognize_object"] ?  this.showElement("ui", "alert_norecobj") : this.hideElement("ui", "alert_norecobj");
+
+        alertStatus["arm"]["not_recognize_object_limit"] ?  this.showElement("ui", "alert_norecobjlim") : this.hideElement("ui", "alert_norecobjlim");
+
+        alertStatus["arm"]["gripcheck_not_working"] ?  this.showElement("ui", "alert_nogripcheck") : this.hideElement("ui", "alert_nogripcheck");
+
+        alertStatus["arm"]["grip_failed_limit"] ?  this.showElement("ui", "alert_gripfaillim") : this.hideElement("ui", "alert_gripfaillim");
+
+        alertStatus["seri"]["arduino_not_found"] ?  this.showElement("ui", "alert_noard") : this.hideElement("ui", "alert_noard");
+
+        alertStatus["seri"]["windows_detected"] ?  this.showElement("ui", "alert_wintec") : this.hideElement("ui", "alert_wintec");
+
+        alertStatus["seri"]["sensor_not_working"] ?  this.showElement("ui", "alert_nosen") : this.hideElement("ui", "alert_nosen");
+
+        alertStatus["seri"]["emergency_mode_activated"] ?  this.showElement("ui", "alert_emergencyactivated") : this.hideElement("ui", "alert_emergencyactivated");
+
+        alertStatus["seri"]["sending_message_failed"] ?  this.showElement("ui", "alert_sendmessagefail") : this.hideElement("ui", "alert_sendmessagefail");
+
+        alertStatus["seri"]["high_cpu_usage"] ?  this.showElement("ui", "alert_highcpuuse") : this.hideElement("ui", "alert_highcpuuse");
+
+        alertStatus["seri"]["high_memory_usage"] ?  this.showElement("ui", "alert_highmemuse") : this.hideElement("ui", "alert_highmemuse");
+
+        alertStatus["seri"]["high_disk_usage"] ?  this.showElement("ui", "alert_highdiskuse") : this.hideElement("ui", "alert_highdiskuse");
+
+        alertStatus["tf"]["camera_not_working"] ?  this.showElement("ui", "alert_nocam") : this.hideElement("ui", "alert_nocam");
+
+        alertStatus["tf"]["model_not_working"] ?  this.showElement("ui", "alert_nomodel") : this.hideElement("ui", "alert_nomodel");
+    }
 
     
     /**
@@ -807,6 +1000,7 @@ class ARMMane{
      */
     mainScreen() {
         this.showScreen("main", true);
+        this.showElement("btn", "emergency");
     }
 
     mainArea(area){
@@ -863,10 +1057,41 @@ class ARMMane{
             }
         }else{
         }
+        if (!armStatus["emergency"]){
+            document.querySelector(".btn-emergency-toggle").querySelector("a").style.backgroundColor = "#FF0000";
+            this.changeText("emergency_title", "หยุดฉุกเฉิน");
+        }else{
+            document.querySelector(".btn-emergency-toggle").querySelector("a").style.backgroundColor = "#FF7B00";
+            this.changeText("emergency_title", "ทำงานต่อ");
+        }
         this.handleConvStatus(0, armStatus["conv"]["mode"][0]);
         this.handleConvStatus(1, armStatus["conv"]["mode"][1]);
         this.handleInfStatus(armStatus["sensor"]);
         this.logSet(armStatus["status"], armStatus["message"], armStatus["progress"] || "");
+        // "info_os_title" : this.querySel(".info-os").querySelector("h4"),
+        // "info_version_title" : this.querySel(".info-version").querySelector("h4"),
+        // "info_release_title" : this.querySel(".info-release").querySelector("h4"),
+        // "info_machine_title" : this.querySel(".info-machine").querySelector("h4"),
+        // "info_processor_title" : this.querySel(".info-processor").querySelector("h4"),
+        // "info_python_version_title" : this.querySel(".info-python-version").querySelector("h4"),
+        // "info_cpu_usage_title" : this.querySel(".info-cpu-usage").querySelectorAll("span")[2],
+        // "info_memory_usage_title" : this.querySel(".info-memory-usage").querySelectorAll("span")[2],
+        // "info_disk_usage_title" : this.querySel(".info-disk-usage").querySelectorAll("span")[2],
+        this.elements["text"]["info_os_title"].textContent = armStatus["system"]["os"] == "" || armStatus["system"]["os"] == null ? "ไม่ระบุ" : String(armStatus["system"]["os"]);
+        this.elements["text"]["info_version_title"].textContent = armStatus["system"]["version"] == "" || armStatus["system"]["version"] == null ? "ไม่ระบุ" : String(armStatus["system"]["version"]);
+        this.elements["text"]["info_release_title"].textContent = armStatus["system"]["release"] == "" || armStatus["system"]["release"] == null ? "ไม่ระบุ" : String(armStatus["system"]["release"]);
+        this.elements["text"]["info_machine_title"].textContent = armStatus["system"]["machine"] == "" || armStatus["system"]["machine"] == null ? "ไม่ระบุ" : String(armStatus["system"]["machine"]);
+        this.elements["text"]["info_processor_title"].textContent = armStatus["system"]["processor"] == "" || armStatus["system"]["processor"] == null ? "ไม่ระบุ" : String(armStatus["system"]["processor"]);
+        this.elements["text"]["info_python_version_title"].textContent = armStatus["system"]["python_version"] == "" || armStatus["system"]["python_version"] == null ? "ไม่ระบุ" : String(armStatus["system"]["python_version"]);
+        this.elements["text"]["info_cpu_usage_title"].textContent = armStatus["system"]["cpu_usage"] == "" || armStatus["system"]["cpu_usage"] == null ? "ไม่ระบุ" : String(armStatus["system"]["cpu_usage"]);
+        this.elements["ui"]["info_cpu_usage"].querySelectorAll("div")[2].style.width = armStatus["system"]["cpu_usage"] == "" || armStatus["system"]["cpu_usage"] == null ? "0%" : String(armStatus["system"]["cpu_usage"] + "%");
+        this.elements["ui"]["info_cpu_usage"].querySelectorAll("span")[2].textContent = armStatus["system"]["cpu_usage"] == "" || armStatus["system"]["cpu_usage"] == null ? "ไม่ระบุ" : String(armStatus["system"]["cpu_usage"] + "%");
+        this.elements["text"]["info_memory_usage_title"].textContent = armStatus["system"]["memory_usage"] == "" || armStatus["system"]["memory_usage"] == null ? "ไม่ระบุ" : String(armStatus["system"]["memory_usage"]);
+        this.elements["ui"]["info_memory_usage"].querySelectorAll("div")[2].style.width = armStatus["system"]["memory_usage"] == "" || armStatus["system"]["memory_usage"] == null ? "0%" : String(armStatus["system"]["memory_usage"] + "%");
+        this.elements["ui"]["info_memory_usage"].querySelectorAll("span")[2].textContent = armStatus["system"]["memory_usage"] == "" || armStatus["system"]["memory_usage"] == null ? "ไม่ระบุ" : String(armStatus["system"]["memory_usage"] + "%");
+        this.elements["text"]["info_disk_usage_title"].textContent = armStatus["system"]["disk_usage"] == "" || armStatus["system"]["disk_usage"] == null ? "ไม่ระบุ" : String(armStatus["system"]["disk_usage"]);
+        this.elements["ui"]["info_disk_usage"].querySelectorAll("div")[2].style.width = armStatus["system"]["disk_usage"] == "" || armStatus["system"]["disk_usage"] == null ? "0%" : String(armStatus["system"]["disk_usage"] + "%");
+        this.elements["ui"]["info_disk_usage"].querySelectorAll("span")[2].textContent = armStatus["system"]["disk_usage"] == "" || armStatus["system"]["disk_usage"] == null ? "ไม่ระบุ" : String(armStatus["system"]["disk_usage"] + "%");
     }
 
 
@@ -901,6 +1126,90 @@ class ARMMane{
             this.elements["icon"]["pred_icon"].style.color = "#FFFFFF";
         }
     }
+
+    //data {"step": 2, "idle": true, "start": 0, "mode": 1, "drop": null, "shape": false, "error": 0, "pickup_count": [2, 2, 2], "items": [1, 2, 2]}
+    handleArmStatus(data) {
+        let armStatus = JSON.parse(data);
+        this.elements["ui"]["box_step_1"].style.backgroundColor = "";
+        this.elements["ui"]["box_step_2"].style.backgroundColor = "";
+        this.elements["ui"]["box_step_3"].style.backgroundColor = "";
+        this.elements["ui"]["box_step_4"].style.backgroundColor = "";
+        this.elements["ui"]["box_step_5"].style.backgroundColor = "";
+        if(this.appStatus["manualBoxControl"] != true ){
+            this.elements["form"]["box_1"].value = armStatus["items"][0];
+            this.elements["form"]["box_2"].value = armStatus["items"][1];
+            this.elements["form"]["box_3"].value = armStatus["items"][2];
+        }
+
+        if(armStatus["step"] == 1 && this.appStatus["lastArmStep"] != 1){
+            this.elements["ui"]["box_step_1"].style.backgroundColor = "#FCA5B6";
+            this.playSoundOnce("object_grip.mp3");
+            this.appStatus["lastArmStep"] = 1; 
+        }else if(armStatus["step"] == 2 && this.appStatus["lastArmStep"] != 2){
+            this.elements["ui"]["box_step_2"].style.backgroundColor = "#FCA5B6";
+            this.playSoundOnce("object_dropbelt.mp3");
+            this.appStatus["lastArmStep"] = 2;
+        }else if(armStatus["step"] == 3 && this.appStatus["lastArmStep"] != 3){
+            this.elements["ui"]["box_step_3"].style.backgroundColor = "#FCA5B6";
+            this.playSoundOnce("object_conv.mp3");
+            this.appStatus["lastArmStep"] = 3;
+        }else if(armStatus["step"] == 4 && this.appStatus["lastArmStep"] != 4){
+            this.elements["ui"]["box_step_4"].style.backgroundColor = "#FCA5B6";
+            this.playSoundOnce("object_reg.mp3");
+            this.appStatus["lastArmStep"] = 4;
+        }else if(armStatus["step"] == 5 && this.appStatus["lastArmStep"] != 5){
+            this.elements["ui"]["box_step_5"].style.backgroundColor = "#FCA5B6";
+            this.appStatus["lastArmStep"] = 5;
+        }else{
+            this.appStatus["lastArmStep"] = -1;
+        }
+
+        if(armStatus["mode"] == 1 ){
+            this.elements["text"]["main_auto_title"].textContent = "อัตโนมัติ";
+            this.appStatus["lastArmStatusMode"] = 1;
+            
+        }else{
+            this.elements["text"]["main_auto_title"].textContent = "ควบคุมด้วยตนเอง";
+            this.appStatus["lastArmStatusMode"] = 0;
+        }
+
+        if(armStatus["sorting"] == 1){
+            this.elements["text"]["main_mode_title"].textContent = "ตรวจจับวัตถุด้วยสี";
+            this.appStatus["lastArmStatusSortingMode"] = 1;
+        }else if(armStatus["sorting"] == 0){
+            this.elements["text"]["main_mode_title"].textContent = "ตรวจจับวัตถุด้วยรูปร่าง";
+            this.appStatus["lastArmStatusSortingMode"] = 0;
+        }else{
+            this.elements["text"]["main_mode_title"].textContent = "ไม่มีโหมด";
+            this.appStatus["lastArmStatusSortingMode"] = 2;
+        }
+
+        if(armStatus["drop"] == 0 && this.appStatus["lastDropBoxPosition"] != 0){
+            this.elements["ui"]["box_status_a"].classList.add("drop-inprogress");
+            this.elements["ui"]["box_status_b"].classList.remove("drop-inprogress");
+            this.elements["ui"]["box_status_c"].classList.remove("drop-inprogress");
+            this.appStatus["lastDropBoxPosition"] = 0;
+            this.playSoundOnce("drop_a.mp3");
+        }else if(armStatus["drop"] == 1 && this.appStatus["lastDropBoxPosition"] != 1){
+            this.elements["ui"]["box_status_a"].classList.remove("drop-inprogress");
+            this.elements["ui"]["box_status_b"].classList.add("drop-inprogress");
+            this.elements["ui"]["box_status_c"].classList.remove("drop-inprogress");
+            this.appStatus["lastDropBoxPosition"] = 1;
+            this.playSoundOnce("drop_b.mp3");
+        }else if(armStatus["drop"] == 2 && this.appStatus["lastDropBoxPosition"] != 2){
+            this.elements["ui"]["box_status_a"].classList.remove("drop-inprogress");
+            this.elements["ui"]["box_status_b"].classList.remove("drop-inprogress");
+            this.elements["ui"]["box_status_c"].classList.add("drop-inprogress");
+            this.appStatus["lastDropBoxPosition"] = 2;
+            this.playSoundOnce("drop_c.mp3");
+        }else{
+            this.elements["ui"]["box_status_a"].classList.remove("drop-inprogress");
+            this.elements["ui"]["box_status_b"].classList.remove("drop-inprogress");
+            this.elements["ui"]["box_status_c"].classList.remove("drop-inprogress");
+            this.appStatus["lastDropBoxPosition"] = -1;
+        }
+    }
+
 
 
     handleVideoStream() {
@@ -981,7 +1290,6 @@ class ARMMane{
         if (available == 0 || available == false) {
             if (this.appStatus["sensorWarningTrigger"] == null) {
                 this.appStatus["sensorWarningTrigger"] = setInterval(() => {
-                    // this.playSound("https://design.nicezki.com/dev/sound/red-beep.mp3");
                     element_trigger.style.backgroundColor = warning;
                     element_idle.style.backgroundColor = warning;
                     setTimeout(() => {
@@ -1007,7 +1315,6 @@ class ARMMane{
                 clearInterval(this.appStatus["sensorWarningTrigger"]);
                 this.appStatus["sensorWarningTrigger"] = null;
             }
-            // this.playSound("https://design.nicezki.com/dev/sound/beep-2.mp3");
             element_trigger.style.backgroundColor = active;
             element_idle.style.backgroundColor = inactive;
         }else{
@@ -1021,8 +1328,27 @@ class ARMMane{
      * @param sound Pass in the sound file that is to be played
      */
     playSound(sound) {
-        let audio = new Audio(sound);
-        audio.play();
+        if(this.appStatus["soundState"] == true || this.appStatus["soundState"] == 1){
+            let soundDomain = this.appStatus["soundDomain"]
+            this.audio = new Audio(soundDomain + sound);
+            this.audio.play();
+            this.appStatus["lastSoundPlay"] = sound;
+        }else{
+            this.consoleLog("「ARMMANE」 Can't play sound " + sound + " because the sound is muted", "WARN");
+        }
+    }
+
+    playSoundOnce(sound) {
+        if(this.appStatus["soundState"]){
+            if(this.appStatus["lastSoundPlay"] == sound){
+                this.consoleLog("「ARMMANE」 Can't play sound " + sound + " because the sound is already played", "WARN");
+            }else{
+                this.playSound(sound);
+            }
+
+        }else{
+            this.consoleLog("「ARMMANE」 Can't play sound " + sound + " because the sound is muted", "WARN");
+        }
     }
 
 
@@ -1362,34 +1688,58 @@ class ARMMane{
         }
     }
 
-
+    createPresetPlayList(presetsWithSteps) {
+        let spawnArea = this.elements["ui"]["preset_box1"][0].querySelector("div");
+        presetsWithSteps.forEach(preset => {
+            let newPresetPlayElement = this.createPresetPlayElement(preset.presetName);
+            newPresetPlayElement.addEventListener("click", () => {
+                this.handlePresetElementPlay(preset.presetName);
+            });
+            spawnArea.appendChild(newPresetPlayElement);
+        });
+    }
 
     createPresetList(presetsWithSteps) {
-        const spawnArea = this.elements["ui"]["preset_box"][0].querySelector("div");
-        
+        const spawnArea = this.elements["ui"]["preset_box2"][0].querySelector("div");
         presetsWithSteps.forEach(preset => {
             const newPresetElement = this.createPresetElement(preset.presetName);
             newPresetElement.addEventListener("click", () => {
                 this.handlePresetElementClick(preset, newPresetElement);
             });
-    
             spawnArea.appendChild(newPresetElement);
         });
     }
+
+    createPresetPlayElement(presetName){
+        const newPresetPlayElement = this.elements["template"]["ins_preset1"][0].cloneNode(true);
+        const uniqueId = `preset_${presetName}`;
+        newPresetPlayElement.id = uniqueId;
+
+        newPresetPlayElement.classList.add("ins-preset", presetName);
+        newPresetPlayElement.querySelector(".tp-ins-preset-1 > div > h4").textContent = presetName;
+        newPresetPlayElement.style.display = "flex";
+        newPresetPlayElement.setAttribute("data-preset-name", presetName);
+
+        return newPresetPlayElement;
+    }
     
     createPresetElement(presetName) {
-        const newPresetElement = this.elements["template"]["ins_preset"][0].cloneNode(true);
+        const newPresetElement = this.elements["template"]["ins_preset2"][0].cloneNode(true);
         const uniqueId = `preset_${presetName}`;
         newPresetElement.id = uniqueId;
 
         newPresetElement.classList.add("ins-preset", presetName);
-        newPresetElement.querySelector(".tp-ins-preset > div > h4").textContent = presetName;
+        newPresetElement.querySelector(".tp-ins-preset-2 > div > h4").textContent = presetName;
         newPresetElement.style.display = "flex";
         newPresetElement.setAttribute("data-preset-name", presetName);
 
         return newPresetElement;
     }
-    
+
+    handlePresetElementPlay(presetName) {
+        this.runPreset(presetName);
+    };
+
     handlePresetElementClick(preset, newPresetElement) {
         const swimLane = this.elements["ui"]["command_area"][0];
         swimLane.innerHTML = "";
@@ -1408,6 +1758,22 @@ class ARMMane{
             swimLane.appendChild(newDiv);
         });
     }
+
+    runPreset(presetName){
+        fetch(this.appStatus["server"]["fullURL"] + "/command/preset/" + presetName, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }).then(response => response.json())
+        .then(data => {
+            this.consoleLog("「ARMMANE」 Run preset : " + presetName);
+        })
+        .catch(err => {
+            console.log(err);
+        });
+    }
+    
     initializePreset() {
         // Fetch the presets and steps
         this.getPreset()
@@ -1420,10 +1786,12 @@ class ARMMane{
                 this.createDraggableList();
                 
                 // Remove the preset list before creating new ones
-                this.elements["ui"]["preset_box"][0].querySelector("div").innerHTML = "";
+                this.elements["ui"]["preset_box1"][0].querySelector("div").innerHTML = "";
+                this.elements["ui"]["preset_box2"][0].querySelector("div").innerHTML = "";
     
                 // Create the preset list in the preset_box
                 this.createPresetList(presetsWithSteps);
+                this.createPresetPlayList(presetsWithSteps);
     
                 this.checkDragAreaEmpty();
             })
@@ -1515,7 +1883,21 @@ class ARMMane{
         });
     }
 
-        
+    setBoxItem(box, item) {
+        // send POST api to server
+        fetch(this.appStatus["server"]["fullURL"] + "/item/" + box + "/" + item, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }).then(response => response.json())
+        .then(data => {
+            this.consoleLog("「ARMMANE」 Box "+box+" item changed to "+item);
+        })
+        .catch(err => {
+            console.log(err);
+        });
+    }
 
 
     async getDataFromAPI(path, value = "") {
@@ -1623,6 +2005,110 @@ class ARMMane{
         }, time);
     }
 
+    setAuto(){
+        this.consoleLog("Test Mode: " + this.armStatus["mode"]);
+        if(this.armStatus["mode"] == 1){
+            fetch(this.appStatus["server"]["fullURL"] + "/mode/manual", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }).then(response => response.json())
+            .then(data => {
+                this.consoleLog("「ARMMANE」 Mode changed to manual");
+            })
+            .catch(err => {
+                console.log(err);
+            });
+        } else{
+            fetch(this.appStatus["server"]["fullURL"] + "/mode/auto", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }).then(response => response.json())
+            .then(data => {
+                this.consoleLog("「ARMMANE」 Mode changed to auto");
+            })
+            .catch(err => {
+                console.log(err);
+            });
+        }
+    }
+
+    setMode(){
+        this.consoleLog("Test Detect: " + this.armStatus["sorting"]);
+        if(this.armStatus["sorting"] == 1){
+            fetch(this.appStatus["server"]["fullURL"] + "/command/sorting/0", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }).then(response => response.json())
+            .then(data => {
+                this.consoleLog("「ARMMANE」 Mode changed to detect shape");
+            })
+            .catch(err => {
+                console.log(err);
+            });
+        } else if(this.armStatus["sorting"] == 0) {
+            fetch(this.appStatus["server"]["fullURL"] + "/command/sorting/1", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }).then(response => response.json())
+            .then(data => {
+                this.consoleLog("「ARMMANE」 Mode changed to detect color");
+            })
+            .catch(err => {
+                console.log(err);
+            });
+        } else if(this.armStatus["sorting"] == 2) {
+            fetch(this.appStatus["server"]["fullURL"] + "/command/sorting/0", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }).then(response => response.json())
+            .then(data => {
+                this.consoleLog("「ARMMANE」 Mode changed to no mode");
+            })
+            .catch(err => {
+                console.log(err);
+            });
+        }
+    }
+
+    emergency() {
+        if(!this.seriStatus["emergency"]){
+            fetch(this.appStatus["server"]["fullURL"] + "/command/emergency", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }).then(response => response.json())
+            .then(data => {
+                this.consoleLog("「ARMMANE」 Emergency stop");
+            })
+            .catch(err => {
+                console.log(err);
+            });
+        }else{
+            fetch(this.appStatus["server"]["fullURL"] + "/command/unlock", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }).then(response => response.json())
+            .then(data => {
+                this.consoleLog("「ARMMANE」 Unlock");
+            })
+            .catch(err => {
+                console.log(err);
+            });
+        }
+    }
 
     changeText(element_name, text) {
         this.elements["text"][element_name].textContent = text;
@@ -1663,6 +2149,36 @@ class ARMMane{
         }
     }
 
+    setSoundState() {
+        this.appStatus["soundState"] = this.strToBool(this.elements["form"]["cconf_sound"].value);
+        this.consoleLog("「ARMMANE」 Sound state set to " + this.appStatus["soundState"]);
+    }
+
+    setCookies(name, value) {
+        document.cookie = name + "=" + value + ";path=/";
+    }
+
+    getCookies(name) {
+        var value = "; " + document.cookie;
+        var parts = value.split("; " + name + "=");
+        if (parts.length == 2) {
+            return parts.pop().split(";").shift();
+        }
+        else {
+            return null;
+        }
+    }
+
+    strToBool(string){
+        if (string == "true"){
+            return true;
+        }else{
+            return false;
+        }
+        
+    }
+
+    
     
     /**
      * The consoleLog function is a wrapper for the console.log function that allows you to specify
