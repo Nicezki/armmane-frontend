@@ -66,6 +66,8 @@ class ARMMane{
             "manualControl" : false, // Trigger whwn manual control is active in 10 last second
             "manualControlTrigger" : null, // Store the timeout function
             "sensorWarningTrigger" : null, // Store the timeout function
+            "manualBoxControlTrigger" : null, // Store the timeout function
+            "manualBoxControl" : null, // Store the timeout function    
 
         }
 
@@ -172,9 +174,10 @@ class ARMMane{
                 "cconf_02" : this.querySel("#form-field-cconf-s2"),
                 "cconf_03" : this.querySel("#form-field-cconf-s3"),
                 "cconf_04" : this.querySel("#form-field-cconf-s4"),
-                "box_a" : this.querySel("#form-field-box-a"),
-                "box_b" : this.querySel("#form-field-box-b"),
-                "box_c" : this.querySel("#form-field-box-c"),
+                "box_1" : this.querySel("#form-field-box-a"),
+                "box_2" : this.querySel("#form-field-box-b"),
+                "box_3" : this.querySel("#form-field-box-c"),
+                "cconf_sound" : this.querySel("#form-field-soundstate"),
             },
             "template" : {
                 "btn_serverlist" : this.querySel(".tp-btn-server"),
@@ -298,13 +301,17 @@ class ARMMane{
 
         // Show loading screen
         this.showScreen("connect", true);
-        this.playSoundOnce("welcome.mp3");
+        
         this.hideElement("btn", "emergency");
 
         this.setupElementTrigger();
 
         this.initializeSortable();
 
+        this.getCookies("soundState");
+        this.appStatus["soundState"] = this.strToBool(this.getCookies("soundState") == null ? false : this.getCookies("soundState"));
+        this.elements["form"]["cconf_sound"].value = String(this.appStatus["soundState"]);
+        this.playSoundOnce("welcome.mp3");
     }
 
 
@@ -413,6 +420,32 @@ class ARMMane{
             }
         });
 
+        this.setTriggerEvent("form", "box_1", "change", () => {
+            this.appStatus["manualBoxControl"] = true;
+            clearTimeout(this.appStatus["manualBoxControlTrigger"]);
+            this.appStatus["manualBoxControlTrigger"] = setTimeout(() => {
+                this.consoleLog("Live update is resumed");
+                this.appStatus["manualControl"] = false;
+            }, 5000);
+        });
+
+        this.setTriggerEvent("form", "box_2", "change", () => {
+            this.appStatus["manualBoxControl"] = true;
+            clearTimeout(this.appStatus["manualBoxControlTrigger"]);
+            this.appStatus["manualBoxControlTrigger"] = setTimeout(() => {
+                this.consoleLog("Live update is resumed");
+                this.appStatus["manualControl"] = false;
+            }, 5000);
+        });
+
+        this.setTriggerEvent("form", "box_3", "change", () => {
+            this.appStatus["manualBoxControl"] = true;
+            clearTimeout(this.appStatus["manualBoxControlTrigger"]);
+            this.appStatus["manualBoxControlTrigger"] = setTimeout(() => {
+                this.consoleLog("Live update is resumed");
+                this.appStatus["manualControl"] = false;
+            }, 5000);
+        });
 
         this.setTriggerEvent("btn", "cconf_btn_save", "click", () => {
             let selectedElement = document.getElementById(this.appStatus["currentEditCodeBlock"]);
@@ -467,6 +500,19 @@ class ARMMane{
             });
         }
 
+        for (let box = 1; box <= 3; box++) {
+            this.setTriggerEvent("form", "box_" + box, "change", () => {
+                this.setBoxItem(box, this.elements["form"]["box_" + box].value);
+                this.consoleLog("Live update is paused");
+                this.appStatus["manualBoxControl"] = true;
+                clearTimeout(this.appStatus["manualBoxControlTrigger"]);
+                this.appStatus["manualBoxControlTrigger"] = setTimeout(() => {
+                    this.consoleLog("Live update is resumed");
+                    this.appStatus["manualBoxControl"] = false;
+                }, 5000);
+            });
+        }
+
         for (let servo = 0; servo < 6; servo++) {
             this.setTriggerEvent("form", "servo_0" + servo, "change", () => {
                 this.consoleLog("Live update is paused");
@@ -501,14 +547,23 @@ class ARMMane{
             this.setAuto();
         }
         );
+
         this.setTriggerEvent("btn", "main_mode", "click", () => {
             this.setMode();
         }
         );
+
         this.setTriggerEvent("btn", "emergency", "click", () => {
             this.emergency();
         }
         );
+
+        this.setTriggerEvent("form", "cconf_sound", "change", () => {
+            this.setSoundState();
+            this.setCookies("soundState", this.appStatus["soundState"])
+        }
+        );
+        
     }
 
     
@@ -1080,7 +1135,12 @@ class ARMMane{
         this.elements["ui"]["box_step_3"].style.backgroundColor = "";
         this.elements["ui"]["box_step_4"].style.backgroundColor = "";
         this.elements["ui"]["box_step_5"].style.backgroundColor = "";
-        
+        if(this.appStatus["manualBoxControl"] != true ){
+            this.elements["form"]["box_1"].value = armStatus["items"][0];
+            this.elements["form"]["box_2"].value = armStatus["items"][1];
+            this.elements["form"]["box_3"].value = armStatus["items"][2];
+        }
+
         if(armStatus["step"] == 1 && this.appStatus["lastArmStep"] != 1){
             this.elements["ui"]["box_step_1"].style.backgroundColor = "#FCA5B6";
             this.playSoundOnce("object_grip.mp3");
@@ -1268,7 +1328,7 @@ class ARMMane{
      * @param sound Pass in the sound file that is to be played
      */
     playSound(sound) {
-        if(this.appStatus["soundState"]){
+        if(this.appStatus["soundState"] == true || this.appStatus["soundState"] == 1){
             let soundDomain = this.appStatus["soundDomain"]
             this.audio = new Audio(soundDomain + sound);
             this.audio.play();
@@ -1823,6 +1883,22 @@ class ARMMane{
         });
     }
 
+    setBoxItem(box, item) {
+        // send POST api to server
+        fetch(this.appStatus["server"]["fullURL"] + "/item/" + box + "/" + item, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }).then(response => response.json())
+        .then(data => {
+            this.consoleLog("「ARMMANE」 Box "+box+" item changed to "+item);
+        })
+        .catch(err => {
+            console.log(err);
+        });
+    }
+
 
     async getDataFromAPI(path, value = "") {
         if(value != "") {
@@ -2073,6 +2149,36 @@ class ARMMane{
         }
     }
 
+    setSoundState() {
+        this.appStatus["soundState"] = this.strToBool(this.elements["form"]["cconf_sound"].value);
+        this.consoleLog("「ARMMANE」 Sound state set to " + this.appStatus["soundState"]);
+    }
+
+    setCookies(name, value) {
+        document.cookie = name + "=" + value + ";path=/";
+    }
+
+    getCookies(name) {
+        var value = "; " + document.cookie;
+        var parts = value.split("; " + name + "=");
+        if (parts.length == 2) {
+            return parts.pop().split(";").shift();
+        }
+        else {
+            return null;
+        }
+    }
+
+    strToBool(string){
+        if (string == "true"){
+            return true;
+        }else{
+            return false;
+        }
+        
+    }
+
+    
     
     /**
      * The consoleLog function is a wrapper for the console.log function that allows you to specify
